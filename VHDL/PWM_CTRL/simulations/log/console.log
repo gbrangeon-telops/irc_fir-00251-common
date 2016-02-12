@@ -1,0 +1,705 @@
+acom -O3 -work work -2002  -relax $dsn/../hdl/PWM_GEN.vhd
+# Compile...
+# Warning: DAGGEN_0523: The source is compiled without the -dbg switch. Line breakpoints and assertion debug will not be available.
+# File: D:\Telops\FIR-00251-Common\VHDL\FAN_CTRL\hdl\PWM_GEN.vhd
+# Compile Entity "PWM_GEN_3"
+# Compile Architecture "PWM_GEN" of Entity "PWM_GEN_3"
+# Compile success 0 Errors 0 Warnings  Analysis time :  62.0 [ms]
+open -vhdl {D:\Telops\FIR-00251-Output\src\Clink\Simulations\clink_tb\src\clink_stim.vhd}
+acom -O3 -work work -2002  -relax $dsn/src/fan_stim.vhd
+# Compile...
+# Warning: DAGGEN_0523: The source is compiled without the -dbg switch. Line breakpoints and assertion debug will not be available.
+# File: D:\Telops\FIR-00251-Common\VHDL\FAN_CTRL\simulations\src\fan_stim.vhd
+# Compile Entity "fan_stim"
+# Error: COMP96_0015: fan_stim.vhd : (31, 4): ';' expected.
+# Compile Architecture "fan_stim" of Entity "fan_stim"
+# Error: COMP96_0056: fan_stim.vhd : (43, 1): Cannot find referenced entity declaration "fan_stim".
+# Compile failure 2 Errors 0 Warnings  Analysis time :  15.0 [ms]
+acom -O3 -work work -2002  -relax $dsn/src/fan_stim.vhd
+# Compile...
+# Warning: DAGGEN_0523: The source is compiled without the -dbg switch. Line breakpoints and assertion debug will not be available.
+# File: D:\Telops\FIR-00251-Common\VHDL\FAN_CTRL\simulations\src\fan_stim.vhd
+# Compile Entity "fan_stim"
+# Error: COMP96_0018: fan_stim.vhd : (30, 4): Identifier expected.
+# Error: COMP96_0015: fan_stim.vhd : (31, 4): ';' expected.
+# Compile Architecture "fan_stim" of Entity "fan_stim"
+# Error: COMP96_0056: fan_stim.vhd : (43, 1): Cannot find referenced entity declaration "fan_stim".
+# Compile failure 3 Errors 0 Warnings  Analysis time :  0.0 [ms]
+acom -O3 -work work -2002  -relax $dsn/src/fan_stim.vhd
+# Compile...
+# Warning: DAGGEN_0523: The source is compiled without the -dbg switch. Line breakpoints and assertion debug will not be available.
+# File: D:\Telops\FIR-00251-Common\VHDL\FAN_CTRL\simulations\src\fan_stim.vhd
+# Compile Entity "fan_stim"
+# Compile Architecture "fan_stim" of Entity "fan_stim"
+# Compile success 0 Errors 0 Warnings  Analysis time :  0.1 [s]
+acom -O3 -work work -2002  -relax $dsn/src/fan_tb.bde
+# Compile...
+# DRC: Checking file 'D:\Telops\FIR-00251-Common\VHDL\FAN_CTRL\simulations\src\fan_tb.bde'.
+# DRC: Warning: fan_tb.bde - 0 error(s), 1 warning(s)
+# DRC: DRC process completed in 1 second(s).
+# DRC: The results have been written to the log file. Double click on this line to view the log.
+# Generating D:\Telops\FIR-00251-Common\VHDL\FAN_CTRL\simulations\compile\fan_tb.vhd from D:\Telops\FIR-00251-Common\VHDL\FAN_CTRL\simulations\src\fan_tb.bde ... 
+# Generation successful 
+# Warning: DAGGEN_0523: The source is compiled without the -dbg switch. Line breakpoints and assertion debug will not be available.
+# File: .\fan_tb.vhd
+# Compile Entity "fan_tb"
+# Compile Architecture "fan_tb" of Entity "fan_tb"
+# Error: COMP96_0078: fan_tb.bde(fan_tb.vhd) : (40, 23): Unknown identifier "T_AXI4_LITE_MISO".
+# Error: COMP96_0064: fan_tb.bde(fan_tb.vhd) : (40, 23): Unknown type.
+# Error: COMP96_0078: fan_tb.bde(fan_tb.vhd) : (42, 24): Unknown identifier "T_AXI4_LITE_MOSI".
+# Error: COMP96_0064: fan_tb.bde(fan_tb.vhd) : (42, 24): Unknown type.
+# Error: COMP96_0078: fan_tb.bde(fan_tb.vhd) : (53, 23): Unknown identifier "T_AXI4_LITE_MOSI".
+# Error: COMP96_0064: fan_tb.bde(fan_tb.vhd) : (53, 23): Unknown type.
+# Error: COMP96_0078: fan_tb.bde(fan_tb.vhd) : (56, 24): Unknown identifier "T_AXI4_LITE_MISO".
+# Error: COMP96_0064: fan_tb.bde(fan_tb.vhd) : (56, 24): Unknown type.
+# Error: COMP96_0078: fan_tb.bde(fan_tb.vhd) : (63, 16): Unknown identifier "T_AXI4_LITE_MOSI".
+# Error: COMP96_0064: fan_tb.bde(fan_tb.vhd) : (63, 16): Unknown type.
+# Error: COMP96_0078: fan_tb.bde(fan_tb.vhd) : (64, 16): Unknown identifier "T_AXI4_LITE_MISO".
+# Error: COMP96_0064: fan_tb.bde(fan_tb.vhd) : (64, 16): Unknown type.
+# Error: COMP96_0333: fan_tb.bde(fan_tb.vhd) : (76, 8): Formal must be locally static name.
+# Error: COMP96_0333: fan_tb.bde(fan_tb.vhd) : (77, 8): Formal must be locally static name.
+# Error: COMP96_0333: fan_tb.bde(fan_tb.vhd) : (86, 8): Formal must be locally static name.
+# Error: COMP96_0333: fan_tb.bde(fan_tb.vhd) : (85, 8): Formal must be locally static name.
+# Compile failure 16 Errors 0 Warnings  Analysis time :  0.0 [ms]
+acom -O3 -work work -2002  -relax $dsn/src/fan_tb.bde
+# Compile...
+# DRC: Checking file 'D:\Telops\FIR-00251-Common\VHDL\FAN_CTRL\simulations\src\fan_tb.bde'.
+# DRC: Warning: fan_tb.bde - 0 error(s), 1 warning(s)
+# DRC: DRC process completed in 1 second(s).
+# DRC: The results have been written to the log file. Double click on this line to view the log.
+# Generating D:\Telops\FIR-00251-Common\VHDL\FAN_CTRL\simulations\compile\fan_tb.vhd from D:\Telops\FIR-00251-Common\VHDL\FAN_CTRL\simulations\src\fan_tb.bde ... 
+# Generation successful 
+# Warning: DAGGEN_0523: The source is compiled without the -dbg switch. Line breakpoints and assertion debug will not be available.
+# File: .\fan_tb.vhd
+# Compile Entity "fan_tb"
+# Compile Architecture "fan_tb" of Entity "fan_tb"
+# Compile success 0 Errors 0 Warnings  Analysis time :  15.0 [ms]
+asim -O5 +access +r +m+gh_PWM gh_PWM a
+# ELBREAD: Elaboration process.
+# ELBREAD: Elaboration time 0.0 [s].
+# asim: Stack memory: 32MB
+# asim: Retval memory: 32MB
+# KERNEL: Main thread initiated.
+# KERNEL: Kernel process initialization phase.
+# KERNEL: Time resolution set to 1ps.
+# ELAB2: Elaboration final pass...
+# ELAB2: Create instances ...
+# ELAB2: Create instances complete.
+# SLP: Started
+# SLP: Elaboration phase ...
+# SLP: Elaboration phase ... skipped, nothing to simulate in SLP mode : 0.0 [s]
+# SLP: Finished : 0.0 [s]
+# ELAB2: Elaboration final pass complete - time: 0.1 [s].
+# KERNEL: Kernel process initialization done.
+# Allocation: Simulator allocated 5807 kB (elbread=1023 elab2=4634 kernel=149 sdf=0)
+# KERNEL: ASDB file was created in location D:\Telops\FIR-00251-Common\VHDL\FAN_CTRL\simulations\src\wave.asdb
+#  09:56, 12 février 2014
+#  Simulation has been initialized
+#  Selected Top-Level: gh_PWM (a)
+run
+# KERNEL: WARNING: There is an 'U'|'X'|'W'|'Z'|'-' in an arithmetic operand, the result will be 'X'(es).
+# KERNEL: Time: 0 ps,  Iteration: 0,  Instance: /gh_PWM,  Process: line__53.
+# KERNEL: Simulation has finished. There are no more test vectors to simulate.
+# Error: You do not have valid license to run Riviera-PRO. Contact Aldec for ordering information - sales@aldec.com.
+# 
+asim
+#  Simulation has been stopped
+# Error: asim: cannot select specified top-level
+asim -O5 +access +r +m+gh_PWM gh_PWM a
+# ELBREAD: Elaboration process.
+# ELBREAD: Elaboration time 0.0 [s].
+# asim: Stack memory: 32MB
+# asim: Retval memory: 32MB
+# KERNEL: Main thread initiated.
+# KERNEL: Kernel process initialization phase.
+# KERNEL: Time resolution set to 1ps.
+# ELAB2: Elaboration final pass...
+# ELAB2: Create instances ...
+# ELAB2: Create instances complete.
+# SLP: Started
+# SLP: Elaboration phase ...
+# SLP: Elaboration phase ... skipped, nothing to simulate in SLP mode : 0.0 [s]
+# SLP: Finished : 0.0 [s]
+# ELAB2: Elaboration final pass complete - time: 0.0 [s].
+# KERNEL: Kernel process initialization done.
+# Allocation: Simulator allocated 5807 kB (elbread=1023 elab2=4634 kernel=149 sdf=0)
+# KERNEL: ASDB file was created in location D:\Telops\FIR-00251-Common\VHDL\FAN_CTRL\simulations\src\wave.asdb
+#  09:57, 12 février 2014
+#  Simulation has been initialized
+#  Selected Top-Level: gh_PWM (a)
+run
+# KERNEL: WARNING: There is an 'U'|'X'|'W'|'Z'|'-' in an arithmetic operand, the result will be 'X'(es).
+# KERNEL: Time: 0 ps,  Iteration: 0,  Instance: /gh_PWM,  Process: line__53.
+# KERNEL: Simulation has finished. There are no more test vectors to simulate.
+open -do {D:\Telops\FIR-00251-Output\src\Clink\Simulations\clink_tb\src\run_sim.do}
+runscript -start 3 -stop 3 -do "D:\Telops\FIR-00251-Common\VHDL\FAN_CTRL\simulations\src\run_sim.do"
+asim -ses +access +r fan_tb
+#  Simulation has been stopped
+# ELBREAD: Elaboration process.
+# ELBREAD: Elaboration time 0.0 [s].
+# asim: Stack memory: 32MB
+# asim: Retval memory: 32MB
+# KERNEL: Main thread initiated.
+# KERNEL: Kernel process initialization phase.
+# KERNEL: Time resolution set to 1ps.
+# ELAB2: Elaboration final pass...
+# ELAB2: Create instances ...
+# ELAB2: Create instances complete.
+# SLP: Started
+# SLP: Elaboration phase ...
+# SLP: Elaboration phase ... skipped, nothing to simulate in SLP mode : 0.0 [s]
+# SLP: Finished : 0.0 [s]
+# ELAB2: Elaboration final pass complete - time: 0.0 [s].
+# KERNEL: Kernel process initialization done.
+# Allocation: Simulator allocated 7022 kB (elbread=1023 elab2=5847 kernel=150 sdf=0)
+# KERNEL: ASDB file was created in location D:\Telops\FIR-00251-Common\VHDL\FAN_CTRL\simulations\src\wave.asdb
+#  09:58, 12 février 2014
+#  Simulation has been initialized
+#  Selected Top-Level: fan_tb (fan_tb)
+open -do {D:\Telops\FIR-00251-Output\src\Clink\Simulations\clink_tb\src\waveform.do}
+add wave
+# Waveform file 'untitled.awc' connected to 'D:/Telops/FIR-00251-Common/VHDL/FAN_CTRL/simulations/src/wave.asdb'.
+# 8 signal(s) traced.
+# 4 signal(s) traced.
+# 8 signal(s) traced.
+# 8 signal(s) traced.
+# 8 signal(s) traced.
+endsim
+#  Simulation has been stopped
+# Format saved to file: D:/Telops/FIR-00251-Common/VHDL/FAN_CTRL/simulations/src/waveform.do
+# Adding file D:\Telops\FIR-00251-Common\VHDL\FAN_CTRL\simulations\src\waveform.do ... Done
+runscript -do "D:\Telops\FIR-00251-Common\VHDL\FAN_CTRL\simulations\src\run_sim.do"
+# #Simulation file
+
+asim -ses +access +r fan_tb
+# ELBREAD: Elaboration process.
+# ELBREAD: Elaboration time 0.0 [s].
+# asim: Stack memory: 32MB
+# asim: Retval memory: 32MB
+# KERNEL: Main thread initiated.
+# KERNEL: Kernel process initialization phase.
+# KERNEL: Time resolution set to 1ps.
+# ELAB2: Elaboration final pass...
+# ELAB2: Create instances ...
+# ELAB2: Create instances complete.
+# SLP: Started
+# SLP: Elaboration phase ...
+# SLP: Elaboration phase ... skipped, nothing to simulate in SLP mode : 0.0 [s]
+# SLP: Finished : 0.0 [s]
+# ELAB2: Elaboration final pass complete - time: 0.0 [s].
+# KERNEL: Kernel process initialization done.
+# Allocation: Simulator allocated 7022 kB (elbread=1023 elab2=5847 kernel=150 sdf=0)
+# KERNEL: ASDB file was created in location D:\Telops\FIR-00251-Common\VHDL\FAN_CTRL\simulations\src\wave.asdb
+#  10:11, 12 février 2014
+#  Simulation has been initialized
+#  Selected Top-Level: fan_tb (fan_tb)
+# Waveform file 'untitled.awc' connected to 'D:/Telops/FIR-00251-Common/VHDL/FAN_CTRL/simulations/src/wave.asdb'.
+# #transcript off
+do "D:\Telops\FIR-00251-Common\VHDL\FAN_CTRL\simulations\src\waveform.do"
+onerror { resume }
+transcript off
+# 5 signal(s) traced.
+# 4 signal(s) traced.
+# 8 signal(s) traced.
+# 8 signal(s) traced.
+# 8 signal(s) traced.
+# #transcript on
+run 200 us
+# KERNEL: WARNING: There is an 'U'|'X'|'W'|'Z'|'-' in an arithmetic operand, the result will be 'X'(es).
+# KERNEL: Time: 0 ps,  Iteration: 0,  Instance: /fan_tb/U2/pwm0,  Process: line__53.
+# KERNEL: WARNING: There is an 'U'|'X'|'W'|'Z'|'-' in an arithmetic operand, the result will be 'X'(es).
+# KERNEL: Time: 0 ps,  Iteration: 0,  Instance: /fan_tb/U2/pwm1,  Process: line__53.
+# KERNEL: WARNING: There is an 'U'|'X'|'W'|'Z'|'-' in an arithmetic operand, the result will be 'X'(es).
+# KERNEL: Time: 0 ps,  Iteration: 0,  Instance: /fan_tb/U2/pwm2,  Process: line__53.
+# RUNTIME: Fatal Error: RUNTIME_0047 fan_ctrl.vhd (203): Index 15 out of range (11 downto 0).
+# KERNEL: Time: 5015 ns,  Iteration: 1,  Instance: /fan_tb/U2/fan_ctrl_inst,  Process: line__184.
+# KERNEL: stopped at delta: 1 at time 5015 ns.
+# Error: Fatal error occurred during simulation.
+# Error: DO_001 in file D:\Telops\FIR-00251-Common\VHDL\FAN_CTRL\simulations\src\run_sim.do line 7
+# Error: Cannot run D:\Telops\FIR-00251-Common\VHDL\FAN_CTRL\simulations\src\run_sim.do
+acom -O3 -work work -2002  -relax $dsn/../hdl/fan_ctrl.vhd
+# Compile...
+# Warning: DAGGEN_0523: The source is compiled without the -dbg switch. Line breakpoints and assertion debug will not be available.
+# File: D:\Telops\FIR-00251-Common\VHDL\FAN_CTRL\hdl\fan_ctrl.vhd
+# Compile Entity "FAN_CTRL"
+# Compile Architecture "FAN_CTRL" of Entity "FAN_CTRL"
+# Warning: COMP96_0546: ../../hdl/fan_ctrl.vhd : (198, 24): Choice in a case statement is not locally static. Duplicate choices will not be detected.
+# Warning: COMP96_0546: ../../hdl/fan_ctrl.vhd : (206, 25): Choice in a case statement is not locally static. Duplicate choices will not be detected.
+# Warning: COMP96_0546: ../../hdl/fan_ctrl.vhd : (215, 24): Choice in a case statement is not locally static. Duplicate choices will not be detected.
+# Warning: COMP96_0546: ../../hdl/fan_ctrl.vhd : (223, 24): Choice in a case statement is not locally static. Duplicate choices will not be detected.
+# Compile success 0 Errors 4 Warnings  Analysis time :  0.1 [s]
+acom -O3 -work work -2002  -relax $dsn/../hdl/PWM_GEN.vhd
+# Compile...
+# Warning: DAGGEN_0523: The source is compiled without the -dbg switch. Line breakpoints and assertion debug will not be available.
+# File: D:\Telops\FIR-00251-Common\VHDL\FAN_CTRL\hdl\PWM_GEN.vhd
+# Compile Entity "PWM_GEN_3"
+# Compile Architecture "PWM_GEN" of Entity "PWM_GEN_3"
+# Compile success 0 Errors 0 Warnings  Analysis time :  62.0 [ms]
+acom -O3 -work work -2002  -relax $dsn/src/fan_tb.bde
+# Compile...
+# DRC: Checking file 'D:\Telops\FIR-00251-Common\VHDL\FAN_CTRL\simulations\src\fan_tb.bde'.
+# DRC: Warning: fan_tb.bde - 0 error(s), 1 warning(s)
+# DRC: DRC process completed in 1 second(s).
+# DRC: The results have been written to the log file. Double click on this line to view the log.
+# Generating D:\Telops\FIR-00251-Common\VHDL\FAN_CTRL\simulations\compile\fan_tb.vhd from D:\Telops\FIR-00251-Common\VHDL\FAN_CTRL\simulations\src\fan_tb.bde ... 
+# Generation successful 
+# Warning: DAGGEN_0523: The source is compiled without the -dbg switch. Line breakpoints and assertion debug will not be available.
+# File: .\fan_tb.vhd
+# Compile Entity "fan_tb"
+# Compile Architecture "fan_tb" of Entity "fan_tb"
+# Compile success 0 Errors 0 Warnings  Analysis time :  0.0 [ms]
+runscript -do "D:\Telops\FIR-00251-Common\VHDL\FAN_CTRL\simulations\src\run_sim.do"
+# #Simulation file
+
+asim -ses +access +r fan_tb
+#  Simulation has been stopped
+# ELBREAD: Elaboration process.
+# ELBREAD: Elaboration time 0.1 [s].
+# asim: Stack memory: 32MB
+# asim: Retval memory: 32MB
+# KERNEL: Main thread initiated.
+# KERNEL: Kernel process initialization phase.
+# KERNEL: Time resolution set to 1ps.
+# ELAB2: Elaboration final pass...
+# ELAB2: Create instances ...
+# ELAB2: Create instances complete.
+# SLP: Started
+# SLP: Elaboration phase ...
+# SLP: Elaboration phase ... skipped, nothing to simulate in SLP mode : 0.0 [s]
+# SLP: Finished : 0.0 [s]
+# ELAB2: Elaboration final pass complete - time: 0.0 [s].
+# KERNEL: Kernel process initialization done.
+# Allocation: Simulator allocated 7022 kB (elbread=1023 elab2=5848 kernel=150 sdf=0)
+# KERNEL: ASDB file was created in location D:\Telops\FIR-00251-Common\VHDL\FAN_CTRL\simulations\src\wave.asdb
+#  10:13, 12 février 2014
+#  Simulation has been initialized
+#  Selected Top-Level: fan_tb (fan_tb)
+# Waveform file 'untitled.awc' connected to 'D:/Telops/FIR-00251-Common/VHDL/FAN_CTRL/simulations/src/wave.asdb'.
+# #transcript off
+do "D:\Telops\FIR-00251-Common\VHDL\FAN_CTRL\simulations\src\waveform.do"
+onerror { resume }
+transcript off
+# 5 signal(s) traced.
+# 4 signal(s) traced.
+# 8 signal(s) traced.
+# 8 signal(s) traced.
+# 8 signal(s) traced.
+# #transcript on
+run 200 us
+# KERNEL: WARNING: There is an 'U'|'X'|'W'|'Z'|'-' in an arithmetic operand, the result will be 'X'(es).
+# KERNEL: Time: 0 ps,  Iteration: 0,  Instance: /fan_tb/U2/pwm0,  Process: line__53.
+# KERNEL: WARNING: There is an 'U'|'X'|'W'|'Z'|'-' in an arithmetic operand, the result will be 'X'(es).
+# KERNEL: Time: 0 ps,  Iteration: 0,  Instance: /fan_tb/U2/pwm1,  Process: line__53.
+# KERNEL: WARNING: There is an 'U'|'X'|'W'|'Z'|'-' in an arithmetic operand, the result will be 'X'(es).
+# KERNEL: Time: 0 ps,  Iteration: 0,  Instance: /fan_tb/U2/pwm2,  Process: line__53.
+# RUNTIME: Fatal Error: RUNTIME_0047 fan_ctrl.vhd (203): Index 23 out of range (15 downto 0).
+# KERNEL: Time: 5015 ns,  Iteration: 1,  Instance: /fan_tb/U2/fan_ctrl_inst,  Process: line__184.
+# KERNEL: stopped at delta: 1 at time 5015 ns.
+# Error: Fatal error occurred during simulation.
+# Error: DO_001 in file D:\Telops\FIR-00251-Common\VHDL\FAN_CTRL\simulations\src\run_sim.do line 7
+# Error: Cannot run D:\Telops\FIR-00251-Common\VHDL\FAN_CTRL\simulations\src\run_sim.do
+acom -O3 -work work -2002  -relax $dsn/../hdl/fan_ctrl.vhd
+# Compile...
+# Warning: DAGGEN_0523: The source is compiled without the -dbg switch. Line breakpoints and assertion debug will not be available.
+# File: D:\Telops\FIR-00251-Common\VHDL\FAN_CTRL\hdl\fan_ctrl.vhd
+# Compile Entity "FAN_CTRL"
+# Compile Architecture "FAN_CTRL" of Entity "FAN_CTRL"
+# Warning: COMP96_0546: ../../hdl/fan_ctrl.vhd : (198, 24): Choice in a case statement is not locally static. Duplicate choices will not be detected.
+# Warning: COMP96_0546: ../../hdl/fan_ctrl.vhd : (206, 25): Choice in a case statement is not locally static. Duplicate choices will not be detected.
+# Warning: COMP96_0546: ../../hdl/fan_ctrl.vhd : (215, 24): Choice in a case statement is not locally static. Duplicate choices will not be detected.
+# Warning: COMP96_0546: ../../hdl/fan_ctrl.vhd : (223, 24): Choice in a case statement is not locally static. Duplicate choices will not be detected.
+# Compile success 0 Errors 4 Warnings  Analysis time :  62.0 [ms]
+acom -O3 -work work -2002  -relax $dsn/../hdl/PWM_GEN.vhd
+# Compile...
+# Warning: DAGGEN_0523: The source is compiled without the -dbg switch. Line breakpoints and assertion debug will not be available.
+# File: D:\Telops\FIR-00251-Common\VHDL\FAN_CTRL\hdl\PWM_GEN.vhd
+# Compile Entity "PWM_GEN_3"
+# Compile Architecture "PWM_GEN" of Entity "PWM_GEN_3"
+# Compile success 0 Errors 0 Warnings  Analysis time :  62.0 [ms]
+acom -O3 -work work -2002  -relax $dsn/src/fan_tb.bde
+# Compile...
+# Warning: DAGGEN_0523: The source is compiled without the -dbg switch. Line breakpoints and assertion debug will not be available.
+# File: .\fan_tb.vhd
+# Compile Entity "fan_tb"
+# Compile Architecture "fan_tb" of Entity "fan_tb"
+# Compile success 0 Errors 0 Warnings  Analysis time :  0.0 [ms]
+runscript -do "D:\Telops\FIR-00251-Common\VHDL\FAN_CTRL\simulations\src\run_sim.do"
+# #Simulation file
+
+asim -ses +access +r fan_tb
+#  Simulation has been stopped
+# ELBREAD: Elaboration process.
+# ELBREAD: Elaboration time 0.0 [s].
+# asim: Stack memory: 32MB
+# asim: Retval memory: 32MB
+# KERNEL: Main thread initiated.
+# KERNEL: Kernel process initialization phase.
+# KERNEL: Time resolution set to 1ps.
+# ELAB2: Elaboration final pass...
+# ELAB2: Create instances ...
+# ELAB2: Create instances complete.
+# SLP: Started
+# SLP: Elaboration phase ...
+# SLP: Elaboration phase ... skipped, nothing to simulate in SLP mode : 0.0 [s]
+# SLP: Finished : 0.0 [s]
+# ELAB2: Elaboration final pass complete - time: 0.0 [s].
+# KERNEL: Kernel process initialization done.
+# Allocation: Simulator allocated 7023 kB (elbread=1023 elab2=5848 kernel=150 sdf=0)
+# KERNEL: ASDB file was created in location D:\Telops\FIR-00251-Common\VHDL\FAN_CTRL\simulations\src\wave.asdb
+#  10:14, 12 février 2014
+#  Simulation has been initialized
+#  Selected Top-Level: fan_tb (fan_tb)
+# Waveform file 'untitled.awc' connected to 'D:/Telops/FIR-00251-Common/VHDL/FAN_CTRL/simulations/src/wave.asdb'.
+# #transcript off
+do "D:\Telops\FIR-00251-Common\VHDL\FAN_CTRL\simulations\src\waveform.do"
+onerror { resume }
+transcript off
+# 5 signal(s) traced.
+# 4 signal(s) traced.
+# 8 signal(s) traced.
+# 8 signal(s) traced.
+# 8 signal(s) traced.
+# #transcript on
+run 200 us
+# KERNEL: WARNING: There is an 'U'|'X'|'W'|'Z'|'-' in an arithmetic operand, the result will be 'X'(es).
+# KERNEL: Time: 0 ps,  Iteration: 0,  Instance: /fan_tb/U2/pwm0,  Process: line__53.
+# KERNEL: WARNING: There is an 'U'|'X'|'W'|'Z'|'-' in an arithmetic operand, the result will be 'X'(es).
+# KERNEL: Time: 0 ps,  Iteration: 0,  Instance: /fan_tb/U2/pwm1,  Process: line__53.
+# KERNEL: WARNING: There is an 'U'|'X'|'W'|'Z'|'-' in an arithmetic operand, the result will be 'X'(es).
+# KERNEL: Time: 0 ps,  Iteration: 0,  Instance: /fan_tb/U2/pwm2,  Process: line__53.
+# EXECUTION:: ERROR  : END OF SIMULATION
+# EXECUTION:: Time: 26145 ns,  Iteration: 0,  Instance: /fan_tb/U1,  Process: fan_stim.
+# KERNEL: stopped at time: 200 us
+runscript -do "D:\Telops\FIR-00251-Common\VHDL\FAN_CTRL\simulations\src\run_sim.do"
+# #Simulation file
+
+asim -ses +access +r fan_tb
+#  Simulation has been stopped
+# ELBREAD: Elaboration process.
+# ELBREAD: Elaboration time 0.0 [s].
+# asim: Stack memory: 32MB
+# asim: Retval memory: 32MB
+# KERNEL: Main thread initiated.
+# KERNEL: Kernel process initialization phase.
+# KERNEL: Time resolution set to 1ps.
+# ELAB2: Elaboration final pass...
+# ELAB2: Create instances ...
+# ELAB2: Create instances complete.
+# SLP: Started
+# SLP: Elaboration phase ...
+# SLP: Elaboration phase ... skipped, nothing to simulate in SLP mode : 0.0 [s]
+# SLP: Finished : 0.0 [s]
+# ELAB2: Elaboration final pass complete - time: 0.0 [s].
+# KERNEL: Kernel process initialization done.
+# Allocation: Simulator allocated 7023 kB (elbread=1023 elab2=5848 kernel=150 sdf=0)
+# KERNEL: ASDB file was created in location D:\Telops\FIR-00251-Common\VHDL\FAN_CTRL\simulations\src\wave.asdb
+#  10:15, 12 février 2014
+#  Simulation has been initialized
+#  Selected Top-Level: fan_tb (fan_tb)
+# Waveform file 'untitled.awc' connected to 'D:/Telops/FIR-00251-Common/VHDL/FAN_CTRL/simulations/src/wave.asdb'.
+# #transcript off
+do "D:\Telops\FIR-00251-Common\VHDL\FAN_CTRL\simulations\src\waveform.do"
+onerror { resume }
+transcript off
+# 5 signal(s) traced.
+# 4 signal(s) traced.
+# 8 signal(s) traced.
+# 8 signal(s) traced.
+# 8 signal(s) traced.
+# #transcript on
+run 2 ms
+# KERNEL: WARNING: There is an 'U'|'X'|'W'|'Z'|'-' in an arithmetic operand, the result will be 'X'(es).
+# KERNEL: Time: 0 ps,  Iteration: 0,  Instance: /fan_tb/U2/pwm0,  Process: line__53.
+# KERNEL: WARNING: There is an 'U'|'X'|'W'|'Z'|'-' in an arithmetic operand, the result will be 'X'(es).
+# KERNEL: Time: 0 ps,  Iteration: 0,  Instance: /fan_tb/U2/pwm1,  Process: line__53.
+# KERNEL: WARNING: There is an 'U'|'X'|'W'|'Z'|'-' in an arithmetic operand, the result will be 'X'(es).
+# KERNEL: Time: 0 ps,  Iteration: 0,  Instance: /fan_tb/U2/pwm2,  Process: line__53.
+# EXECUTION:: ERROR  : END OF SIMULATION
+# EXECUTION:: Time: 26145 ns,  Iteration: 0,  Instance: /fan_tb/U1,  Process: fan_stim.
+# KERNEL: stopped at time: 2 ms
+acom -O3 -work work -2002  -relax $dsn/src/fan_stim.vhd
+# Compile...
+# Warning: DAGGEN_0523: The source is compiled without the -dbg switch. Line breakpoints and assertion debug will not be available.
+# File: D:\Telops\FIR-00251-Common\VHDL\FAN_CTRL\simulations\src\fan_stim.vhd
+# Compile Entity "fan_stim"
+# Compile Architecture "fan_stim" of Entity "fan_stim"
+# Compile success 0 Errors 0 Warnings  Analysis time :  78.0 [ms]
+acom -O3 -work work -2002  -relax $dsn/src/fan_tb.bde
+# Compile...
+# Warning: DAGGEN_0523: The source is compiled without the -dbg switch. Line breakpoints and assertion debug will not be available.
+# File: .\fan_tb.vhd
+# Compile Entity "fan_tb"
+# Compile Architecture "fan_tb" of Entity "fan_tb"
+# Compile success 0 Errors 0 Warnings  Analysis time :  16.0 [ms]
+runscript -do "D:\Telops\FIR-00251-Common\VHDL\FAN_CTRL\simulations\src\run_sim.do"
+# #Simulation file
+
+asim -ses +access +r fan_tb
+#  Simulation has been stopped
+# ELBREAD: Elaboration process.
+# ELBREAD: Elaboration time 0.0 [s].
+# asim: Stack memory: 32MB
+# asim: Retval memory: 32MB
+# KERNEL: Main thread initiated.
+# KERNEL: Kernel process initialization phase.
+# KERNEL: Time resolution set to 1ps.
+# ELAB2: Elaboration final pass...
+# ELAB2: Create instances ...
+# ELAB2: Create instances complete.
+# SLP: Started
+# SLP: Elaboration phase ...
+# SLP: Elaboration phase ... skipped, nothing to simulate in SLP mode : 0.0 [s]
+# SLP: Finished : 0.0 [s]
+# ELAB2: Elaboration final pass complete - time: 0.0 [s].
+# KERNEL: Kernel process initialization done.
+# Allocation: Simulator allocated 7023 kB (elbread=1023 elab2=5848 kernel=150 sdf=0)
+# KERNEL: ASDB file was created in location D:\Telops\FIR-00251-Common\VHDL\FAN_CTRL\simulations\src\wave.asdb
+#  10:16, 12 février 2014
+#  Simulation has been initialized
+#  Selected Top-Level: fan_tb (fan_tb)
+# Waveform file 'untitled.awc' connected to 'D:/Telops/FIR-00251-Common/VHDL/FAN_CTRL/simulations/src/wave.asdb'.
+# #transcript off
+do "D:\Telops\FIR-00251-Common\VHDL\FAN_CTRL\simulations\src\waveform.do"
+onerror { resume }
+transcript off
+# 5 signal(s) traced.
+# 4 signal(s) traced.
+# 8 signal(s) traced.
+# 8 signal(s) traced.
+# 8 signal(s) traced.
+# #transcript on
+run 10 ms
+# KERNEL: WARNING: There is an 'U'|'X'|'W'|'Z'|'-' in an arithmetic operand, the result will be 'X'(es).
+# KERNEL: Time: 0 ps,  Iteration: 0,  Instance: /fan_tb/U2/pwm0,  Process: line__53.
+# KERNEL: WARNING: There is an 'U'|'X'|'W'|'Z'|'-' in an arithmetic operand, the result will be 'X'(es).
+# KERNEL: Time: 0 ps,  Iteration: 0,  Instance: /fan_tb/U2/pwm1,  Process: line__53.
+# KERNEL: WARNING: There is an 'U'|'X'|'W'|'Z'|'-' in an arithmetic operand, the result will be 'X'(es).
+# KERNEL: Time: 0 ps,  Iteration: 0,  Instance: /fan_tb/U2/pwm2,  Process: line__53.
+# KERNEL: stopped at time: 10 ms
+acom -O3 -work work -2002  -relax $dsn/src/fan_stim.vhd
+# Compile...
+# Warning: DAGGEN_0523: The source is compiled without the -dbg switch. Line breakpoints and assertion debug will not be available.
+# File: D:\Telops\FIR-00251-Common\VHDL\FAN_CTRL\simulations\src\fan_stim.vhd
+# Compile Entity "fan_stim"
+# Compile Architecture "fan_stim" of Entity "fan_stim"
+# Compile success 0 Errors 0 Warnings  Analysis time :  0.1 [s]
+acom -O3 -work work -2002  -relax $dsn/src/fan_tb.bde
+# Compile...
+# Warning: DAGGEN_0523: The source is compiled without the -dbg switch. Line breakpoints and assertion debug will not be available.
+# File: .\fan_tb.vhd
+# Compile Entity "fan_tb"
+# Compile Architecture "fan_tb" of Entity "fan_tb"
+# Compile success 0 Errors 0 Warnings  Analysis time :  0.0 [ms]
+runscript -do "D:\Telops\FIR-00251-Common\VHDL\FAN_CTRL\simulations\src\run_sim.do"
+# #Simulation file
+
+asim -ses +access +r fan_tb
+#  Simulation has been stopped
+# ELBREAD: Elaboration process.
+# ELBREAD: Elaboration time 0.0 [s].
+# asim: Stack memory: 32MB
+# asim: Retval memory: 32MB
+# KERNEL: Main thread initiated.
+# KERNEL: Kernel process initialization phase.
+# KERNEL: Time resolution set to 1ps.
+# ELAB2: Elaboration final pass...
+# ELAB2: Create instances ...
+# ELAB2: Create instances complete.
+# SLP: Started
+# SLP: Elaboration phase ...
+# SLP: Elaboration phase ... skipped, nothing to simulate in SLP mode : 0.0 [s]
+# SLP: Finished : 0.0 [s]
+# ELAB2: Elaboration final pass complete - time: 0.0 [s].
+# KERNEL: Kernel process initialization done.
+# Allocation: Simulator allocated 7023 kB (elbread=1023 elab2=5848 kernel=150 sdf=0)
+# KERNEL: ASDB file was created in location D:\Telops\FIR-00251-Common\VHDL\FAN_CTRL\simulations\src\wave.asdb
+#  10:17, 12 février 2014
+#  Simulation has been initialized
+#  Selected Top-Level: fan_tb (fan_tb)
+# Waveform file 'untitled.awc' connected to 'D:/Telops/FIR-00251-Common/VHDL/FAN_CTRL/simulations/src/wave.asdb'.
+# #transcript off
+do "D:\Telops\FIR-00251-Common\VHDL\FAN_CTRL\simulations\src\waveform.do"
+onerror { resume }
+transcript off
+# 5 signal(s) traced.
+# 4 signal(s) traced.
+# 8 signal(s) traced.
+# 8 signal(s) traced.
+# 8 signal(s) traced.
+# #transcript on
+run 10 ms
+# KERNEL: WARNING: There is an 'U'|'X'|'W'|'Z'|'-' in an arithmetic operand, the result will be 'X'(es).
+# KERNEL: Time: 0 ps,  Iteration: 0,  Instance: /fan_tb/U2/pwm0,  Process: line__53.
+# KERNEL: WARNING: There is an 'U'|'X'|'W'|'Z'|'-' in an arithmetic operand, the result will be 'X'(es).
+# KERNEL: Time: 0 ps,  Iteration: 0,  Instance: /fan_tb/U2/pwm1,  Process: line__53.
+# KERNEL: WARNING: There is an 'U'|'X'|'W'|'Z'|'-' in an arithmetic operand, the result will be 'X'(es).
+# KERNEL: Time: 0 ps,  Iteration: 0,  Instance: /fan_tb/U2/pwm2,  Process: line__53.
+# KERNEL: stopped at time: 10 ms
+acom -O3 -work work -2002  -relax $dsn/src/fan_stim.vhd
+# Compile...
+# Warning: DAGGEN_0523: The source is compiled without the -dbg switch. Line breakpoints and assertion debug will not be available.
+# File: D:\Telops\FIR-00251-Common\VHDL\FAN_CTRL\simulations\src\fan_stim.vhd
+# Compile Entity "fan_stim"
+# Compile Architecture "fan_stim" of Entity "fan_stim"
+# Compile success 0 Errors 0 Warnings  Analysis time :  0.1 [s]
+acom -O3 -work work -2002  -relax $dsn/src/fan_tb.bde
+# Compile...
+# Warning: DAGGEN_0523: The source is compiled without the -dbg switch. Line breakpoints and assertion debug will not be available.
+# File: .\fan_tb.vhd
+# Compile Entity "fan_tb"
+# Compile Architecture "fan_tb" of Entity "fan_tb"
+# Compile success 0 Errors 0 Warnings  Analysis time :  15.0 [ms]
+runscript -do "D:\Telops\FIR-00251-Common\VHDL\FAN_CTRL\simulations\src\run_sim.do"
+# #Simulation file
+
+asim -ses +access +r fan_tb
+#  Simulation has been stopped
+# ELBREAD: Elaboration process.
+# ELBREAD: Elaboration time 0.0 [s].
+# asim: Stack memory: 32MB
+# asim: Retval memory: 32MB
+# KERNEL: Main thread initiated.
+# KERNEL: Kernel process initialization phase.
+# KERNEL: Time resolution set to 1ps.
+# ELAB2: Elaboration final pass...
+# ELAB2: Create instances ...
+# ELAB2: Create instances complete.
+# SLP: Started
+# SLP: Elaboration phase ...
+# SLP: Elaboration phase ... skipped, nothing to simulate in SLP mode : 0.0 [s]
+# SLP: Finished : 0.0 [s]
+# ELAB2: Elaboration final pass complete - time: 0.0 [s].
+# KERNEL: Kernel process initialization done.
+# Allocation: Simulator allocated 7023 kB (elbread=1023 elab2=5848 kernel=150 sdf=0)
+# KERNEL: ASDB file was created in location D:\Telops\FIR-00251-Common\VHDL\FAN_CTRL\simulations\src\wave.asdb
+#  10:19, 12 février 2014
+#  Simulation has been initialized
+#  Selected Top-Level: fan_tb (fan_tb)
+# Waveform file 'untitled.awc' connected to 'D:/Telops/FIR-00251-Common/VHDL/FAN_CTRL/simulations/src/wave.asdb'.
+# #transcript off
+do "D:\Telops\FIR-00251-Common\VHDL\FAN_CTRL\simulations\src\waveform.do"
+onerror { resume }
+transcript off
+# 5 signal(s) traced.
+# 4 signal(s) traced.
+# 8 signal(s) traced.
+# 8 signal(s) traced.
+# 8 signal(s) traced.
+# #transcript on
+run 10 ms
+# KERNEL: WARNING: There is an 'U'|'X'|'W'|'Z'|'-' in an arithmetic operand, the result will be 'X'(es).
+# KERNEL: Time: 0 ps,  Iteration: 0,  Instance: /fan_tb/U2/pwm0,  Process: line__53.
+# KERNEL: WARNING: There is an 'U'|'X'|'W'|'Z'|'-' in an arithmetic operand, the result will be 'X'(es).
+# KERNEL: Time: 0 ps,  Iteration: 0,  Instance: /fan_tb/U2/pwm1,  Process: line__53.
+# KERNEL: WARNING: There is an 'U'|'X'|'W'|'Z'|'-' in an arithmetic operand, the result will be 'X'(es).
+# KERNEL: Time: 0 ps,  Iteration: 0,  Instance: /fan_tb/U2/pwm2,  Process: line__53.
+# KERNEL: stopped at time: 10 ms
+# 1 signal(s) traced.
+# KERNEL: Warning: KERNEL_0291 Signal '/fan_tb/U2/pwm0/DATA' has already been traced.
+# 0 signal(s) traced.
+# KERNEL: Warning: KERNEL_0291 Signal '/fan_tb/U2/pwm1/DATA' has already been traced.
+# 0 signal(s) traced.
+endsim
+#  Simulation has been stopped
+# Format saved to file: D:/Telops/FIR-00251-Common/VHDL/FAN_CTRL/simulations/src/waveform.do
+# Adding file D:\Telops\FIR-00251-Common\VHDL\FAN_CTRL\simulations\src\waveform.do ... Done
+# Warning: WAVEFORM: Object matching /fan_tb/U2/PWM_CLK not found in D:/Telops/FIR-00251-Common/VHDL/FAN_CTRL/simulations/src/wave.asdb.
+runscript -do "D:\Telops\FIR-00251-Common\VHDL\FAN_CTRL\simulations\src\run_sim.do"
+# #Simulation file
+
+asim -ses +access +r fan_tb
+# ELBREAD: Elaboration process.
+# ELBREAD: Elaboration time 0.0 [s].
+# asim: Stack memory: 32MB
+# asim: Retval memory: 32MB
+# KERNEL: Main thread initiated.
+# KERNEL: Kernel process initialization phase.
+# KERNEL: Time resolution set to 1ps.
+# ELAB2: Elaboration final pass...
+# ELAB2: Create instances ...
+# ELAB2: Create instances complete.
+# SLP: Started
+# SLP: Elaboration phase ...
+# SLP: Elaboration phase ... skipped, nothing to simulate in SLP mode : 0.0 [s]
+# SLP: Finished : 0.0 [s]
+# ELAB2: Elaboration final pass complete - time: 0.0 [s].
+# KERNEL: Kernel process initialization done.
+# Allocation: Simulator allocated 7023 kB (elbread=1023 elab2=5848 kernel=150 sdf=0)
+# KERNEL: ASDB file was created in location D:\Telops\FIR-00251-Common\VHDL\FAN_CTRL\simulations\src\wave.asdb
+#  10:22, 12 février 2014
+#  Simulation has been initialized
+#  Selected Top-Level: fan_tb (fan_tb)
+# Waveform file 'untitled.awc' connected to 'D:/Telops/FIR-00251-Common/VHDL/FAN_CTRL/simulations/src/wave.asdb'.
+# #transcript off
+do "D:\Telops\FIR-00251-Common\VHDL\FAN_CTRL\simulations\src\waveform.do"
+onerror { resume }
+transcript off
+# 5 signal(s) traced.
+# 4 signal(s) traced.
+# 8 signal(s) traced.
+# 8 signal(s) traced.
+# 8 signal(s) traced.
+# KERNEL: Warning: KERNEL_0291 Signal '/fan_tb/U2/pwm0/PWMo' has already been traced.
+# KERNEL: Warning: KERNEL_0291 Signal '/fan_tb/U2/pwm0/DATA' has already been traced.
+# KERNEL: Warning: KERNEL_0291 Signal '/fan_tb/U2/pwm1/PWMo' has already been traced.
+# KERNEL: Warning: KERNEL_0291 Signal '/fan_tb/U2/pwm1/DATA' has already been traced.
+# KERNEL: Warning: KERNEL_0291 Signal '/fan_tb/U2/pwm2/PWMo' has already been traced.
+# KERNEL: Warning: KERNEL_0291 Signal '/fan_tb/U2/pwm2/DATA' has already been traced.
+# 0 signal(s) traced.
+# #transcript on
+run 10 ms
+# KERNEL: WARNING: There is an 'U'|'X'|'W'|'Z'|'-' in an arithmetic operand, the result will be 'X'(es).
+# KERNEL: Time: 0 ps,  Iteration: 0,  Instance: /fan_tb/U2/pwm0,  Process: line__53.
+# KERNEL: WARNING: There is an 'U'|'X'|'W'|'Z'|'-' in an arithmetic operand, the result will be 'X'(es).
+# KERNEL: Time: 0 ps,  Iteration: 0,  Instance: /fan_tb/U2/pwm1,  Process: line__53.
+# KERNEL: WARNING: There is an 'U'|'X'|'W'|'Z'|'-' in an arithmetic operand, the result will be 'X'(es).
+# KERNEL: Time: 0 ps,  Iteration: 0,  Instance: /fan_tb/U2/pwm2,  Process: line__53.
+# KERNEL: stopped at time: 10 ms
+# 1 signal(s) traced.
+# Format saved to file: D:/Telops/FIR-00251-Common/VHDL/FAN_CTRL/simulations/src/waveform.do
+# Adding file D:\Telops\FIR-00251-Common\VHDL\FAN_CTRL\simulations\src\waveform.do ... Done
+acom -O3 -work work -2002  -relax $dsn/../hdl/PWM_GEN.vhd
+# Compile...
+# Warning: DAGGEN_0523: The source is compiled without the -dbg switch. Line breakpoints and assertion debug will not be available.
+# File: D:\Telops\FIR-00251-Common\VHDL\FAN_CTRL\hdl\PWM_GEN.vhd
+# Compile Entity "PWM_GEN_3"
+# Compile Architecture "PWM_GEN" of Entity "PWM_GEN_3"
+# Compile success 0 Errors 0 Warnings  Analysis time :  0.1 [s]
+acom -O3 -work work -2002  -relax $dsn/../hdl/PWM_GEN.vhd
+# Compile...
+# Warning: DAGGEN_0523: The source is compiled without the -dbg switch. Line breakpoints and assertion debug will not be available.
+# File: D:\Telops\FIR-00251-Common\VHDL\FAN_CTRL\hdl\PWM_GEN.vhd
+# Compile Entity "PWM_GEN_3"
+# Compile Architecture "PWM_GEN" of Entity "PWM_GEN_3"
+# Compile success 0 Errors 0 Warnings  Analysis time :  63.0 [ms]
+acom -O3 -work work -2002  -relax $dsn/../hdl/PWM_GEN1.vhd
+# Compile...
+# Warning: DAGGEN_0523: The source is compiled without the -dbg switch. Line breakpoints and assertion debug will not be available.
+# File: D:\Telops\FIR-00251-Common\VHDL\FAN_CTRL\hdl\PWM_GEN1.vhd
+# Compile Entity "PWM_GEN_1"
+# Error: COMP96_0111: ../../hdl/PWM_GEN1.vhd : (47, 5): Labels do not match.
+# Compile Architecture "PWM_GEN" of Entity "PWM_GEN_1"
+# Error: COMP96_0056: ../../hdl/PWM_GEN1.vhd : (51, 1): Cannot find referenced entity declaration "PWM_GEN_1".
+# Compile failure 2 Errors 0 Warnings  Analysis time :  0.0 [ms]
+acom -O3 -work work -2002  -relax $dsn/../hdl/PWM_GEN3.vhd
+# Compile...
+# Warning: DAGGEN_0523: The source is compiled without the -dbg switch. Line breakpoints and assertion debug will not be available.
+# File: D:\Telops\FIR-00251-Common\VHDL\FAN_CTRL\hdl\PWM_GEN3.vhd
+# Compile Entity "PWM_GEN_3"
+# Compile Architecture "PWM_GEN" of Entity "PWM_GEN_3"
+# Compile success 0 Errors 0 Warnings  Analysis time :  47.0 [ms]
+acom -O3 -work work -2002  -relax $dsn/../hdl/PWM_GEN4.vhd
+# Compile...
+# Warning: DAGGEN_0523: The source is compiled without the -dbg switch. Line breakpoints and assertion debug will not be available.
+# File: D:\Telops\FIR-00251-Common\VHDL\FAN_CTRL\hdl\PWM_GEN4.vhd
+# Compile Entity "PWM_GEN_4"
+# Compile Architecture "PWM_GEN" of Entity "PWM_GEN_4"
+# Compile success 0 Errors 0 Warnings  Analysis time :  62.0 [ms]
+acom -O3 -work work -2002  -relax $dsn/../hdl/PWM_GEN1.vhd
+# Compile...
+# Warning: DAGGEN_0523: The source is compiled without the -dbg switch. Line breakpoints and assertion debug will not be available.
+# File: D:\Telops\FIR-00251-Common\VHDL\FAN_CTRL\hdl\PWM_GEN1.vhd
+# Compile Entity "PWM_GEN_1"
+# Compile Architecture "PWM_GEN" of Entity "PWM_GEN_1"
+# Compile success 0 Errors 0 Warnings  Analysis time :  63.0 [ms]
+#  Simulation has been stopped

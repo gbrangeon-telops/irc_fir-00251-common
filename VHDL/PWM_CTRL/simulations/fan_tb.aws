@@ -1,0 +1,15 @@
+[Version]
+Version=9.3
+[Designs]
+fan_tb=fan_tb.adf
+[Settings]
+Active=fan_tb
+[Expand]
+fan_tb=1
+work=0
+[Browser]
+sort=order
+mode=none
+[Order]
+order=1
+macro=

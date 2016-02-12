@@ -1,0 +1,9 @@
+i<>.\..\..\..\..\Common_HDL\gh_vhdl_lib\custom_MSI\gh_PWM.vhd
+i<>.\..\hdl\fan_ctrl.vhd
+i<>.\..\..\tel2000pkg.vhd
+i<>.\..\hdl\PWM_GEN.vhd
+i<>.\src\fan_stim.vhd
+i<>.\src\fan_tb.bde
+i<>.\..\hdl\PWM_GEN1.vhd
+i<>.\..\hdl\PWM_GEN3.vhd
+i<>.\..\hdl\PWM_GEN4.vhd

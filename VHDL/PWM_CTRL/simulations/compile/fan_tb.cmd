@@ -1,0 +1,1 @@
+-w -s "D:\Telops\FIR-00251-Common\VHDL\FAN_CTRL\simulations\library.cfg"  -j "D:\Telops\FIR-00251-Common\VHDL\FAN_CTRL\simulations\projlib.cfg"  -d "D:\Telops\FIR-00251-Common\VHDL\FAN_CTRL\simulations\compile"   -work work  -relax -O3 -e 100 -2002 "D:\Telops\FIR-00251-Common\VHDL\FAN_CTRL\hdl\PWM_GEN1.vhd"

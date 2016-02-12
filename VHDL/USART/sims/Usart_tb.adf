@@ -1,0 +1,97 @@
+[Project]
+Current Flow=Generic
+VCS=0
+version=3
+Current Config=compile
+
+[Configurations]
+compile=work
+
+[Library]
+Usart_tb=.\Usart_tb\Usart_tb.lib
+work=.\src\work\work.lib
+
+[Settings]
+AccessRead=0
+AccessReadWrite=0
+AccessACCB=0
+AccessACCR=0
+AccessReadWriteSLP=0
+AccessReadTopLevel=1
+DisableC=1
+ENABLE_ADV_DATAFLOW=0
+FLOW_TYPE=HDL
+LANGUAGE=VHDL
+REFRESH_FLOW=1
+FLOWTOOLS=NONE
+FAMILY=
+fileopenfolder=D:\Telops\Common_HDL\gh_vhdl_lib\custom_MSI
+
+[LocalVerilogSets]
+EnableSLP=1
+EnableDebug=0
+
+[LocalVhdlSets]
+CompileWithDebug=0
+
+[$LibMap$]
+Usart_tb=.
+Active_lib=
+work=.
+
+[SpecTracer]
+WindowVisible=0
+
+[HierarchyViewer]
+HierarchyInformation=usart_axis_tb|sims|0 usart_b|USART_B|0 usart_b_tb|USART_B_TB|0 usart_serial_tb|sims|0 
+ShowHide=ShowTopLevel
+Selected=
+
+[Files]
+/USART_B_TB.bde=-1
+/..\..\USART_B.bde=-1
+/..\..\usart_rx.vhd=-1
+/..\..\usart_tx.vhd=-1
+/..\..\..\tel2000pkg.vhd=-1
+/..\..\USART_TO_AXIS.VHD=-1
+/..\..\..\Fifo\t_axi4_stream32_fifo.vhd=-1
+/..\..\AXIS_TO_USART.VHD=-1
+/usart_serial_tb.vhd=-1
+/usart_axis_tb.vhd=-1
+/waveform.do=-1
+/run_sim.do=-1
+/..\..\build_usart.do=-1
+/..\..\..\..\..\FIR-00251-Proc\IP\t_axi4_stream32_afifo_d512\t_axi4_stream32_afifo_d512_funcsim.vhdl=-1
+/..\..\Usart_Ctrl.vhd=-1
+/..\..\..\..\..\Common_HDL\Utilities\double_sync.vhd=-1
+/..\..\..\..\..\Common_HDL\Utilities\double_sync_vector.vhd=-1
+/..\..\rx_counter.VHD=-1
+/..\..\..\..\..\Common_HDL\gh_vhdl_lib\custom_MSI\gh_stretch.vhd=-1
+
+[Files.Data]
+.\src\USART_B_TB.bde=Block Diagram
+.\..\USART_B.bde=Block Diagram
+.\..\usart_rx.vhd=VHDL Source Code
+.\..\usart_tx.vhd=VHDL Source Code
+.\..\..\tel2000pkg.vhd=VHDL Source Code
+.\..\USART_TO_AXIS.VHD=VHDL Source Code
+.\..\..\Fifo\t_axi4_stream32_fifo.vhd=VHDL Source Code
+.\..\AXIS_TO_USART.VHD=VHDL Source Code
+.\src\usart_serial_tb.vhd=VHDL Source Code
+.\src\usart_axis_tb.vhd=VHDL Source Code
+.\src\waveform.do=Macro
+.\src\run_sim.do=Macro
+.\..\build_usart.do=Macro
+.\..\..\..\..\FIR-00251-Proc\IP\t_axi4_stream32_afifo_d512\t_axi4_stream32_afifo_d512_funcsim.vhdl=VHDL Source Code
+.\..\Usart_Ctrl.vhd=VHDL Source Code
+.\..\..\..\..\Common_HDL\Utilities\double_sync.vhd=VHDL Source Code
+.\..\..\..\..\Common_HDL\Utilities\double_sync_vector.vhd=VHDL Source Code
+.\..\rx_counter.VHD=VHDL Source Code
+.\..\..\..\..\Common_HDL\gh_vhdl_lib\custom_MSI\gh_stretch.vhd=VHDL Source Code
+
+[file_out:/USART_B_TB.bde]
+/..\compile\USART_B_TB.vhd=-1
+
+[file_out:/..\..\USART_B.bde]
+/..\compile\USART_B.vhd=-1
+

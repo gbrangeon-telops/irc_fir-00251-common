@@ -1,0 +1,112 @@
+@echo off
+rem Syntax: startxmd r|d target
+
+rem Clear variables
+set xDir=
+set x_xmd=
+set config=
+set target=
+set sensorName=
+set deviceNumber=
+set bitFile=
+set elfFile=
+
+rem Set xilinx directory
+set xDir=C:\Xilinx
+if exist D:\Xilinx\SDK\2013.4\*.* set xDir=D:\Xilinx
+echo Xilinx directory: %xDir%
+set x_xmd=%xDir%\SDK\2013.4\bin\nt64\xmd.exe
+
+rem Parse configuration parameter
+if "%1"=="r" (
+set config=Release
+) else if "%1"=="d" (
+set config=Debug
+) else (
+echo Error: Unknown configuration ^(%1^).
+goto error
+)
+
+rem Parse target parameter
+if "%2"=="hawkA" (
+set target=proc
+set sensorName=%2
+) else if "%2"=="herculesD" (
+set target=proc
+set sensorName=%2
+) else if "%2"=="isc0207A" (
+set target=proc
+set sensorName=%2
+) else if "%2"=="marsD" (
+set target=proc
+set sensorName=%2
+) else if "%2"=="pelicanD" (
+set target=proc
+set sensorName=%2
+) else if "%2"=="scorpiolwD" (
+set target=proc
+set sensorName=%2
+) else if "%2"=="scorpiolwD_230Hz" (
+set target=proc
+set sensorName=%2
+) else if "%2"=="scorpiomwD" (
+set target=proc
+set sensorName=%2
+) else if "%2"=="output" (
+set target=output
+) else if "%2"=="storage" (
+set target=storage
+) else (
+echo Error: Unknown target ^(%2^).
+goto error
+)
+
+rem Set programming parameter
+if "%target%"=="proc" (
+set deviceNumber=1
+set bitFile=D:\Telops\FIR-00251-Proc\sdk\fir_00251_proc_%sensorName%\hw\fir_00251_proc_%sensorName%.bit
+set elfFile=D:\Telops\FIR-00251-Proc\sdk\fir_00251_proc_%sensorName%\fir_00251_proc_%sensorName%\%config%\fir_00251_proc_%sensorName%.elf
+) else if "%target%"=="output" (
+set deviceNumber=2
+set bitFile=D:\Telops\FIR-00251-Output\sdk\hw\fir_251_output_top.bit
+set elfFile=D:\Telops\FIR-00251-Output\sdk\fir_00251_output\%config%\fir_00251_output.elf
+) else if "%target%"=="storage" (
+set deviceNumber=3
+set bitFile=D:\Telops\FIR-00257-Storage\sdk\hw_platform_0\fir_257_top.bit
+set elfFile=D:\Telops\FIR-00257-Storage\sdk\fir_00257_storage\%config%\fir_00257_storage.elf
+)
+
+if not exist %bitFile% (
+echo Error: Cannot find %bitFile%.
+goto error
+)
+
+for %%a in ("%bitFile%") do echo Bit file: %%~ta
+
+if not exist %elfFile% (
+echo Error: Cannot find %elfFile%.
+goto error
+)
+
+for %%a in ("%elfFile%") do echo Elf file: %%~ta
+
+set tclScript=startxmd.tcl
+if exist %tclScript% del %tclScript%
+>%tclScript% (
+echo fpga -f %bitFile:\=/% -debugdevice deviceNr %deviceNumber%
+echo connect mb mdm -debugdevice deviceNr %deviceNumber%
+echo rst
+echo dow %elfFile:\=/%
+echo rst
+echo run
+)
+
+%x_xmd% -tcl %tclScript%
+
+goto end
+
+:error
+
+
+:end
+

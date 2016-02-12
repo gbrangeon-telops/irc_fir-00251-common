@@ -1,0 +1,93 @@
+[Project]
+Current Flow=Generic
+VCS=0
+version=3
+Current Config=compile
+
+[Configurations]
+compile=work
+
+[Library]
+fan_tb=.\fan_tb\fan_tb.lib
+
+[Settings]
+AccessRead=0
+AccessReadWrite=0
+AccessACCB=0
+AccessACCR=0
+AccessReadWriteSLP=0
+AccessReadTopLevel=1
+DisableC=1
+ENABLE_ADV_DATAFLOW=0
+FLOW_TYPE=HDL
+LANGUAGE=VHDL
+REFRESH_FLOW=1
+FLOWTOOLS=NONE
+FAMILY=
+fileopenfolder=D:\Telops\FIR-00251-Common\VHDL\FAN_CTRL\hdl
+IMPL_TOOL=
+SYNTH_TOOL=
+
+[LocalVerilogSets]
+EnableSLP=1
+EnableDebug=0
+
+[LocalVhdlSets]
+CompileWithDebug=0
+
+[$LibMap$]
+fan_tb=.
+Active_lib=
+work=.
+
+[Folders]
+Name3=Makefiles
+Directory3=D:\Telops\FIR-00251-Common\VHDL\FAN_CTRL\simulations\
+Extension3=mak
+Name4=Memory
+Directory4=D:\Telops\FIR-00251-Common\VHDL\FAN_CTRL\simulations\
+Extension4=mem;mif;hex
+Name5=Dll Libraries
+Directory5=D:\Telops\FIR-00251-Common\VHDL\FAN_CTRL\simulations\
+Extension5=dll
+Name6=PDF
+Directory6=D:\Telops\FIR-00251-Common\VHDL\FAN_CTRL\simulations\
+Extension6=pdf
+Name7=HTML
+Directory7=D:\Telops\FIR-00251-Common\VHDL\FAN_CTRL\simulations\
+Extension7=
+
+[SpecTracer]
+WindowVisible=0
+
+[Files]
+/..\..\..\..\..\Common_HDL\gh_vhdl_lib\custom_MSI\gh_PWM.vhd=-1
+/..\..\hdl\fan_ctrl.vhd=-1
+/..\..\..\tel2000pkg.vhd=-1
+/..\..\hdl\PWM_GEN.vhd=-1
+/fan_stim.vhd=-1
+/fan_tb.bde=-1
+/waveform.do=-1
+/..\..\hdl\PWM_GEN1.vhd=-1
+/..\..\hdl\PWM_GEN3.vhd=-1
+/..\..\hdl\PWM_GEN4.vhd=-1
+
+[Files.Data]
+.\..\..\..\..\Common_HDL\gh_vhdl_lib\custom_MSI\gh_PWM.vhd=VHDL Source Code
+.\..\hdl\fan_ctrl.vhd=VHDL Source Code
+.\..\..\tel2000pkg.vhd=VHDL Source Code
+.\..\hdl\PWM_GEN.vhd=VHDL Source Code
+.\src\fan_stim.vhd=VHDL Source Code
+.\src\fan_tb.bde=Block Diagram
+.\src\waveform.do=Macro
+.\..\hdl\PWM_GEN1.vhd=VHDL Source Code
+.\..\hdl\PWM_GEN3.vhd=VHDL Source Code
+.\..\hdl\PWM_GEN4.vhd=VHDL Source Code
+
+[file_out:/fan_tb.bde]
+/..\compile\fan_tb.vhd=-1
+
+[HierarchyViewer]
+HierarchyInformation=fan_tb|fan_tb|0 gh_pwm|a|0 
+ShowHide=ShowTopLevel
+Selected=
