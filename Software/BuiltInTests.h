@@ -33,10 +33,10 @@ typedef enum builtInTestIDEnum builtInTestID_t;
  * Built-in test result.
  */
 enum builtInTestResultEnum {
-   BITR_NotApplicable = DBITGR_NotApplicable,
-   BITR_Pending = DBITGR_Pending,
-   BITR_Passed = DBITGR_Passed,
-   BITR_Failed = DBITGR_Failed
+   BITR_NotApplicable = 0,
+   BITR_Pending = 1,
+   BITR_Passed = 2,
+   BITR_Failed = 3
 };
 
 /**

@@ -124,97 +124,14 @@ struct gcRegister
  */
 typedef struct gcRegister gcRegister_t;
 
-/*
- * Sensor code (based on firmware minor version number definition)
- */
-#define Isc0207ASensor     1
-#define HawkASensor        2
-#define HerculesDSensor    3
-#define PelicanDSensor     4
-#define MarsASensor        5
-#define JupiterASensor     6
-#define ScorpiolwDSensor   7
-#define MarsDSensor        8
-#define ScorpiomwDSensor   9
-// ScorpiolwD_230HzSensor is not defined since it's using ScorpiomwDSensor
-#define Isc0209ASensor     11
-
-/*
- * TDCStatus register bit masks
- */
-#define WaitingForCoolerMask                    0x00000001  /**< TDCStatus StructReg bit mask for WaitingForCooler field */
-#define WaitingForSensorMask                    0x00000002  /**< TDCStatus StructReg bit mask for WaitingForSensor field */
-#define WaitingForInitMask                      0x00000004  /**< TDCStatus StructReg bit mask for WaitingForInit field */
-// #define WaitingForCameraLinkMask                0x00000008  /**< TDCStatus StructReg bit mask for WaitingForCameraLink field */
-#define WaitingForICUMask                       0x00000010  /**< TDCStatus StructReg bit mask for WaitingForICU field */
-#define WaitingForNDFilterMask                  0x00000020  /**< TDCStatus StructReg bit mask for WaitingForNDFilter field */
-#define WaitingForCalibrationInitMask           0x00000040  /**< TDCStatus StructReg bit mask for WaitingForCalibrationInit field */
-#define WaitingForFilterWheelMask               0x00000080  /**< TDCStatus StructReg bit mask for WaitingForFilterWheel field */
-#define WaitingForArmMask                       0x00000100  /**< TDCStatus StructReg bit mask for WaitingForArm field */
-#define WaitingForValidParametersMask           0x00000200  /**< TDCStatus StructReg bit mask for WaitingForValidParameters field */
-#define AcquisitionStartedMask                  0x00000400  /**< TDCStatus StructReg bit mask for AcquisitionStarted field */
-// #define WaitingForSCDCmdAckMask                 0x00000800  /**< TDCStatus StructReg bit mask for WaitingForSCDCmdAck field */
-#define WaitingForCalibrationDataMask           0x00001000  /**< TDCStatus StructReg bit mask for WaitingForCalibrationData field */
-#define WaitingForCalibrationActualizationMask  0x00002000  /**< TDCStatus StructReg bit mask for WaitingForCalibrationActualization field */
-#define WaitingForOutputFPGAMask                0x00004000  /**< TDCStatus StructReg bit mask for WaitingForOutputFPGA field */
-#define WaitingForPowerMask                     0x00008000  /**< TDCStatus StructReg bit mask for WaitingForPower field */
-#define WaitingForFlashSettingsInitMask         0x00010000  /**< TDCStatus StructReg bit mask for WaitingForFlashSettingsInit field */
-
-#define TDC_STATUS_INIT                         (WaitingForCoolerMask | WaitingForInitMask | WaitingForCalibrationInitMask | WaitingForArmMask | \
-                                                WaitingForOutputFPGAMask | WaitingForFlashSettingsInitMask)
-
-/*
- * AvailabilityFlags register bit masks
- */
-#define DiscreteExposureTimeIsAvailableMask     0x00000001  /**< AvailabilityFlags register bit mask for DiscreteExposureTimeIsAvailable field */
-#define CalibrationIsAvailableMask              0x00000002  /**< AvailabilityFlags register bit mask for CalibrationIsAvailable field */
-#define Raw0IsAvailableMask                     0x00000004  /**< AvailabilityFlags register bit mask for Raw0IsAvailable field */
-#define RawIsAvailableMask                      0x00000008  /**< AvailabilityFlags register bit mask for RawIsAvailable field */
-#define NUCIsAvailableMask                      0x00000010  /**< AvailabilityFlags register bit mask for NUCIsAvailable field */
-#define RTIsAvailableMask                       0x00000020  /**< AvailabilityFlags register bit mask for RTIsAvailable field */
-#define IBRIsAvailableMask                      0x00000040  /**< AvailabilityFlags register bit mask for IBRIsAvailable field */
-#define IBIIsAvailableMask                      0x00000080  /**< AvailabilityFlags register bit mask for CalibrationIsAvailable field */
-
-/*
- * TDCFlags register bit masks
- */
-#define ITRIsImplementedMask                             0x00000001  /**< TDCFlags register bit mask for ITRIsImplemented field */
-#define IWRIsImplementedMask                             0x00000002  /**< TDCFlags register bit mask for IWRIsImplemented field */
-#define ClBaseIsImplementedMask                          0x00000004  /**< TDCFlags register bit mask for ClBaseIsImplemented field */
-#define ClFullIsImplementedMask                          0x00000008  /**< TDCFlags register bit mask for ClFullIsImplemented field */
-#define CalibrationActualizationIsImplementedMask        0x00000010  /**< TDCFlags register bit mask for CalibrationActualizationIsImplemented field */
-#define HighGainSWDIsImplementedMask                     0x00000020  /**< TDCFlags register bit mask for HighGainSWDIsImplemented field */
-#define ICUIsImplementedMask                             0x00000040  /**< TDCFlags register bit mask for ICUIsImplemented field */
-#define NDFilterIsImplementedMask                        0x00000080  /**< TDCFlags register bit mask for NDFilterIsImplemented field */
-#define FWIsImplementedMask                              0x00000100  /**< TDCFlags register bit mask for FWIsImplemented field */
-#define FWAsynchronouslyRotatingModeIsImplementedMask    0x00000200  /**< TDCFlags register bit mask for FWAsynchronouslyRotatingModeIsImplemented field */
-#define FWSynchronouslyRotatingModeIsImplementedMask     0x00000400  /**< TDCFlags register bit mask for FWSynchronouslyRotatingModeIsImplemented field */
-#define AECPlusIsImplementedMask                         0x00000800  /**< TDCFlags register bit mask for AECPlusIsImplemented field */
-#define ExternalMemoryBufferIsImplementedMask            0x00001000  /**< TDCFlags register bit mask for ExternalMemoryBufferIsImplemented field */
-#define SensorIsImplementedMask                          0xF8000000  /**< TDCFlags register bit mask for SensorIsImplemented field */
-#define SensorIsImplementedBitPos                        27          /**< TDCFlags register bit position for SensorIsImplemented field */
-
-#define SensorIsImplemented(sensorCode)   ((sensorCode << SensorIsImplementedBitPos) & SensorIsImplementedMask)
-
-#define Isc0207AIsImplemented          SensorIsImplemented(Isc0207ASensor)
-#define HawkAIsImplemented             SensorIsImplemented(HawkASensor)
-#define HerculesDIsImplemented         SensorIsImplemented(HerculesDSensor)
-#define PelicanDIsImplemented          SensorIsImplemented(PelicanDSensor)
-#define MarsAIsImplemented             SensorIsImplemented(MarsASensor)
-#define JupiterAIsImplemented          SensorIsImplemented(JupiterASensor)
-#define ScorpiolwDIsImplemented        SensorIsImplemented(ScorpiolwDSensor)
-#define MarsDIsImplemented             SensorIsImplemented(MarsDSensor)
-#define ScorpiomwDIsImplemented        SensorIsImplemented(ScorpiomwDSensor)
-#define Isc0209AIsImplemented          SensorIsImplemented(Isc0209ASensor)
-
 
 /* AUTO-CODE BEGIN */
 // Auto-generated GeniCam library.
-// Generated from XML camera definition file version 11.1.0
+// Generated from XML camera definition file version 11.2.0
 // using generateGenICamCommonCLib.m Matlab script.
 
 #define GC_XMLMAJORVERSION    11
-#define GC_XMLMINORVERSION    1
+#define GC_XMLMINORVERSION    2
 #define GC_XMLSUBMINORVERSION 0
 
 // Enumerations values and data types
@@ -573,7 +490,8 @@ typedef enum IntegrationModeEnum IntegrationMode_t;
  */
 enum TriggerSelectorEnum {
    TS_AcquisitionStart = 0,
-   TS_Flagging = 1
+   TS_Flagging = 1,
+   TS_Gating = 2
 };
 
 /**
@@ -1128,21 +1046,6 @@ enum DeviceCurrentSelectorEnum {
 typedef enum DeviceCurrentSelectorEnum DeviceCurrentSelector_t;
 
 /**
- * DeviceBuiltInTestsGlobalResult enumeration values
- */
-enum DeviceBuiltInTestsGlobalResultEnum {
-   DBITGR_NotApplicable = 0,
-   DBITGR_Pending = 1,
-   DBITGR_Passed = 2,
-   DBITGR_Failed = 3
-};
-
-/**
- * DeviceBuiltInTestsGlobalResult enumeration values data type
- */
-typedef enum DeviceBuiltInTestsGlobalResultEnum DeviceBuiltInTestsGlobalResult_t;
-
-/**
  * DevicePowerStateSetpoint enumeration values
  */
 enum DevicePowerStateSetpointEnum {
@@ -1208,8 +1111,6 @@ typedef enum DeviceLedIndicatorStateEnum DeviceLedIndicatorState_t;
 // #define AcquisitionModeAddr                           0x0000D310  /**< AcquisitionMode register address */
 // #define AcquisitionStartAddr                          0x0000D314  /**< AcquisitionStart register address */
 // #define AcquisitionStopAddr                           0x0000D318  /**< AcquisitionStop register address */
-// #define OffsetXAddr                                   0x0000D31C  /**< OffsetX register address */
-// #define OffsetYAddr                                   0x0000D320  /**< OffsetY register address */
 // #define DeviceResetAddr                               0x0000D340  /**< DeviceReset register address */
 // #define AcquisitionArmAddr                            0x0000E800  /**< AcquisitionArm register address */
 // #define ExposureModeAddr                              0x0000E804  /**< ExposureMode register address */
@@ -1412,10 +1313,17 @@ typedef enum DeviceLedIndicatorStateEnum DeviceLedIndicatorState_t;
 // #define DeviceBuiltInTestsResults6Addr                0x0000EB1C  /**< DeviceBuiltInTestsResults6 register address */
 // #define DeviceBuiltInTestsResults7Addr                0x0000EB20  /**< DeviceBuiltInTestsResults7 register address */
 // #define DeviceBuiltInTestsResults8Addr                0x0000EB24  /**< DeviceBuiltInTestsResults8 register address */
-// #define DeviceBuiltInTestsGlobalResultAddr            0x0000EB28  /**< DeviceBuiltInTestsGlobalResult register address */
+// #define OffsetXMinAddr                                0x0000EB28  /**< OffsetXMin register address */
 // #define MemoryBufferMOISourceAddr                     0x0000EB2C  /**< MemoryBufferMOISource register address */
 // #define MemoryBufferMOIActivationAddr                 0x0000EB30  /**< MemoryBufferMOIActivation register address */
 // #define MemoryBufferMOISoftwareAddr                   0x0000EB34  /**< MemoryBufferMOISoftware register address */
+// #define OffsetXMaxAddr                                0x0000EB38  /**< OffsetXMax register address */
+// #define OffsetYMinAddr                                0x0000EB3C  /**< OffsetYMin register address */
+// #define OffsetYMaxAddr                                0x0000EB40  /**< OffsetYMax register address */
+// #define OffsetXAddr                                   0x0000EB44  /**< OffsetX register address */
+// #define OffsetYAddr                                   0x0000EB48  /**< OffsetY register address */
+// #define AECPlusExtrapolationWeightAddr                0x0000EB4C  /**< AECPlusExtrapolationWeight register address */
+// #define IsActiveFlagsAddr                             0x0000EB50  /**< IsActiveFlags register address */
 
 // Registers definition array indices
 ////////////////////////////////////////////////////////////////////////////////
@@ -1438,219 +1346,224 @@ typedef enum DeviceLedIndicatorStateEnum DeviceLedIndicatorState_t;
 #define AcquisitionModeIdx                            15
 #define AcquisitionStartIdx                           16
 #define AcquisitionStopIdx                            17
-#define OffsetXIdx                                    18
-#define OffsetYIdx                                    19
-#define DeviceResetIdx                                20
-#define AcquisitionArmIdx                             21
-#define ExposureModeIdx                               22
-#define ExposureTimeIdx                               23
-#define ExposureTimeSetToMaxIdx                       24
-#define AcquisitionFrameRateIdx                       25
-#define AcquisitionFrameRateSetToMaxIdx               26
-#define AcquisitionFrameRateModeIdx                   27
-#define AcquisitionFrameRateMaxFGIdx                  28
-#define AECImageFractionIdx                           29
-#define AECTargetWellFillingIdx                       30
-#define AECResponseTimeIdx                            31
-#define ExposureAutoIdx                               32
-#define EHDRIModeIdx                                  33
-#define EHDRIExpectedTemperatureMinIdx                34
-#define EHDRIExpectedTemperatureMinMaxIdx             35
-#define EHDRIExpectedTemperatureMaxIdx                36
-#define EHDRIExpectedTemperatureMaxMinIdx             37
-#define EHDRINumberOfExposuresIdx                     38
-#define EHDRIResetToDefaultIdx                        39
-#define ExposureTime1Idx                              40
-#define ExposureTime2Idx                              41
-#define ExposureTime3Idx                              42
-#define ExposureTime4Idx                              43
-#define EHDRIExposureOccurrence1Idx                   44
-#define EHDRIExposureOccurrence2Idx                   45
-#define EHDRIExposureOccurrence3Idx                   46
-#define EHDRIExposureOccurrence4Idx                   47
-#define CalibrationModeIdx                            48
-#define CalibrationCollectionCountIdx                 49
-#define CalibrationCollectionSelectorIdx              50
-#define CalibrationCollectionPOSIXTimeIdx             51
-#define CalibrationCollectionLoadIdx                  52
-#define CalibrationCollectionActivePOSIXTimeIdx       53
-#define CalibrationActualizationModeIdx               54
-#define CalibrationActualizeIdx                       55
-#define NDFilterPositionSetpointIdx                   56
-#define NDFilterPositionIdx                           57
-#define NDFilterNumberIdx                             58
-#define NDFilterPositionRawSetpointIdx                59
-#define NDFilterPositionRawIdx                        60
-#define FWModeIdx                                     61
-#define FWPositionSetpointIdx                         62
-#define FWPositionIdx                                 63
-#define FWFilterNumberIdx                             64
-#define FWPositionRawSetpointIdx                      65
-#define FWPositionRawIdx                              66
-#define FWSpeedSetpointIdx                            67
-#define FWSpeedIdx                                    68
-#define FWSpeedMaxIdx                                 69
-#define ExternalLensSerialNumberIdx                   70
-#define ManualFilterSerialNumberIdx                   71
-#define ICUPositionSetpointIdx                        72
-#define ICUPositionIdx                                73
-#define ReverseXIdx                                   74
-#define ReverseYIdx                                   75
-#define SensorWellDepthIdx                            76
-#define IntegrationModeIdx                            77
-#define AcquisitionStartAtStartupIdx                  78
-#define CenterImageIdx                                79
-#define LockedCenterImageIdx                          80
-#define TriggerSelectorIdx                            81
-#define TriggerModeIdx                                82
-#define TriggerSoftwareIdx                            83
-#define TriggerSourceIdx                              84
-#define TriggerActivationIdx                          85
-#define TriggerDelayIdx                               86
-#define MemoryBufferModeIdx                           87
-#define MemoryBufferNumberOfImagesMaxIdx              88
-#define MemoryBufferNumberOfSequencesMaxIdx           89
-#define MemoryBufferSequenceCountIdx                  90
-#define MemoryBufferNumberOfSequencesIdx              91
-#define MemoryBufferSequenceSizeMaxIdx                92
-#define MemoryBufferSequenceSizeIdx                   93
-#define MemoryBufferSequencePreMOISizeIdx             94
-#define MemoryBufferSequenceSelectorIdx               95
-#define MemoryBufferSequenceFirstFrameIDIdx           96
-#define MemoryBufferSequenceMOIFrameIDIdx             97
-#define MemoryBufferSequenceRecordedSizeIdx           98
-#define MemoryBufferSequenceDownloadImageFrameIDIdx   99
-#define MemoryBufferSequenceDownloadModeIdx           100
-#define MemoryBufferSequenceClearAllIdx               101
-#define ExternalBlackBodyTemperatureIdx               102
-#define DevicePowerStateSetpointIdx                   103
-#define DevicePowerStateIdx                           104
-#define DeviceLedIndicatorStateIdx                    105
-#define StealthModeIdx                                106
-#define PowerOnAtStartupIdx                           107
-#define GPSLongitudeIdx                               108
-#define GPSLatitudeIdx                                109
-#define GPSAltitudeIdx                                110
-#define GPSModeIndicatorIdx                           111
-#define GPSNumberOfSatellitesInUseIdx                 112
-#define AutomaticExternalFanSpeedModeIdx              113
-#define ExternalFanSpeedSetpointIdx                   114
-#define ExternalFanSpeedIdx                           115
-#define TimeSourceIdx                                 116
-#define POSIXTimeIdx                                  117
-#define SubSecondTimeIdx                              118
-#define VideoAGCIdx                                   119
-#define VideoColorMapIdx                              120
-#define VideoColorMapMinIdx                           121
-#define VideoColorMapMaxIdx                           122
-#define VideoDigitalZoomFactorIdx                     123
-#define VideoEHDRIExposureIndexIdx                    124
-#define VideoFWPositionIdx                            125
-#define VideoBadPixelReplacementIdx                   126
-#define VideoAGCFractionMinIdx                        127
-#define VideoAGCFractionMinMaxIdx                     128
-#define VideoAGCFractionMaxIdx                        129
-#define VideoAGCFractionMaxMinIdx                     130
-#define VideoAGCResponseTimeIdx                       131
-#define VideoDigitalZoomModeIdx                       132
-#define VideoDigitalZoomWidthIdx                      133
-#define VideoDigitalZoomHeightIdx                     134
-#define VideoDigitalZoomOffsetXIdx                    135
-#define VideoDigitalZoomOffsetYIdx                    136
-#define VideoReverseXIdx                              137
-#define VideoReverseYIdx                              138
-#define VideoFreezeIdx                                139
-#define DeviceSerialPortSelectorIdx                   140
-#define DeviceSerialPortBaudRateIdx                   141
-#define ProprietaryFeatureIdx                         142
-#define DeviceSerialNumberIdx                         143
-#define SensorIDIdx                                   144
-#define WidthMaxIdx                                   145
-#define HeightMaxIdx                                  146
-#define WidthMinIdx                                   147
-#define WidthIncIdx                                   148
-#define HeightMinIdx                                  149
-#define HeightIncIdx                                  150
-#define OffsetXIncIdx                                 151
-#define OffsetYIncIdx                                 152
-#define PixelDataResolutionIdx                        153
-#define EventSelectorIdx                              154
-#define EventNotificationIdx                          155
-#define EventErrorIdx                                 156
-#define EventErrorTimestampIdx                        157
-#define EventErrorCodeIdx                             158
-#define EventTelopsIdx                                159
-#define EventTelopsTimestampIdx                       160
-#define EventTelopsCodeIdx                            161
-#define FValSizeIdx                                   162
-#define LValSizeIdx                                   163
-#define ClConfigurationIdx                            164
-#define DeviceTapGeometryIdx                          165
-#define DeviceXMLMajorVersionIdx                      166
-#define DeviceXMLMinorVersionIdx                      167
-#define DeviceXMLSubMinorVersionIdx                   168
-#define DeviceFirmwareMajorVersionIdx                 169
-#define DeviceFirmwareMinorVersionIdx                 170
-#define DeviceFirmwareSubMinorVersionIdx              171
-#define DeviceFirmwareBuildVersionIdx                 172
-#define DeviceFirmwareModuleSelectorIdx               173
-#define DeviceFirmwareModuleRevisionIdx               174
-#define DeviceTemperatureSelectorIdx                  175
-#define DeviceTemperatureIdx                          176
-#define DeviceClockSelectorIdx                        177
-#define DeviceClockFrequencyIdx                       178
-#define DeviceRegistersCheckIdx                       179
-#define DeviceRegistersValidIdx                       180
-#define DeviceNotReadyIdx                             181
-#define DeviceVoltageSelectorIdx                      182
-#define DeviceVoltageIdx                              183
-#define DeviceCurrentSelectorIdx                      184
-#define DeviceCurrentIdx                              185
-#define DeviceRunningTimeIdx                          186
-#define DeviceCoolerRunningTimeIdx                    187
-#define DevicePowerOnCyclesIdx                        188
-#define DeviceCoolerPowerOnCyclesIdx                  189
-#define TDCFlagsIdx                                   190
-#define TDCStatusIdx                                  191
-#define AvailabilityFlagsIdx                          192
-#define AcquisitionFrameRateMaxIdx                    193
-#define ExposureTimeMinIdx                            194
-#define ExposureTimeMaxIdx                            195
-#define DeviceBuiltInTestsResults1Idx                 196
-#define DeviceBuiltInTestsResults2Idx                 197
-#define DeviceBuiltInTestsResults3Idx                 198
-#define TestImageSelectorIdx                          199
-#define TriggerFrameCountIdx                          200
-#define MemoryBufferSequenceDownloadBitRateMaxIdx     201
-#define AcquisitionFrameRateMinIdx                    202
-#define VideoDigitalZoomFactorMaxIdx                  203
-#define PayloadSizeMinFGIdx                           204
-#define CalibrationCollectionActiveTypeIdx            205
-#define ExposureTime5Idx                              206
-#define ExposureTime6Idx                              207
-#define ExposureTime7Idx                              208
-#define ExposureTime8Idx                              209
-#define DeviceDetectorPolarizationVoltageIdx          210
-#define CalibrationCollectionBlockCountIdx            211
-#define CalibrationCollectionBlockSelectorIdx         212
-#define CalibrationCollectionBlockPOSIXTimeIdx        213
-#define CalibrationCollectionBlockLoadIdx             214
-#define CalibrationCollectionActiveBlockPOSIXTimeIdx  215
-#define CalibrationCollectionTypeIdx                  216
-#define DeviceBuiltInTestsResults4Idx                 217
-#define DeviceBuiltInTestsResults5Idx                 218
-#define DeviceBuiltInTestsResults6Idx                 219
-#define DeviceBuiltInTestsResults7Idx                 220
-#define DeviceBuiltInTestsResults8Idx                 221
-#define DeviceBuiltInTestsGlobalResultIdx             222
-#define MemoryBufferMOISourceIdx                      223
-#define MemoryBufferMOIActivationIdx                  224
-#define MemoryBufferMOISoftwareIdx                    225
+#define DeviceResetIdx                                18
+#define AcquisitionArmIdx                             19
+#define ExposureModeIdx                               20
+#define ExposureTimeIdx                               21
+#define ExposureTimeSetToMaxIdx                       22
+#define AcquisitionFrameRateIdx                       23
+#define AcquisitionFrameRateSetToMaxIdx               24
+#define AcquisitionFrameRateModeIdx                   25
+#define AcquisitionFrameRateMaxFGIdx                  26
+#define AECImageFractionIdx                           27
+#define AECTargetWellFillingIdx                       28
+#define AECResponseTimeIdx                            29
+#define ExposureAutoIdx                               30
+#define EHDRIModeIdx                                  31
+#define EHDRIExpectedTemperatureMinIdx                32
+#define EHDRIExpectedTemperatureMinMaxIdx             33
+#define EHDRIExpectedTemperatureMaxIdx                34
+#define EHDRIExpectedTemperatureMaxMinIdx             35
+#define EHDRINumberOfExposuresIdx                     36
+#define EHDRIResetToDefaultIdx                        37
+#define ExposureTime1Idx                              38
+#define ExposureTime2Idx                              39
+#define ExposureTime3Idx                              40
+#define ExposureTime4Idx                              41
+#define EHDRIExposureOccurrence1Idx                   42
+#define EHDRIExposureOccurrence2Idx                   43
+#define EHDRIExposureOccurrence3Idx                   44
+#define EHDRIExposureOccurrence4Idx                   45
+#define CalibrationModeIdx                            46
+#define CalibrationCollectionCountIdx                 47
+#define CalibrationCollectionSelectorIdx              48
+#define CalibrationCollectionPOSIXTimeIdx             49
+#define CalibrationCollectionLoadIdx                  50
+#define CalibrationCollectionActivePOSIXTimeIdx       51
+#define CalibrationActualizationModeIdx               52
+#define CalibrationActualizeIdx                       53
+#define NDFilterPositionSetpointIdx                   54
+#define NDFilterPositionIdx                           55
+#define NDFilterNumberIdx                             56
+#define NDFilterPositionRawSetpointIdx                57
+#define NDFilterPositionRawIdx                        58
+#define FWModeIdx                                     59
+#define FWPositionSetpointIdx                         60
+#define FWPositionIdx                                 61
+#define FWFilterNumberIdx                             62
+#define FWPositionRawSetpointIdx                      63
+#define FWPositionRawIdx                              64
+#define FWSpeedSetpointIdx                            65
+#define FWSpeedIdx                                    66
+#define FWSpeedMaxIdx                                 67
+#define ExternalLensSerialNumberIdx                   68
+#define ManualFilterSerialNumberIdx                   69
+#define ICUPositionSetpointIdx                        70
+#define ICUPositionIdx                                71
+#define ReverseXIdx                                   72
+#define ReverseYIdx                                   73
+#define SensorWellDepthIdx                            74
+#define IntegrationModeIdx                            75
+#define AcquisitionStartAtStartupIdx                  76
+#define CenterImageIdx                                77
+#define LockedCenterImageIdx                          78
+#define TriggerSelectorIdx                            79
+#define TriggerModeIdx                                80
+#define TriggerSoftwareIdx                            81
+#define TriggerSourceIdx                              82
+#define TriggerActivationIdx                          83
+#define TriggerDelayIdx                               84
+#define MemoryBufferModeIdx                           85
+#define MemoryBufferNumberOfImagesMaxIdx              86
+#define MemoryBufferNumberOfSequencesMaxIdx           87
+#define MemoryBufferSequenceCountIdx                  88
+#define MemoryBufferNumberOfSequencesIdx              89
+#define MemoryBufferSequenceSizeMaxIdx                90
+#define MemoryBufferSequenceSizeIdx                   91
+#define MemoryBufferSequencePreMOISizeIdx             92
+#define MemoryBufferSequenceSelectorIdx               93
+#define MemoryBufferSequenceFirstFrameIDIdx           94
+#define MemoryBufferSequenceMOIFrameIDIdx             95
+#define MemoryBufferSequenceRecordedSizeIdx           96
+#define MemoryBufferSequenceDownloadImageFrameIDIdx   97
+#define MemoryBufferSequenceDownloadModeIdx           98
+#define MemoryBufferSequenceClearAllIdx               99
+#define ExternalBlackBodyTemperatureIdx               100
+#define DevicePowerStateSetpointIdx                   101
+#define DevicePowerStateIdx                           102
+#define DeviceLedIndicatorStateIdx                    103
+#define StealthModeIdx                                104
+#define PowerOnAtStartupIdx                           105
+#define GPSLongitudeIdx                               106
+#define GPSLatitudeIdx                                107
+#define GPSAltitudeIdx                                108
+#define GPSModeIndicatorIdx                           109
+#define GPSNumberOfSatellitesInUseIdx                 110
+#define AutomaticExternalFanSpeedModeIdx              111
+#define ExternalFanSpeedSetpointIdx                   112
+#define ExternalFanSpeedIdx                           113
+#define TimeSourceIdx                                 114
+#define POSIXTimeIdx                                  115
+#define SubSecondTimeIdx                              116
+#define VideoAGCIdx                                   117
+#define VideoColorMapIdx                              118
+#define VideoColorMapMinIdx                           119
+#define VideoColorMapMaxIdx                           120
+#define VideoDigitalZoomFactorIdx                     121
+#define VideoEHDRIExposureIndexIdx                    122
+#define VideoFWPositionIdx                            123
+#define VideoBadPixelReplacementIdx                   124
+#define VideoAGCFractionMinIdx                        125
+#define VideoAGCFractionMinMaxIdx                     126
+#define VideoAGCFractionMaxIdx                        127
+#define VideoAGCFractionMaxMinIdx                     128
+#define VideoAGCResponseTimeIdx                       129
+#define VideoDigitalZoomModeIdx                       130
+#define VideoDigitalZoomWidthIdx                      131
+#define VideoDigitalZoomHeightIdx                     132
+#define VideoDigitalZoomOffsetXIdx                    133
+#define VideoDigitalZoomOffsetYIdx                    134
+#define VideoReverseXIdx                              135
+#define VideoReverseYIdx                              136
+#define VideoFreezeIdx                                137
+#define DeviceSerialPortSelectorIdx                   138
+#define DeviceSerialPortBaudRateIdx                   139
+#define ProprietaryFeatureIdx                         140
+#define DeviceSerialNumberIdx                         141
+#define SensorIDIdx                                   142
+#define WidthMaxIdx                                   143
+#define HeightMaxIdx                                  144
+#define WidthMinIdx                                   145
+#define WidthIncIdx                                   146
+#define HeightMinIdx                                  147
+#define HeightIncIdx                                  148
+#define OffsetXIncIdx                                 149
+#define OffsetYIncIdx                                 150
+#define PixelDataResolutionIdx                        151
+#define EventSelectorIdx                              152
+#define EventNotificationIdx                          153
+#define EventErrorIdx                                 154
+#define EventErrorTimestampIdx                        155
+#define EventErrorCodeIdx                             156
+#define EventTelopsIdx                                157
+#define EventTelopsTimestampIdx                       158
+#define EventTelopsCodeIdx                            159
+#define FValSizeIdx                                   160
+#define LValSizeIdx                                   161
+#define ClConfigurationIdx                            162
+#define DeviceTapGeometryIdx                          163
+#define DeviceXMLMajorVersionIdx                      164
+#define DeviceXMLMinorVersionIdx                      165
+#define DeviceXMLSubMinorVersionIdx                   166
+#define DeviceFirmwareMajorVersionIdx                 167
+#define DeviceFirmwareMinorVersionIdx                 168
+#define DeviceFirmwareSubMinorVersionIdx              169
+#define DeviceFirmwareBuildVersionIdx                 170
+#define DeviceFirmwareModuleSelectorIdx               171
+#define DeviceFirmwareModuleRevisionIdx               172
+#define DeviceTemperatureSelectorIdx                  173
+#define DeviceTemperatureIdx                          174
+#define DeviceClockSelectorIdx                        175
+#define DeviceClockFrequencyIdx                       176
+#define DeviceRegistersCheckIdx                       177
+#define DeviceRegistersValidIdx                       178
+#define DeviceNotReadyIdx                             179
+#define DeviceVoltageSelectorIdx                      180
+#define DeviceVoltageIdx                              181
+#define DeviceCurrentSelectorIdx                      182
+#define DeviceCurrentIdx                              183
+#define DeviceRunningTimeIdx                          184
+#define DeviceCoolerRunningTimeIdx                    185
+#define DevicePowerOnCyclesIdx                        186
+#define DeviceCoolerPowerOnCyclesIdx                  187
+#define TDCFlagsIdx                                   188
+#define TDCStatusIdx                                  189
+#define AvailabilityFlagsIdx                          190
+#define AcquisitionFrameRateMaxIdx                    191
+#define ExposureTimeMinIdx                            192
+#define ExposureTimeMaxIdx                            193
+#define DeviceBuiltInTestsResults1Idx                 194
+#define DeviceBuiltInTestsResults2Idx                 195
+#define DeviceBuiltInTestsResults3Idx                 196
+#define TestImageSelectorIdx                          197
+#define TriggerFrameCountIdx                          198
+#define MemoryBufferSequenceDownloadBitRateMaxIdx     199
+#define AcquisitionFrameRateMinIdx                    200
+#define VideoDigitalZoomFactorMaxIdx                  201
+#define PayloadSizeMinFGIdx                           202
+#define CalibrationCollectionActiveTypeIdx            203
+#define ExposureTime5Idx                              204
+#define ExposureTime6Idx                              205
+#define ExposureTime7Idx                              206
+#define ExposureTime8Idx                              207
+#define DeviceDetectorPolarizationVoltageIdx          208
+#define CalibrationCollectionBlockCountIdx            209
+#define CalibrationCollectionBlockSelectorIdx         210
+#define CalibrationCollectionBlockPOSIXTimeIdx        211
+#define CalibrationCollectionBlockLoadIdx             212
+#define CalibrationCollectionActiveBlockPOSIXTimeIdx  213
+#define CalibrationCollectionTypeIdx                  214
+#define DeviceBuiltInTestsResults4Idx                 215
+#define DeviceBuiltInTestsResults5Idx                 216
+#define DeviceBuiltInTestsResults6Idx                 217
+#define DeviceBuiltInTestsResults7Idx                 218
+#define DeviceBuiltInTestsResults8Idx                 219
+#define OffsetXMinIdx                                 220
+#define MemoryBufferMOISourceIdx                      221
+#define MemoryBufferMOIActivationIdx                  222
+#define MemoryBufferMOISoftwareIdx                    223
+#define OffsetXMaxIdx                                 224
+#define OffsetYMinIdx                                 225
+#define OffsetYMaxIdx                                 226
+#define OffsetXIdx                                    227
+#define OffsetYIdx                                    228
+#define AECPlusExtrapolationWeightIdx                 229
+#define IsActiveFlagsIdx                              230
 
 // Registers general macros
 ////////////////////////////////////////////////////////////////////////////////
 
-#define GC_REG_COUNT 226 /**< Number of GenICam registers */
+#define GC_REG_COUNT 231 /**< Number of GenICam registers */
 #define GC_REG_MAX_LENGTH 512 /**< GenICam registers maximum length (in bytes) */
 #define GC_REG_MAX_READ_LENGTH 512 /**< GenICam readable registers maximum length (in bytes) */
 #define GC_REG_MAX_WRITE_LENGTH 4 /**< GenICam writable registers maximum length (in bytes) */
