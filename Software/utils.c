@@ -940,3 +940,49 @@ int lcm(int x, int y)
 {
    return x * (y/gcd(x,y));
 }
+
+uint32_t select(uint32_t* list, int left, int right, int n)
+{
+     while (1)
+     {
+         if (left == right)
+             return list[left];
+
+         int pivotIndex = (left + right)/2; // select pivotIndex between left and right
+         pivotIndex = partition(list, left, right, pivotIndex);
+         if (n == pivotIndex)
+             return list[n];
+         else if (n < pivotIndex)
+             right = pivotIndex - 1;
+         else
+             left = pivotIndex + 1;
+     }
+}
+
+int partition(uint32_t* list, int left, int right, int pivotIndex)
+{
+   int i;
+   int pivotValue = list[pivotIndex];
+   uint32_t tmp;
+   int storeIndex = left;
+
+   tmp = list[right];
+   list[right] = list[pivotIndex]; // Move pivot to end
+   list[pivotIndex] = tmp;
+
+   for (i=left; i<right; ++i)
+   {
+      if (list[i] < pivotValue)
+      {
+         tmp = list[i];
+         list[i] = list[storeIndex];
+         list[storeIndex] = tmp;
+         ++storeIndex;
+      }
+   }
+   tmp = list[right];
+   list[right] = list[storeIndex]; // Move pivot to its final place
+   list[storeIndex] = tmp;
+
+   return storeIndex;
+}
