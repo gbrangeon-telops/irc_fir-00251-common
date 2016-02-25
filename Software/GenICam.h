@@ -127,12 +127,12 @@ typedef struct gcRegister gcRegister_t;
 
 /* AUTO-CODE BEGIN */
 // Auto-generated GeniCam library.
-// Generated from XML camera definition file version 11.2.1
+// Generated from XML camera definition file version 11.3.0
 // using generateGenICamCommonCLib.m Matlab script.
 
 #define GC_XMLMAJORVERSION    11
-#define GC_XMLMINORVERSION    2
-#define GC_XMLSUBMINORVERSION 1
+#define GC_XMLMINORVERSION    3
+#define GC_XMLSUBMINORVERSION 0
 
 // Enumerations values and data types
 ////////////////////////////////////////////////////////////////////////////////
@@ -1324,6 +1324,8 @@ typedef enum DeviceLedIndicatorStateEnum DeviceLedIndicatorState_t;
 // #define OffsetYAddr                                   0x0000EB48  /**< OffsetY register address */
 // #define AECPlusExtrapolationWeightAddr                0x0000EB4C  /**< AECPlusExtrapolationWeight register address */
 // #define IsActiveFlagsAddr                             0x0000EB50  /**< IsActiveFlags register address */
+// #define DeviceKeyValidationLowAddr                    0x0000EB54  /**< DeviceKeyValidationLow register address */
+// #define DeviceKeyValidationHighAddr                   0x0000EB58  /**< DeviceKeyValidationHigh register address */
 
 // Registers definition array indices
 ////////////////////////////////////////////////////////////////////////////////
@@ -1559,11 +1561,13 @@ typedef enum DeviceLedIndicatorStateEnum DeviceLedIndicatorState_t;
 #define OffsetYIdx                                    228
 #define AECPlusExtrapolationWeightIdx                 229
 #define IsActiveFlagsIdx                              230
+#define DeviceKeyValidationLowIdx                     231
+#define DeviceKeyValidationHighIdx                    232
 
 // Registers general macros
 ////////////////////////////////////////////////////////////////////////////////
 
-#define GC_REG_COUNT 231 /**< Number of GenICam registers */
+#define GC_REG_COUNT 233 /**< Number of GenICam registers */
 #define GC_REG_MAX_LENGTH 512 /**< GenICam registers maximum length (in bytes) */
 #define GC_REG_MAX_READ_LENGTH 512 /**< GenICam readable registers maximum length (in bytes) */
 #define GC_REG_MAX_WRITE_LENGTH 4 /**< GenICam writable registers maximum length (in bytes) */
