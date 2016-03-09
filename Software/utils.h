@@ -37,10 +37,10 @@
 #define BitMaskTstAny(arg, mask) (((arg) & (mask)) != 0)    /**< Test if at least of of the masked bits in arg is set */
 #define BitMaskFlp(arg, mask) ((arg) ^= (mask))              /**< Flip masked bits in arg */
 
-#define BitSet(arg, pos) BitMaskSet(arg, (1L << (pos)))   	/**< Set bit(pos) in arg */
-#define BitClr(arg, pos) BitMaskClr(arg, (1L << (pos)))   	/**< Clear bit(pos) in arg */
-#define BitTst(arg, pos) BitMaskTst(arg, (1L << (pos)))   	/**< Test if bit(pos) in arg is true else false */
-#define BitFlp(arg, pos) BitMaskFlp(arg, (1L << (pos)))   	/**< Flip bit(pos) in arg */
+#define BitSet(arg, pos) BitMaskSet(arg, (1ULL << (pos)))   	/**< Set bit(pos) in arg */
+#define BitClr(arg, pos) BitMaskClr(arg, (1ULL << (pos)))   	/**< Clear bit(pos) in arg */
+#define BitTst(arg, pos) BitMaskTst(arg, (1ULL << (pos)))   	/**< Test if bit(pos) in arg is true else false */
+#define BitFlp(arg, pos) BitMaskFlp(arg, (1ULL << (pos)))   	/**< Flip bit(pos) in arg */
 
 #define MAX(a,b) (a>b? a : b) /**< Find maximum between to number */
 #define MIN(a,b) (a>b? b : a) /**< Find minimum between to number */
