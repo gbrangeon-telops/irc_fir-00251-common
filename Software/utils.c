@@ -869,7 +869,7 @@ void resetStats(statistics_t* s)
       s->N = 0;
       s->max = FLT_MIN;
       s->min = FLT_MAX;
-      s->avg = 0;
+      s->mu = 0;
       s->R = 0;
       s->var = -1; // invalid result for N < 2
    }
@@ -879,12 +879,12 @@ void updateStats(statistics_t* s, float x)
 {
    if (s != 0)
    {
-      double N = ++s->N;
-      double tmp = x - s->avg;
+      float N = ++s->N;
+      float tmp = x - s->mu;
 
-      s->avg += tmp/N;
+      s->mu += tmp/N;
 
-      s->R += tmp * (x - s->avg);
+      s->R += tmp * (x - s->mu);
 
       if (x > s->max)
          s->max = x;
@@ -912,7 +912,7 @@ void reportStats(statistics_t* s, char* label)
    PRINTF("Number of samples %d\n", s->N);
    PRINTF("Min value :" _PCF(3) "\n", _FFMT(s->min, 3));
    PRINTF("Max value :" _PCF(3) "\n", _FFMT(s->max, 3));
-   PRINTF("Average :" _PCF(3) "\n", _FFMT(s->avg, 3));
+   PRINTF("Average :" _PCF(3) "\n", _FFMT(s->mu, 3));
    PRINTF("Std :" _PCF(3) "\n", _FFMT(sqrtf(s->var), 3));
 #endif
 }

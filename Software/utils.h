@@ -52,7 +52,7 @@ typedef struct
    uint32_t N;
    float max;
    float min;
-   float avg;
+   float mu;
    float R; // for variance calculation -> var = R/(N-1)
    float var;
 } statistics_t;
