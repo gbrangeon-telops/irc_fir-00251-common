@@ -252,7 +252,9 @@ IRC_Status_t Usart_Loopback(usart_t *usart)
    byteCount = Usart_ReadReg(usart->BaseAddress, USART_RX_BYTES_COUNT_OFFSET);
    Usart_WriteReg(usart->BaseAddress, USART_BYTES_TO_TRANSMIT_OFFSET, 0);
 
+#ifndef STARTUP
    PRINTF("0x");
+#endif
 
    bytesToReceive = byteCount;
    while (bytesToReceive > 0)
@@ -267,7 +269,11 @@ IRC_Status_t Usart_Loopback(usart_t *usart)
       i = 0;
       while ((i < sizeof(data)) && (bytesToReceive > 0))
       {
+
+#ifndef STARTUP
          PRINTF("%02X", p_data[i++]);
+#endif
+
          bytesToReceive--;
       }
 
