@@ -28,6 +28,10 @@ netIntfPort_t fuPort;
  */
 qspiFlash_t *p_qspiFlash;
 
+/**
+ * Firmware updater QSPI flash write protection.
+ */
+uint8_t gFuPromIsWriteProtected = 0;
 
 /**
  * Initializes the firmware updater.
@@ -65,6 +69,7 @@ void Firmware_Updater_SM()
    static uint32_t dataOffset;
    static uint32_t dataLength;
    static uint16_t promCRC16;
+   extern uint8_t gGC_ProprietaryFeatureKeyIsValid;
    networkCommand_t fuResponse;
    uint32_t nextPageAddr;
    IRC_Status_t status;
@@ -91,26 +96,34 @@ void Firmware_Updater_SM()
                switch (fuRequest.f1f2.cmd)
                {
                   case F1F2_CMD_PROM_ERASE:
-                     if ((fuRequest.f1f2.payload.promErase.offset + fuRequest.f1f2.payload.promErase.dataLength) <= QSPIFLASH_SIZE)
+                     if ((gFuPromIsWriteProtected == 0) || (gGC_ProprietaryFeatureKeyIsValid == 1))
                      {
-                        status = QSPIFlash_SectorErase(p_qspiFlash,
-                              fuRequest.f1f2.payload.promErase.offset,
-                              fuRequest.f1f2.payload.promErase.dataLength);
-                        if (status == IRC_FAILURE)
+                        if ((fuRequest.f1f2.payload.promErase.offset + fuRequest.f1f2.payload.promErase.dataLength) <= QSPIFLASH_SIZE)
                         {
-                           FU_ERR("Failed to erase %d bytes in PROM @ 0x%08X.",
-                                 fuRequest.f1f2.payload.promErase.dataLength, fuRequest.f1f2.payload.promErase.offset);
-                           F1F2_BuildNAKResponse(&fuRequest.f1f2, &fuResponse.f1f2);
+                           status = QSPIFlash_SectorErase(p_qspiFlash,
+                                 fuRequest.f1f2.payload.promErase.offset,
+                                 fuRequest.f1f2.payload.promErase.dataLength);
+                           if (status == IRC_FAILURE)
+                           {
+                              FU_ERR("Failed to erase %d bytes in PROM @ 0x%08X.",
+                                    fuRequest.f1f2.payload.promErase.dataLength, fuRequest.f1f2.payload.promErase.offset);
+                              F1F2_BuildNAKResponse(&fuRequest.f1f2, &fuResponse.f1f2);
+                           }
+                           else
+                           {
+                              fuCurrentState = FUS_ERASING_FLASH;
+                           }
                         }
                         else
                         {
-                           fuCurrentState = FUS_ERASING_FLASH;
+                           FU_ERR("Cannot erase data outside PROM boundaries (%d bytes @ 0x%08X).",
+                                 fuRequest.f1f2.payload.promErase.dataLength, fuRequest.f1f2.payload.promErase.offset);
+                           F1F2_BuildNAKResponse(&fuRequest.f1f2, &fuResponse.f1f2);
                         }
                      }
                      else
                      {
-                        FU_ERR("Cannot erase data outside PROM boundaries (%d bytes @ 0x%08X).",
-                              fuRequest.f1f2.payload.promErase.dataLength, fuRequest.f1f2.payload.promErase.offset);
+                        FU_ERR("PROM is write protected.");
                         F1F2_BuildNAKResponse(&fuRequest.f1f2, &fuResponse.f1f2);
                      }
                      break;
@@ -150,35 +163,43 @@ void Firmware_Updater_SM()
                      break;
 
                   case F1F2_CMD_PROM_WRITE:
-                     if (fuRequest.f1f2.payload.promRW.dataLength <= F1F2_MAX_PROM_DATA_SIZE)
+                     if ((gFuPromIsWriteProtected == 0) || (gGC_ProprietaryFeatureKeyIsValid == 1))
                      {
-                        if ((fuRequest.f1f2.payload.promRW.offset + fuRequest.f1f2.payload.promRW.dataLength) <= QSPIFLASH_SIZE)
+                        if (fuRequest.f1f2.payload.promRW.dataLength <= F1F2_MAX_PROM_DATA_SIZE)
                         {
-                           status = QSPIFlash_Write(p_qspiFlash,
-                                 fuRequest.f1f2.payload.promRW.data,
-                                 fuRequest.f1f2.payload.promRW.offset,
-                                 fuRequest.f1f2.payload.promRW.dataLength);
-                           if (status == IRC_FAILURE)
+                           if ((fuRequest.f1f2.payload.promRW.offset + fuRequest.f1f2.payload.promRW.dataLength) <= QSPIFLASH_SIZE)
                            {
-                              FU_ERR("Failed to write %d bytes in PROM @ 0x%08X.",
-                                    fuRequest.f1f2.payload.promRW.dataLength, fuRequest.f1f2.payload.promRW.offset);
-                              F1F2_BuildNAKResponse(&fuRequest.f1f2, &fuResponse.f1f2);
+                              status = QSPIFlash_Write(p_qspiFlash,
+                                    fuRequest.f1f2.payload.promRW.data,
+                                    fuRequest.f1f2.payload.promRW.offset,
+                                    fuRequest.f1f2.payload.promRW.dataLength);
+                              if (status == IRC_FAILURE)
+                              {
+                                 FU_ERR("Failed to write %d bytes in PROM @ 0x%08X.",
+                                       fuRequest.f1f2.payload.promRW.dataLength, fuRequest.f1f2.payload.promRW.offset);
+                                 F1F2_BuildNAKResponse(&fuRequest.f1f2, &fuResponse.f1f2);
+                              }
+                              else
+                              {
+                                 fuCurrentState = FUS_WRITING_FLASH;
+                              }
                            }
                            else
                            {
-                              fuCurrentState = FUS_WRITING_FLASH;
+                              FU_ERR("Cannot write data outside PROM boundaries (%d bytes @ 0x%08X).",
+                                    fuRequest.f1f2.payload.promRW.dataLength, fuRequest.f1f2.payload.promRW.offset);
+                              F1F2_BuildNAKResponse(&fuRequest.f1f2, &fuResponse.f1f2);
                            }
                         }
                         else
                         {
-                           FU_ERR("Cannot write data outside PROM boundaries (%d bytes @ 0x%08X).",
-                                 fuRequest.f1f2.payload.promRW.dataLength, fuRequest.f1f2.payload.promRW.offset);
+                           FU_ERR("Cannot write more than %d bytes at a time.", fuRequest.f1f2.payload.promRW.dataLength);
                            F1F2_BuildNAKResponse(&fuRequest.f1f2, &fuResponse.f1f2);
                         }
                      }
                      else
                      {
-                        FU_ERR("Cannot write more than %d bytes at a time.", fuRequest.f1f2.payload.promRW.dataLength);
+                        FU_ERR("PROM is write protected.");
                         F1F2_BuildNAKResponse(&fuRequest.f1f2, &fuResponse.f1f2);
                      }
                      break;
