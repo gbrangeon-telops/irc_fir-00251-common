@@ -244,10 +244,7 @@ IRC_Status_t Usart_Loopback(usart_t *usart)
    uint32_t byteCount;
    uint32_t bytesToReceive;
    uint32_t data;
-   uint32_t i;
-#ifdef ENABLE_PRINTF
-   uint8_t *p_data;
-#endif
+   uint32_t receivedBytes;
 
    byteCount = Usart_ReadReg(usart->BaseAddress, USART_RX_BYTES_COUNT_OFFSET);
    Usart_WriteReg(usart->BaseAddress, USART_BYTES_TO_TRANSMIT_OFFSET, 0);
@@ -262,24 +259,23 @@ IRC_Status_t Usart_Loopback(usart_t *usart)
       getfsl(data, XPAR_MICROBLAZE_FSL_LINKS);
       putfsl(data, XPAR_MICROBLAZE_FSL_LINKS);
 
-#ifdef ENABLE_PRINTF
-      p_data = (uint8_t *)&data;
-#endif
+      receivedBytes = MIN(sizeof(data), bytesToReceive);
 
-      i = 0;
-      while ((i < sizeof(data)) && (bytesToReceive > 0))
+      bytesToReceive -= receivedBytes;
+
+#if defined(ENABLE_PRINTF) && !defined(STARTUP)
+      uint8_t *p_data = (uint8_t *)&data;
+      uint32_t i = 0;
+      for (i = 0; i < receivedBytes; i++)
       {
-
-#ifndef STARTUP
-         PRINTF("%02X", p_data[i++]);
-#endif
-
-         bytesToReceive--;
+         PRINTF("%02X", p_data[i]);
       }
-
+#endif
    }
 
+#ifndef STARTUP
    PRINTF("\n");
+#endif
 
    Usart_WriteReg(usart->BaseAddress, USART_BYTES_TO_TRANSMIT_OFFSET, byteCount);
 

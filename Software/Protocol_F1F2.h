@@ -278,5 +278,6 @@ void F1F2_BuildResponse(F1F2Command_t *p_request, F1F2Command_t *p_response);
 void F1F2_BuildACKResponse(F1F2Command_t *p_request, F1F2Command_t *p_response);
 void F1F2_BuildNAKResponse(F1F2Command_t *p_request, F1F2Command_t *p_response);
 uint32_t F1F2_CommandBuilder(F1F2Command_t *f1f2Cmd, uint8_t *buffer, uint16_t buflen);
+char *F1F2_CommandNameToString(uint8_t cmd);
 
 #endif // PROTOCOL_F1F2_H

@@ -1143,3 +1143,48 @@ uint32_t F1F2_FrameBuilder(uint8_t *buffer, uint16_t buflen, uint8_t cmd, F1F2Pa
 
    return (F1F2_MIN_PACKET_SIZE + pdc);
 }
+
+/**
+ * Return command name string corresponding to specified command code.
+ *
+ * @param cmd is the F1F2 command code.
+ *
+ * @return The command name string.
+ */
+char *F1F2_CommandNameToString(uint8_t cmd)
+{
+   switch (cmd)
+   {
+      case F1F2_CMD_NONE: return "NONE";
+      case F1F2_CMD_ACK: return "ACK";
+      case F1F2_CMD_NAK: return "NAK";
+      case F1F2_CMD_REG_READ_REQ: return "REG_READ";
+      case F1F2_CMD_REG_READ_RSP: return "REG_READ_RSP";
+      case F1F2_CMD_REG_WRITE: return "REG_WRITE";
+      case F1F2_CMD_FILE_COUNT_REQ: return "FILE_COUNT_REQ";
+      case F1F2_CMD_FILE_COUNT_RSP: return "FILE_COUNT_RSP";
+      case F1F2_CMD_FILE_INFO_REQ: return "FILE_INFO_REQ";
+      case F1F2_CMD_FILE_INFO_RSP: return "FILE_INFO_RSP";
+      case F1F2_CMD_FILE_CREATE_REQ: return "FILE_CREATE_REQ";
+      case F1F2_CMD_FILE_CREATE_RSP: return "FILE_CREATE_RSP";
+      case F1F2_CMD_FILE_READ_REQ: return "FILE_READ_REQ";
+      case F1F2_CMD_FILE_READ_RSP: return "FILE_READ_RSP";
+      case F1F2_CMD_FILE_WRITE: return "FILE_WRITE";
+      case F1F2_CMD_FILE_CLOSE: return "FILE_CLOSE";
+      case F1F2_CMD_FILE_CHECK_REQ: return "FILE_CHECK_REQ";
+      case F1F2_CMD_FILE_CHECK_RSP: return "FILE_CHECK_RSP";
+      case F1F2_CMD_FILE_DELETE: return "FILE_DELETE";
+      case F1F2_CMD_FILE_FORMAT: return "FILE_FORMAT";
+      case F1F2_CMD_PROM_ERASE: return "PROM_ERASE";
+      case F1F2_CMD_PROM_READ_REQ: return "PROM_READ_REQ";
+      case F1F2_CMD_PROM_READ_RSP: return "PROM_READ_RSP";
+      case F1F2_CMD_PROM_WRITE: return "PROM_WRITE";
+      case F1F2_CMD_PROM_CHECK_REQ: return "PROM_CHECK_REQ";
+      case F1F2_CMD_PROM_CHECK_RSP: return "PROM_CHECK_RSP";
+      case F1F2_CMD_PING: return "PING";
+      case F1F2_CMD_TEXT: return "TEXT";
+      case F1F2_CMD_NETWORK: return "NETWORK";
+      case F1F2_CMD_ERROR: return "ERROR";
+      default: return "UNKNOWN";
+   }
+}

@@ -152,6 +152,7 @@ struct netIntfStruct {
 IRC_Status_t NetIntf_Init(netIntf_t *netIntf, niAddress_t address, circBuffer_t *cmdQueue);
 IRC_Status_t NetIntf_Connect(netIntf_t *netIntf, netIntfPort_t *netIntfPort);
 IRC_Status_t NetIntf_EnqueueCmd(netIntf_t *netIntf, networkCommand_t *netCmd);
+IRC_Status_t NetIntf_FlushCmdQueue(netIntf_t *netIntf);
 void NetIntf_BuildBroadcastRequest(netIntfPort_t *netIntfPort, F1F2Command_t *p_request, niPort_t port);
 void NetIntf_SM(netIntf_t *netIntf);
 

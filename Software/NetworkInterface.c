@@ -17,8 +17,10 @@
 
 
 netIntfPort_t *NetIntf_FindPort(netIntf_t *netIntf, niPort_t port);
+uint32_t NetIntf_GetConnectionIndex(netIntf_t *netIntf, netIntfPort_t *connection);
 IRC_Status_t NetIntf_PingHosts(netIntf_t *netIntf);
-IRC_Status_t NetIntf_ProcessCmd(netIntf_t *netIntf, networkCommand_t *netCmd);
+IRC_Status_t NetIntf_RouteCmd(netIntf_t *netIntf, networkCommand_t *netCmd);
+void NetIntf_ShowPacket(netIntf_t *netIntf, networkCommand_t *netCmd);
 
 /**
  * Initializes network interface.
@@ -107,7 +109,42 @@ IRC_Status_t NetIntf_Connect(netIntf_t *netIntf, netIntfPort_t *netIntfPort)
  */
 IRC_Status_t NetIntf_EnqueueCmd(netIntf_t *netIntf, networkCommand_t *netCmd)
 {
+   netIntfPort_t *p_localPort;
+
+   NetIntf_ShowPacket(netIntf, netCmd);
+
+   if ((netCmd->f1f2.destAddr == netIntf->address) && (netCmd->f1f2.destPort != NIP_UNDEFINED))
+   {
+      // Directly route network command to local port if its command queue is not full
+      p_localPort = NetIntf_FindPort(netIntf, netCmd->f1f2.destPort);
+      if (p_localPort == NULL)
+      {
+         NI_ERR("Local port %d not found.", netCmd->f1f2.destPort);
+         return IRC_FAILURE;
+      }
+
+      if (!CB_Full(p_localPort->cmdQueue))
+      {
+         return CB_Push(p_localPort->cmdQueue, netCmd);
+      }
+   }
+
    return CB_Push(netIntf->cmdQueue, netCmd);
+}
+
+/**
+ * Flush network interface circular command buffer.
+ *
+ * @param netIntf is the pointer to the network interface data structure.
+ *
+ * @return IRC_SUCCESS if successfully flushed command queue.
+ * @return IRC_FAILURE if failed to flush command queue.
+ */
+IRC_Status_t NetIntf_FlushCmdQueue(netIntf_t *netIntf)
+{
+   CB_Flush(netIntf->cmdQueue);
+
+   return IRC_SUCCESS;
 }
 
 /**
@@ -179,19 +216,24 @@ void NetIntf_SM(netIntf_t *netIntf)
    {
       if (CB_Pop(netIntf->cmdQueue, &netCmd) == IRC_SUCCESS)
       {
-         if (netIntf->showPackets)
-         {
-            NI_INF("Network command from local port %d: src = %d:%d, dest = %d:%d.",
-                  netCmd.port->port, netCmd.f1f2.srcAddr, netCmd.f1f2.srcPort, netCmd.f1f2.destAddr, netCmd.f1f2.destPort);
-         }
-
          if ((netCmd.f1f2.srcAddr != netIntf->address) && ((netCmd.f1f2.srcAddr - 1) < NI_NUM_OF_HOSTS) && (netIntf->routingTable[netCmd.f1f2.srcAddr - 1] == NULL))
          {
             NI_INF("Host %d has been reached after %dms.", netCmd.f1f2.srcAddr, (uint32_t)(elapsed_time_us(netIntf->tic_pingStart) / 1000));
             netIntf->routingTable[netCmd.f1f2.srcAddr - 1] = netCmd.port;
          }
 
-         NetIntf_ProcessCmd(netIntf, &netCmd);
+         if (NetIntf_RouteCmd(netIntf, &netCmd) == IRC_NOT_DONE)
+         {
+            // Push back network command in network interface command queue
+            if (CB_Push(netIntf->cmdQueue, &netCmd) != IRC_SUCCESS)
+            {
+               NI_ERR("Failed to push back command in network interface command queue.");
+            }
+            else
+            {
+               NI_DBG("Network command pushed back to network interface command queue.");
+            }
+         }
       }
       else
       {
@@ -278,9 +320,29 @@ netIntfPort_t *NetIntf_FindPort(netIntf_t *netIntf, niPort_t port)
       ++portIndex;
    }
 
-   NI_ERR("Local port %d not found.", port);
-
    return NULL;
+}
+
+/**
+ * Return network interface connection index corresponding to specified connection.
+ *
+ * @param netIntf is the pointer to the network interface data structure.
+ * @param connection is the pointer to the connection to find.
+ *
+ * @return Network interface connection index corresponding to specified connection.
+ * @return NI_MAX_NUM_OF_CONNECTIONS if specified connection cannot be found.
+ */
+uint32_t NetIntf_GetConnectionIndex(netIntf_t *netIntf, netIntfPort_t *connection)
+{
+   uint32_t connectionIndex = 0;
+
+   while ((connectionIndex < NI_MAX_NUM_OF_CONNECTIONS) &&
+         (netIntf->connections[connectionIndex] != connection))
+   {
+      connectionIndex++;
+   }
+
+   return connectionIndex;
 }
 
 /**
@@ -336,90 +398,153 @@ IRC_Status_t NetIntf_PingHosts(netIntf_t *netIntf)
 }
 
 /**
- * Process network command.
+ * Route network command to connection(s) and/or local port.
  *
  * @param netIntf is the pointer to the network interface data structure.
- * @param netCmd is the pointer to the network command to process.
+ * @param netCmd is the pointer to the network command to route.
  *
- * @return IRC_SUCCESS if successfully processed network command.
- * @return IRC_FAILURE if failed to process network command.
+ * @return IRC_SUCCESS if successfully routed network command.
+ * @return IRC_FAILURE if failed to route network command.
+ * @return IRC_NOT_DONE if failed to route network command due to full command queue.
  */
-IRC_Status_t NetIntf_ProcessCmd(netIntf_t *netIntf, networkCommand_t *netCmd)
+IRC_Status_t NetIntf_RouteCmd(netIntf_t *netIntf, networkCommand_t *netCmd)
 {
-   netIntfPort_t *netIntfPort;
+   netIntfPort_t *outgoingPortList[NI_MAX_NUM_OF_CONNECTIONS + 1];
+   uint32_t outgoingPortCount = 0;
    uint32_t i;
+   uint8_t routingError = 0;
 
-   if ((netCmd->f1f2.destAddr == netIntf->address) ||
-         ((netCmd->f1f2.destAddr == NIA_BROADCAST) && (netCmd->f1f2.srcAddr != netIntf->address)))
-   {
-      // Transmit command to local port
-      netIntfPort = NetIntf_FindPort(netIntf, netCmd->f1f2.destPort);
-      if (netIntfPort != NULL)
-      {
-         if (CB_Push(netIntfPort->cmdQueue, netCmd) != IRC_SUCCESS)
-         {
-            NI_DBG("Failed to push command in port %d command queue.", netIntfPort->port);
-
-            // Push back network command in network interface command queue
-            if (CB_Push(netIntf->cmdQueue, netCmd) != IRC_SUCCESS)
-            {
-               NI_ERR("Failed to push back command in network interface command queue.");
-            }
-            else
-            {
-               NI_DBG("Network command pushed back to network interface command queue.");
-            }
-         }
-         else
-         {
-            NI_DBG("Network command forwarded to local port %d.", netIntfPort->port);
-         }
-      }
-   }
-
+   // Determine which connection(s) command must be routed to
    if (netCmd->f1f2.destAddr != netIntf->address)
    {
       if ((netCmd->f1f2.destAddr != NIA_BROADCAST) && ((netCmd->f1f2.destAddr - 1) < NI_NUM_OF_HOSTS) && (netIntf->routingTable[netCmd->f1f2.destAddr - 1] != NULL))
       {
-         // Transmit command to the connection corresponding to the host address in the routing table
-         if (CB_Push(netIntf->routingTable[netCmd->f1f2.destAddr - 1]->cmdQueue, netCmd) != IRC_SUCCESS)
-         {
-            NI_DBG("Failed to transmit network command.");
-
-            // Push back network command in network interface command queue
-            if (CB_Push(netIntf->cmdQueue, netCmd) != IRC_SUCCESS)
-            {
-               NI_ERR("Failed to push back command in network interface command queue.");
-            }
-            else
-            {
-               NI_DBG("Network command pushed back to network interface command queue.");
-            }
-         }
-         else
-         {
-            NI_DBG("Network command transmitted.");
-         }
+         // Route command to the connection corresponding to the host address in the routing table
+         outgoingPortList[outgoingPortCount++] = netIntf->routingTable[netCmd->f1f2.destAddr - 1];
       }
       else
       {
-         // Transmit command to every connections except the one the command comes from
+         // Route command to every connections except the one the command comes from
          for (i = 0; i < netIntf->numberOfConnections; i++)
          {
-            if (netCmd->port != netIntf->connections[i])
+            if (netIntf->connections[i] != netCmd->port)
             {
-               if (CB_Push(netIntf->connections[i]->cmdQueue, netCmd) != IRC_SUCCESS)
-               {
-                  NI_ERR("Failed to transmit network command through connection %d.", i);
-               }
-               else
-               {
-                  NI_DBG("Network command transmitted through connection %d.", i);
-               }
+               outgoingPortList[outgoingPortCount++] = netIntf->connections[i];
             }
          }
       }
    }
 
-   return IRC_SUCCESS;
+   // Determine if command must be routed to local port
+   if ((netCmd->f1f2.destPort != NIP_UNDEFINED) &&
+         ((netCmd->f1f2.destAddr == netIntf->address) ||
+         ((netCmd->f1f2.destAddr == NIA_BROADCAST) && (netCmd->f1f2.srcAddr != netIntf->address))))
+   {
+      // Find corresponding local port
+      outgoingPortList[outgoingPortCount++] = NetIntf_FindPort(netIntf, netCmd->f1f2.destPort);
+      if (outgoingPortList[outgoingPortCount - 1] == NULL)
+      {
+         NI_ERR("Local port %d not found.", netCmd->f1f2.destPort);
+         routingError = 1;
+      }
+   }
+
+   // Check that outgoing port(s) command queue is not full
+   for (i = 0; i < outgoingPortCount; i++)
+   {
+      if (CB_Full(outgoingPortList[i]->cmdQueue))
+      {
+         if (outgoingPortList[i]->port == NIP_UNDEFINED)
+         {
+            NI_DBG("Connection %d command queue is full.", NetIntf_GetConnectionIndex(netIntf, outgoingPortList[i]));
+         }
+         else
+         {
+            NI_DBG("Local port %d command queue is full.", outgoingPortList[i]->port);
+         }
+         return IRC_NOT_DONE;
+      }
+   }
+
+   // Route command to outgoing port(s)
+   for (i = 0; i < outgoingPortCount; i++)
+   {
+      if (CB_Push(outgoingPortList[i]->cmdQueue, netCmd) == IRC_SUCCESS)
+      {
+         if (outgoingPortList[i]->port == NIP_UNDEFINED)
+         {
+            NI_DBG("Network command routed to connection %d.", NetIntf_GetConnectionIndex(netIntf, outgoingPortList[i]));
+         }
+         else
+         {
+            NI_DBG("Network command routed to local port %d.", outgoingPortList[i]->port);
+         }
+      }
+      else
+      {
+         if (outgoingPortList[i]->port == NIP_UNDEFINED)
+         {
+            NI_ERR("Failed to push command in connection %d command queue.", NetIntf_GetConnectionIndex(netIntf, outgoingPortList[i]));
+         }
+         else
+         {
+            NI_ERR("Failed to push command in local port %d command queue.", outgoingPortList[i]->port);
+         }
+         routingError = 1;
+      }
+   }
+
+   if (routingError == 1)
+   {
+      return IRC_FAILURE;
+   }
+   else
+   {
+      return IRC_SUCCESS;
+   }
+}
+
+/**
+ * Print network packet information.
+ *
+ * @param netIntf is the pointer to the network interface data structure.
+ * @param netCmd is the pointer to the network command data structure.
+ */
+void NetIntf_ShowPacket(netIntf_t *netIntf, networkCommand_t *netCmd)
+{
+   if (netIntf->showPackets)
+   {
+      PRINTF("NI: Info: Network command (");
+
+      // Print command data
+      switch (netCmd->f1f2.cmd)
+      {
+         case F1F2_CMD_REG_READ_REQ:
+         case F1F2_CMD_REG_READ_RSP:
+         case F1F2_CMD_REG_WRITE:
+            PRINTF("%s@0x%04X", F1F2_CommandNameToString(netCmd->f1f2.cmd), netCmd->f1f2.payload.regRW.address);
+            break;
+
+         case F1F2_CMD_ACK:
+         case F1F2_CMD_NAK:
+            PRINTF("%s:%s", F1F2_CommandNameToString(netCmd->f1f2.cmd), F1F2_CommandNameToString(netCmd->f1f2.payload.ack.cmd));
+            break;
+         default:
+            PRINTF("%s", F1F2_CommandNameToString(netCmd->f1f2.cmd));
+      }
+
+      // Print routing data
+      PRINTF(") from ");
+      if (netCmd->port->port == NIP_UNDEFINED)
+      {
+         PRINTF("connection %d", NetIntf_GetConnectionIndex(netIntf, netCmd->port));
+      }
+      else
+      {
+         PRINTF("local port %d", netCmd->port->port);
+      }
+      PRINTF(": src = %d:%d, dest = %d:%d.\n",
+            netCmd->f1f2.srcAddr, netCmd->f1f2.srcPort,
+            netCmd->f1f2.destAddr, netCmd->f1f2.destPort);
+   }
 }

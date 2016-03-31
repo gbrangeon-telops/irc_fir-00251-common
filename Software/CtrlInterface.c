@@ -591,6 +591,9 @@ void CtrlIntf_Process(ctrlIntf_t *ctrlIntf)
 #ifdef CI_REQUEST_PROCESSING_DURATION_TEST
                GETTIME(&ctrlIntf->rxCmdTime);
 #endif
+               netCmd.f1f2.srcAddr = ctrlIntf->port.netIntf->address;
+               netCmd.f1f2.srcPort = ctrlIntf->port.port;
+
                // Convert standard F1F2 command to F1F2 network command
                switch (netCmd.f1f2.cmd)
                {
@@ -602,22 +605,13 @@ void CtrlIntf_Process(ctrlIntf_t *ctrlIntf)
                      {
                         CI_ERR("No register found @ 0x%08X.", netCmd.f1f2.payload.regRW.address);
                         F1F2_BuildNAKResponse(&netCmd.f1f2, &netCmd.f1f2);
-                        if (CB_Push(ctrlIntf->port.cmdQueue, &netCmd) != IRC_SUCCESS)
-                        {
-                           CI_ERR("Failed to push register command in control interface command queue.");
-                        }
+                        netCmd.f1f2.destAddr = ctrlIntf->port.netIntf->address;
+                        netCmd.f1f2.destPort = ctrlIntf->port.port;
                      }
                      else
                      {
-                        netCmd.f1f2.srcAddr = ctrlIntf->port.netIntf->address;
-                        netCmd.f1f2.srcPort = ctrlIntf->port.port;
                         netCmd.f1f2.destAddr = p_register->owner;
                         netCmd.f1f2.destPort = NIP_GC_MANAGER;
-                        netCmd.f1f2.isNetwork = 1;
-                        if (NetIntf_EnqueueCmd(ctrlIntf->port.netIntf, &netCmd) != IRC_SUCCESS)
-                        {
-                           CI_ERR("Failed to push register command in network interface command queue.");
-                        }
                      }
                      break;
 
@@ -630,15 +624,8 @@ void CtrlIntf_Process(ctrlIntf_t *ctrlIntf)
                   case F1F2_CMD_FILE_CHECK_REQ:
                   case F1F2_CMD_FILE_DELETE:
                   case F1F2_CMD_FILE_FORMAT:
-                     netCmd.f1f2.srcAddr = ctrlIntf->port.netIntf->address;
-                     netCmd.f1f2.srcPort = ctrlIntf->port.port;
                      netCmd.f1f2.destAddr = ctrlIntf->port.netIntf->address;
                      netCmd.f1f2.destPort = NIP_FILE_MANAGER;
-                     netCmd.f1f2.isNetwork = 1;
-                     if (NetIntf_EnqueueCmd(ctrlIntf->port.netIntf, &netCmd) != IRC_SUCCESS)
-                     {
-                        CI_ERR("Failed to push file command in network interface command queue.");
-                     }
                      break;
 
                   case F1F2_CMD_PROM_ERASE:
@@ -647,33 +634,27 @@ void CtrlIntf_Process(ctrlIntf_t *ctrlIntf)
                   case F1F2_CMD_PROM_WRITE:
                   case F1F2_CMD_PROM_CHECK_REQ:
                   case F1F2_CMD_PROM_CHECK_RSP:
-                     netCmd.f1f2.srcAddr = ctrlIntf->port.netIntf->address;
-                     netCmd.f1f2.srcPort = ctrlIntf->port.port;
                      netCmd.f1f2.destAddr = netCmd.f1f2.payload.promRW.device;
                      netCmd.f1f2.destPort = NIP_FIRM_UPDATER;
-                     netCmd.f1f2.isNetwork = 1;
-                     if (NetIntf_EnqueueCmd(ctrlIntf->port.netIntf, &netCmd) != IRC_SUCCESS)
-                     {
-                        CI_ERR("Failed to push PROM command in network interface command queue.");
-                     }
                      break;
 
                   case F1F2_CMD_PING:
                      F1F2_BuildACKResponse(&netCmd.f1f2, &netCmd.f1f2);
-                     if (CB_Push(ctrlIntf->port.cmdQueue, &netCmd) != IRC_SUCCESS)
-                     {
-                        CI_ERR("Failed to push ping ACK command in control interface command queue.");
-                     }
+                     netCmd.f1f2.destAddr = ctrlIntf->port.netIntf->address;
+                     netCmd.f1f2.destPort = ctrlIntf->port.port;
                      break;
 
                   default:
                      CI_ERR("Invalid master request command code.");
                      F1F2_BuildNAKResponse(&netCmd.f1f2, &netCmd.f1f2);
-                     if (CB_Push(ctrlIntf->port.cmdQueue, &netCmd) != IRC_SUCCESS)
-                     {
-                        CI_ERR("Failed to push NAK command in control interface command queue.");
-                     }
+                     netCmd.f1f2.destAddr = ctrlIntf->port.netIntf->address;
+                     netCmd.f1f2.destPort = ctrlIntf->port.port;
                      break;
+               }
+               netCmd.f1f2.isNetwork = 1;
+               if (NetIntf_EnqueueCmd(ctrlIntf->port.netIntf, &netCmd) != IRC_SUCCESS)
+               {
+                  CI_ERR("Failed to push NAK command in network interface command queue.");
                }
                break;
 
@@ -685,17 +666,11 @@ void CtrlIntf_Process(ctrlIntf_t *ctrlIntf)
                         (netCmd.f1f2.destPort == NIP_UNDEFINED))
                   {
                      F1F2_BuildACKResponse(&netCmd.f1f2, &netCmd.f1f2);
-                     if (CB_Push(ctrlIntf->port.cmdQueue, &netCmd) != IRC_SUCCESS)
-                     {
-                        CI_ERR("Failed to push network ping ACK command in control interface command queue.");
-                     }
                   }
-                  else
+
+                  if (NetIntf_EnqueueCmd(ctrlIntf->port.netIntf, &netCmd) != IRC_SUCCESS)
                   {
-                     if (NetIntf_EnqueueCmd(ctrlIntf->port.netIntf, &netCmd) != IRC_SUCCESS)
-                     {
-                        CI_ERR("Failed to push network command in network interface command queue.");
-                     }
+                     CI_ERR("Failed to push network command in network interface command queue.");
                   }
                }
                else
@@ -707,12 +682,21 @@ void CtrlIntf_Process(ctrlIntf_t *ctrlIntf)
       }
       else if (status == IRC_FAILURE)
       {
+         netCmd.port = &ctrlIntf->port;
          F1F2_BuildNAKResponse(&netCmd.f1f2, &netCmd.f1f2);
 
-         netCmd.port = &ctrlIntf->port;
-         if (CB_Push(ctrlIntf->port.cmdQueue, &netCmd) != IRC_SUCCESS)
+         if (ctrlIntf->protocol != CIP_F1F2_NETWORK)
          {
-            CI_ERR("Failed to push command in control interface command queue.");
+            netCmd.f1f2.srcAddr = ctrlIntf->port.netIntf->address;
+            netCmd.f1f2.srcPort = ctrlIntf->port.port;
+            netCmd.f1f2.destAddr = ctrlIntf->port.netIntf->address;
+            netCmd.f1f2.destPort = ctrlIntf->port.port;
+            netCmd.f1f2.isNetwork = 1;
+         }
+
+         if (NetIntf_EnqueueCmd(ctrlIntf->port.netIntf, &netCmd) != IRC_SUCCESS)
+         {
+            CI_ERR("Failed to push NAK command in network interface command queue.");
          }
       }
       else if (status == IRC_NOT_DONE)
@@ -747,6 +731,7 @@ void CtrlIntf_Process(ctrlIntf_t *ctrlIntf)
    switch (ctrlIntf->txStatus)
    {
       case CITS_READY:
+         // TODO Transfer following code in control interface interruption handler.
          // Check for new response
          if (CB_Pop(ctrlIntf->port.cmdQueue, &netCmd) == IRC_SUCCESS)
          {
