@@ -69,7 +69,6 @@ void Firmware_Updater_SM()
    static uint32_t dataOffset;
    static uint32_t dataLength;
    static uint16_t promCRC16;
-   extern uint8_t gGC_ProprietaryFeatureKeyIsValid;
    networkCommand_t fuResponse;
    uint32_t nextPageAddr;
    IRC_Status_t status;
@@ -96,7 +95,7 @@ void Firmware_Updater_SM()
                switch (fuRequest.f1f2.cmd)
                {
                   case F1F2_CMD_PROM_ERASE:
-                     if ((gFuPromIsWriteProtected == 0) || (gGC_ProprietaryFeatureKeyIsValid == 1))
+                     if (gFuPromIsWriteProtected == 0)
                      {
                         if ((fuRequest.f1f2.payload.promErase.offset + fuRequest.f1f2.payload.promErase.dataLength) <= QSPIFLASH_SIZE)
                         {
@@ -163,7 +162,7 @@ void Firmware_Updater_SM()
                      break;
 
                   case F1F2_CMD_PROM_WRITE:
-                     if ((gFuPromIsWriteProtected == 0) || (gGC_ProprietaryFeatureKeyIsValid == 1))
+                     if (gFuPromIsWriteProtected == 0)
                      {
                         if (fuRequest.f1f2.payload.promRW.dataLength <= F1F2_MAX_PROM_DATA_SIZE)
                         {
