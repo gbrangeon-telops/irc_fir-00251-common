@@ -111,7 +111,10 @@ IRC_Status_t NetIntf_EnqueueCmd(netIntf_t *netIntf, networkCommand_t *netCmd)
 {
    netIntfPort_t *p_localPort;
 
-   NetIntf_ShowPacket(netIntf, netCmd);
+   if (netIntf->showPackets)
+   {
+      NetIntf_ShowPacket(netIntf, netCmd);
+   }
 
    if ((netCmd->f1f2.destAddr == netIntf->address) && (netCmd->f1f2.destPort != NIP_UNDEFINED))
    {
@@ -216,7 +219,14 @@ void NetIntf_SM(netIntf_t *netIntf)
    {
       if (CB_Pop(netIntf->cmdQueue, &netCmd) == IRC_SUCCESS)
       {
-         if ((netCmd.f1f2.srcAddr != netIntf->address) && ((netCmd.f1f2.srcAddr - 1) < NI_NUM_OF_HOSTS) && (netIntf->routingTable[netCmd.f1f2.srcAddr - 1] == NULL))
+         if (netCmd.f1f2.srcAddr == NIA_UNDEFINED)
+         {
+            NI_INF("srcAddr = NIA_UNDEFINED");
+            NetIntf_ShowPacket(netIntf, &netCmd);
+         }
+
+         if ((netCmd.f1f2.srcAddr != NIA_UNDEFINED) && (netCmd.f1f2.srcAddr <= NI_NUM_OF_HOSTS) && (netCmd.f1f2.srcAddr != netIntf->address) &&
+               (netIntf->routingTable[netCmd.f1f2.srcAddr - 1] == NULL))
          {
             NI_INF("Host %d has been reached after %dms.", netCmd.f1f2.srcAddr, (uint32_t)(elapsed_time_us(netIntf->tic_pingStart) / 1000));
             netIntf->routingTable[netCmd.f1f2.srcAddr - 1] = netCmd.port;
@@ -242,39 +252,6 @@ void NetIntf_SM(netIntf_t *netIntf)
       }
 
       cmdCount--;
-   }
-}
-
-/**
- * Build network response to the specified request.
- *
- * @param p_request is the pointer to the request command.
- * @param p_response is the pointer to the response command to fill.
- */
-void NetIntf_BuildNetworkResponse(F1F2Command_t *p_request, F1F2Command_t *p_response)
-{
-   uint8_t destAddr;
-   uint8_t destPort;
-
-   if (p_request->isNetwork == 1)
-   {
-      // Save request destination address and port in case p_response = p_request
-      destAddr = p_request->destAddr;
-      destPort = p_request->destPort;
-
-      p_request->isNetwork = 1;
-      p_response->destAddr = p_request->srcAddr;
-      p_response->destPort = p_request->srcPort;
-      p_response->srcAddr = destAddr;
-      p_response->srcPort = destPort;
-   }
-   else
-   {
-      p_request->isNetwork = 0;
-      p_response->destAddr = NIA_UNDEFINED;
-      p_response->destPort = NIP_UNDEFINED;
-      p_response->srcAddr = NIA_UNDEFINED;
-      p_response->srcPort = NIP_UNDEFINED;
    }
 }
 
@@ -512,39 +489,36 @@ IRC_Status_t NetIntf_RouteCmd(netIntf_t *netIntf, networkCommand_t *netCmd)
  */
 void NetIntf_ShowPacket(netIntf_t *netIntf, networkCommand_t *netCmd)
 {
-   if (netIntf->showPackets)
+   PRINTF("NI: Info: Network command (");
+
+   // Print command data
+   switch (netCmd->f1f2.cmd)
    {
-      PRINTF("NI: Info: Network command (");
+      case F1F2_CMD_REG_READ_REQ:
+      case F1F2_CMD_REG_READ_RSP:
+      case F1F2_CMD_REG_WRITE:
+         PRINTF("%s@0x%04X", F1F2_CommandNameToString(netCmd->f1f2.cmd), netCmd->f1f2.payload.regRW.address);
+         break;
 
-      // Print command data
-      switch (netCmd->f1f2.cmd)
-      {
-         case F1F2_CMD_REG_READ_REQ:
-         case F1F2_CMD_REG_READ_RSP:
-         case F1F2_CMD_REG_WRITE:
-            PRINTF("%s@0x%04X", F1F2_CommandNameToString(netCmd->f1f2.cmd), netCmd->f1f2.payload.regRW.address);
-            break;
-
-         case F1F2_CMD_ACK:
-         case F1F2_CMD_NAK:
-            PRINTF("%s:%s", F1F2_CommandNameToString(netCmd->f1f2.cmd), F1F2_CommandNameToString(netCmd->f1f2.payload.ack.cmd));
-            break;
-         default:
-            PRINTF("%s", F1F2_CommandNameToString(netCmd->f1f2.cmd));
-      }
-
-      // Print routing data
-      PRINTF(") from ");
-      if (netCmd->port->port == NIP_UNDEFINED)
-      {
-         PRINTF("connection %d", NetIntf_GetConnectionIndex(netIntf, netCmd->port));
-      }
-      else
-      {
-         PRINTF("local port %d", netCmd->port->port);
-      }
-      PRINTF(": src = %d:%d, dest = %d:%d.\n",
-            netCmd->f1f2.srcAddr, netCmd->f1f2.srcPort,
-            netCmd->f1f2.destAddr, netCmd->f1f2.destPort);
+      case F1F2_CMD_ACK:
+      case F1F2_CMD_NAK:
+         PRINTF("%s:%s", F1F2_CommandNameToString(netCmd->f1f2.cmd), F1F2_CommandNameToString(netCmd->f1f2.payload.ack.cmd));
+         break;
+      default:
+         PRINTF("%s", F1F2_CommandNameToString(netCmd->f1f2.cmd));
    }
+
+   // Print routing data
+   PRINTF(") from ");
+   if (netCmd->port->port == NIP_UNDEFINED)
+   {
+      PRINTF("connection %d", NetIntf_GetConnectionIndex(netIntf, netCmd->port));
+   }
+   else
+   {
+      PRINTF("local port %d", netCmd->port->port);
+   }
+   PRINTF(": src = %d:%d, dest = %d:%d.\n",
+         netCmd->f1f2.srcAddr, netCmd->f1f2.srcPort,
+         netCmd->f1f2.destAddr, netCmd->f1f2.destPort);
 }
