@@ -26,13 +26,13 @@
 
 
 #ifdef GCM_VERBOSE
-   #define GCM_PRINTF(fmt, ...)  PRINTF("GCM: " fmt, ##__VA_ARGS__)
+   #define GCM_PRINTF(fmt, ...)  FPGA_PRINTF("GCM: " fmt, ##__VA_ARGS__)
 #else
    #define GCM_PRINTF(fmt, ...)  DUMMY_PRINTF("GCM: " fmt, ##__VA_ARGS__)
 #endif
 
-#define GCM_ERR(fmt, ...)        PRINTF("GCM: Error: " fmt "\n", ##__VA_ARGS__)
-#define GCM_INF(fmt, ...)        PRINTF("GCM: Info: " fmt "\n", ##__VA_ARGS__)
+#define GCM_ERR(fmt, ...)        FPGA_PRINTF("GCM: Error: " fmt "\n", ##__VA_ARGS__)
+#define GCM_INF(fmt, ...)        FPGA_PRINTF("GCM: Info: " fmt "\n", ##__VA_ARGS__)
 #define GCM_DBG(fmt, ...)        GCM_PRINTF("Debug: " fmt "\n", ##__VA_ARGS__)
 
 #define GC_SHARED_REG_INIT_PERIOD_US   (uint64_t)500000

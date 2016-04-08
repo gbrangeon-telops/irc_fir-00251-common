@@ -44,6 +44,32 @@ IRC_Status_t CBB_Init(circByteBuffer_t *circByteBuffer, uint8_t *buffer, uint16_
 }
 
 /**
+ * Initialize circular byte buffer.
+ * This function initializes the circular byte buffer structure from existing data buffer.
+ *
+ * @param circByteBuffer is the pointer to the circular byte buffer structure to initialize.
+ * @param buffer is the pointer to the byte buffer that contain buffer data.
+ * @param size is the size, in bytes, of the pointed byte buffer.
+ * @param length is the length, in bytes, of the data contained in the byte buffer.
+ */
+IRC_Status_t CBB_InitFromBuffer(circByteBuffer_t *circByteBuffer, uint8_t *buffer, uint16_t size, uint16_t length)
+{
+   if (circByteBuffer == NULL)
+   {
+      return IRC_FAILURE;
+   }
+
+   circByteBuffer->buffer = buffer;
+   circByteBuffer->size = size;
+   circByteBuffer->length = length;
+   circByteBuffer->maxLength = length;
+   circByteBuffer->idxHead = length % size;
+   circByteBuffer->idxTail = 0;
+
+   return IRC_SUCCESS;
+}
+
+/**
  * Push a byte in the circular byte buffer.
  * This function pushes a byte at the head position of the circular byte buffer.
  *

@@ -24,13 +24,13 @@
 #include <stdint.h>
 
 #ifdef FU_VERBOSE
-   #define FU_PRINTF(fmt, ...)   PRINTF("FU: " fmt, ##__VA_ARGS__)
+   #define FU_PRINTF(fmt, ...)   FPGA_PRINTF("FU: " fmt, ##__VA_ARGS__)
 #else
    #define FU_PRINTF(fmt, ...)   DUMMY_PRINTF("FU: " fmt, ##__VA_ARGS__)
 #endif
 
-#define FU_ERR(fmt, ...)         PRINTF("FU: Error: " fmt "\n", ##__VA_ARGS__)
-#define FU_INF(fmt, ...)         PRINTF("FU: Info: " fmt "\n", ##__VA_ARGS__)
+#define FU_ERR(fmt, ...)         FPGA_PRINTF("FU: Error: " fmt "\n", ##__VA_ARGS__)
+#define FU_INF(fmt, ...)         FPGA_PRINTF("FU: Info: " fmt "\n", ##__VA_ARGS__)
 #define FU_DBG(fmt, ...)         FU_PRINTF("Debug: " fmt "\n", ##__VA_ARGS__)
 
 

@@ -23,12 +23,12 @@
 #include <stdint.h>
 
 #ifdef F1F2_VERBOSE
-   #define F1F2_PRINTF(fmt, ...)    PRINTF("F1F2: " fmt, ##__VA_ARGS__)
+   #define F1F2_PRINTF(fmt, ...)    FPGA_PRINTF("F1F2: " fmt, ##__VA_ARGS__)
 #else
    #define F1F2_PRINTF(fmt, ...)    DUMMY_PRINTF("F1F2: " fmt, ##__VA_ARGS__)
 #endif
 
-#define F1F2_ERR(fmt, ...)          PRINTF("F1F2: Error: " fmt "\n", ##__VA_ARGS__)
+#define F1F2_ERR(fmt, ...)          FPGA_PRINTF("F1F2: Error: " fmt "\n", ##__VA_ARGS__)
 #define F1F2_INF(fmt, ...)          F1F2_PRINTF("Info: " fmt "\n", ##__VA_ARGS__)
 
 // Special F1F2 character
@@ -63,7 +63,8 @@
 #define F1F2_CMD_PROM_CHECK_REQ     0x44     /**< F1F2 PROM Check Request command code */
 #define F1F2_CMD_PROM_CHECK_RSP     0x45     /**< F1F2 PROM Check Response command code */
 #define F1F2_CMD_PING               0x50     /**< F1F2 Ping command code */
-#define F1F2_CMD_TEXT               0x60     /**< F1F2 Text command code */
+#define F1F2_CMD_DEBUG_TEXT         0x60     /**< F1F2 Debug Text Request command code */
+#define F1F2_CMD_DEBUG_CMD          0x61     /**< F1F2 Debug Command Request command code */
 #define F1F2_CMD_NETWORK            0x80     /**< F1F2 Network command code */
 #define F1F2_CMD_ERROR              0xFF     /**< F1F2 command value returned on parsing error */
 
@@ -132,8 +133,8 @@
 #define F1F2_PD_OFFSET_PROM_DATA       (F1F2_PD_OFFSET_PROM_RW_LENGTH + F1F2_PROM_RW_LENGTH_SIZE) /**< F1F2 Payload Data PROM Data offset */
 #define F1F2_PD_OFFSET_PROM_LENGTH     (F1F2_PD_OFFSET_PROM_OFFSET + F1F2_PROM_OFFSET_SIZE)     /**< F1F2 Payload Data PROM Data Check Length offset */
 #define F1F2_PD_OFFSET_PROM_CRC16      (F1F2_PD_OFFSET_PROM_LENGTH + F1F2_PROM_LENGTH_SIZE)     /**< F1F2 Payload Data PROM CRC-16 offset */
-// Text payload data offset
-#define F1F2_PD_OFFSET_TEXT            0                                                        /**< F1F2 Payload Data text offset */
+// Debug payload data bytes offset
+#define F1F2_PD_OFFSET_DEBUG_DATA      0                                                        /**< F1F2 Payload Data Debug Text offset */
 
 // F1F2 size limits definition
 #define F1F2_MIN_PACKET_SIZE        (1 + F1F2_CMD_CODE_SIZE + F1F2_PAYLOADDATACOUNT_SIZE + F1F2_CRC16_SIZE + 1)   /**< Minimum F1F2 packet size in bytes */
@@ -146,13 +147,13 @@
 #define F1F2_MAX_PROM_PACKET_SIZE   256                                                         /**< Maximum F1F2 PROM packet size in bytes */
 #define F1F2_MAX_PROM_DATA_SIZE     (F1F2_MAX_PROM_PACKET_SIZE - F1F2_MIN_PROM_PACKET_SIZE)     /**< Maximum F1F2 PROM packet data size in bytes */
 
-#define F1F2_MIN_TEXT_PACKET_SIZE   F1F2_MIN_PACKET_SIZE                                        /**< Minimum F1F2 text packet size in bytes */
-#define F1F2_MAX_TEXT_PACKET_SIZE   256                                                         /**< Maximum F1F2 text packet size in bytes */
-#define F1F2_MAX_TEXT_DATA_SIZE     (F1F2_MAX_TEXT_PACKET_SIZE - F1F2_MIN_TEXT_PACKET_SIZE)     /**< Maximum F1F2 text packet data size in bytes */
+#define F1F2_MIN_DEBUG_PACKET_SIZE  F1F2_MIN_PACKET_SIZE                                        /**< Minimum F1F2 debug packet size in bytes */
+#define F1F2_MAX_DEBUG_PACKET_SIZE  256                                                         /**< Maximum F1F2 debug packet size in bytes */
+#define F1F2_MAX_DEBUG_DATA_SIZE    (F1F2_MAX_DEBUG_PACKET_SIZE - F1F2_MIN_DEBUG_PACKET_SIZE)   /**< Maximum F1F2 debug packet data size in bytes */
 
 #define F1F2_MIN_NET_DATA_SIZE      (F1F2_NET_SRC_ADDR_SIZE + F1F2_NET_SRC_PORT_SIZE + F1F2_NET_DEST_ADDR_SIZE + F1F2_NET_DEST_PORT_SIZE + F1F2_CMD_CODE_SIZE) /**< Minimum F1F2 network payload data count */
 #define F1F2_MIN_NET_PACKET_SIZE    (F1F2_MIN_PACKET_SIZE + F1F2_MIN_NET_DATA_SIZE)             /**< Minimum F1F2 network packet size in bytes */
-#define F1F2_MAX_NET_PACKET_SIZE    (MAX(MAX(F1F2_MAX_FILE_PACKET_SIZE, F1F2_MAX_PROM_PACKET_SIZE), F1F2_MAX_TEXT_PACKET_SIZE) + F1F2_MIN_NET_DATA_SIZE) /**< Maximum F1F2 network packet size in bytes */
+#define F1F2_MAX_NET_PACKET_SIZE    (MAX(MAX(F1F2_MAX_FILE_PACKET_SIZE, F1F2_MAX_PROM_PACKET_SIZE), F1F2_MAX_DEBUG_PACKET_SIZE) + F1F2_MIN_NET_DATA_SIZE) /**< Maximum F1F2 network packet size in bytes */
 #define F1F2_MAX_NET_DATA_SIZE      (F1F2_MAX_NET_PACKET_SIZE - F1F2_MIN_PACKET_SIZE)           /**< Maximum F1F2 network packet data size in bytes */
 
 #define F1F2_MAX_PACKET_SIZE        F1F2_MAX_NET_PACKET_SIZE                                    /**< Maximum F1F2 packet size in bytes */
@@ -245,8 +246,8 @@ struct F1F2CommandStruct {
       } promCheck;            /**< F1F2 payload data for PROM_CHECK_REQ and PROM_CHECK_RSP command code */
 
       struct {
-         uint8_t data[F1F2_MAX_TEXT_DATA_SIZE]; /**< Text data */
-      } text;                 /**< F1F2 payload data for TEXT command code */
+         char text[F1F2_MAX_DEBUG_DATA_SIZE + 1]; /**< Text data */
+      } debug;                /**< F1F2 payload data for DEBUG_TEXT command code */
 
    } payload;                 /**< F1F2 payload data */
 };

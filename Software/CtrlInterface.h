@@ -29,13 +29,13 @@
 #include <stdint.h>
 
 #ifdef CI_VERBOSE
-   #define CI_PRINTF(fmt, ...)      PRINTF("CI: " fmt, ##__VA_ARGS__)
+   #define CI_PRINTF(fmt, ...)      FPGA_PRINTF("CI: " fmt, ##__VA_ARGS__)
 #else
    #define CI_PRINTF(fmt, ...)      DUMMY_PRINTF("CI: " fmt, ##__VA_ARGS__)
 #endif
 
-#define CI_ERR(fmt, ...)            PRINTF("CI: Error: " fmt "\n", ##__VA_ARGS__)
-#define CI_INF(fmt, ...)            PRINTF("CI: Info: " fmt "\n", ##__VA_ARGS__)
+#define CI_ERR(fmt, ...)            FPGA_PRINTF("CI: Error: " fmt "\n", ##__VA_ARGS__)
+#define CI_INF(fmt, ...)            FPGA_PRINTF("CI: Info: " fmt "\n", ##__VA_ARGS__)
 #define CI_DBG(fmt, ...)            CI_PRINTF("Debug: " fmt "\n", ##__VA_ARGS__)
 
 #define CI_LINKERR(p_ctrlIntf, fmt, ...) \

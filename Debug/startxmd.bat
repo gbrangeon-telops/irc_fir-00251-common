@@ -28,37 +28,13 @@ goto error
 )
 
 rem Parse target parameter
-if "%2"=="hawkA" (
-set target=proc
-set sensorName=%2
-) else if "%2"=="herculesD" (
-set target=proc
-set sensorName=%2
-) else if "%2"=="isc0207A" (
-set target=proc
-set sensorName=%2
-) else if "%2"=="marsD" (
-set target=proc
-set sensorName=%2
-) else if "%2"=="pelicanD" (
-set target=proc
-set sensorName=%2
-) else if "%2"=="scorpiolwD" (
-set target=proc
-set sensorName=%2
-) else if "%2"=="scorpiolwD_230Hz" (
-set target=proc
-set sensorName=%2
-) else if "%2"=="scorpiomwD" (
-set target=proc
-set sensorName=%2
-) else if "%2"=="output" (
+if "%2"=="output" (
 set target=output
 ) else if "%2"=="storage" (
 set target=storage
 ) else (
-echo Error: Unknown target ^(%2^).
-goto error
+set target=proc
+set sensorName=%2
 )
 
 rem Set programming parameter

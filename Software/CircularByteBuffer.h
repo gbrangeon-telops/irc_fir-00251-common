@@ -36,7 +36,13 @@ struct circByteBufferStruct {
  */
 typedef struct circByteBufferStruct circByteBuffer_t;
 
+/**
+ * Circular byte buffer initializer (constructor).
+ */
+#define CBB_Ctor(buffer, size) {buffer, size, 0, 0, 0, 0}
+
 IRC_Status_t CBB_Init(circByteBuffer_t *circByteBuffer, uint8_t *buffer, uint16_t size);
+IRC_Status_t CBB_InitFromBuffer(circByteBuffer_t *circByteBuffer, uint8_t *buffer, uint16_t size, uint16_t length);
 IRC_Status_t CBB_Push(circByteBuffer_t *circByteBuffer, uint8_t data);
 IRC_Status_t CBB_Pushn(circByteBuffer_t *circByteBuffer, uint16_t length, uint8_t* data);
 IRC_Status_t CBB_Pop(circByteBuffer_t *circByteBuffer, uint8_t *data);

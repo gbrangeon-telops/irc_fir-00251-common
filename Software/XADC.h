@@ -22,13 +22,13 @@
 #include "verbose.h"
 
 #ifdef XADC_VERBOSE
-   #define XADC_PRINTF(fmt, ...)    PRINTF("XADC: " fmt, ##__VA_ARGS__)
+   #define XADC_PRINTF(fmt, ...)    FPGA_PRINTF("XADC: " fmt, ##__VA_ARGS__)
 #else
    #define XADC_PRINTF(fmt, ...)    DUMMY_PRINTF("XADC: " fmt, ##__VA_ARGS__)
 #endif
 
-#define XADC_ERR(fmt, ...)          PRINTF("XADC: Error: " fmt "\n", ##__VA_ARGS__)
-#define XADC_INF(fmt, ...)          PRINTF("XADC: Info: " fmt "\n", ##__VA_ARGS__)
+#define XADC_ERR(fmt, ...)          FPGA_PRINTF("XADC: Error: " fmt "\n", ##__VA_ARGS__)
+#define XADC_INF(fmt, ...)          FPGA_PRINTF("XADC: Info: " fmt "\n", ##__VA_ARGS__)
 #define XADC_DBG(fmt, ...)          XADC_PRINTF("Debug: " fmt "\n", ##__VA_ARGS__)
 
 #define XADC_SAMPLING_PERIOD_US     (uint64_t) 100000

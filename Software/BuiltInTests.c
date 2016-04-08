@@ -16,6 +16,7 @@
 #include "BuiltInTests.h"
 #include "printf_utils.h"
 #include "utils.h"
+#include "verbose.h"
 #include <string.h>
 
 
@@ -88,7 +89,7 @@ void BuiltInTest_Execute(builtInTestID_t builtInTestID)
 
    if (strlen(builtInTest->description) > 0)
    {
-      PRINTF("%s...", builtInTest->description);
+      FPGA_PRINTF("%s...", builtInTest->description);
    }
 
    if (builtInTest->testFunc != NULL)

@@ -24,10 +24,7 @@
    //#include "xtime_l.h"
    //#include "xcache_l.h"
 #endif
-#include "verbose.h"
 
-#define MGT_PRINTF PRINTF
-#define MGT_PRINT PRINTF
 
 /************************** Function Definitions ***************************/
 
@@ -152,7 +149,7 @@ uint32_t MGT_ReadCoreStatus(t_mgt *inst)
       {
          if ( bitget(inst->CORE_STATUS,i) == 1 )
          {
-            MGT_PRINTF("MGT Error Detected : bit %d\n",i);
+            MGT_PRINTF("Error Detected : bit %d",i);
          }
       }
       
@@ -161,7 +158,7 @@ uint32_t MGT_ReadCoreStatus(t_mgt *inst)
       {
          if ( bitget(inst->CORE_STATUS,i) == 0 && (bitget(inst->POWER_DOWN,(i-9))) == 0 )
          {
-            MGT_PRINTF("Channel is not up : %d\n",i);
+            MGT_PRINTF("Channel is not up : %d",i);
          }
       }
       
@@ -170,7 +167,7 @@ uint32_t MGT_ReadCoreStatus(t_mgt *inst)
       {
          if ( bitget(inst->CORE_STATUS,i) == 0 )
          {
-            MGT_PRINTF("Lane is not up : %d\n",i);
+            MGT_PRINTF("Lane is not up : %d",i);
          }
       }
    
@@ -179,7 +176,7 @@ uint32_t MGT_ReadCoreStatus(t_mgt *inst)
       {
          if ( bitget(inst->CORE_STATUS,i) == 0 )
          {
-            MGT_PRINTF("Lane is not up : %d\n",i);
+            MGT_PRINTF("Lane is not up : %d",i);
          }
       }
 
@@ -188,7 +185,7 @@ uint32_t MGT_ReadCoreStatus(t_mgt *inst)
       {
          if ( bitget(inst->CORE_STATUS,i) == 0 )
          {
-            MGT_PRINTF("Lane is not up : %d\n",i);
+            MGT_PRINTF("Lane is not up : %d",i);
          }
       }
       
@@ -197,7 +194,7 @@ uint32_t MGT_ReadCoreStatus(t_mgt *inst)
       {
          if ( bitget(inst->CORE_STATUS,i) == 0 && (bitget(inst->POWER_DOWN,(i-18))) == 0 )
          {
-            MGT_PRINTF("RX reset is not done : %d\n",i);
+            MGT_PRINTF("RX reset is not done : %d",i);
          }
       }
 
@@ -206,7 +203,7 @@ uint32_t MGT_ReadCoreStatus(t_mgt *inst)
       {
          if ( bitget(inst->CORE_STATUS,i) == 0 && (bitget(inst->POWER_DOWN,(i-21))) == 0 )
          {
-            MGT_PRINTF("TX reset is not done : %d\n",i);
+            MGT_PRINTF("TX reset is not done : %d",i);
          }
       }
 
@@ -215,7 +212,7 @@ uint32_t MGT_ReadCoreStatus(t_mgt *inst)
       {
          if ( bitget(inst->CORE_STATUS,i) == 0 && (bitget(inst->POWER_DOWN,(i-24))) == 0 )
          {
-            MGT_PRINTF("RX reset is not done : %d\n",i);
+            MGT_PRINTF("RX reset is not done : %d",i);
          }
       }
       
@@ -224,7 +221,7 @@ uint32_t MGT_ReadCoreStatus(t_mgt *inst)
       {
          if ( bitget(inst->CORE_STATUS,i) == 0 && (bitget(inst->POWER_DOWN,(i-27))) == 0 )
          {
-            MGT_PRINTF("Link is in reset : %d\n",i);
+            MGT_PRINTF("Link is in reset : %d",i);
          }
       }
    }
@@ -250,37 +247,37 @@ uint32_t MGT_ReadPLLStatus(t_mgt *inst)
    
    if ( (bitget(inst->PLL_STATUS,0) == 0) && (bitget(inst->POWER_DOWN,0) == 0) )
    {
-      MGT_PRINT("QPLL for Quad 1 is not locked\n");
+      MGT_PRINT("QPLL for Quad 1 is not locked");
    }
 
    if ( (bitget(inst->PLL_STATUS,1) == 0) && (bitget(inst->POWER_DOWN,2) == 0) )
    {
-      MGT_PRINT("QPLL for Quad 2 is not locked\n");
+      MGT_PRINT("QPLL for Quad 2 is not locked");
    }
 
    if ( (bitget(inst->PLL_STATUS,2) == 0) && ((bitget(inst->POWER_DOWN,0) == 0) ) )
    {
-      MGT_PRINT("QPLL reference clock for Quad 1 is lost\n");
+      MGT_PRINT("QPLL reference clock for Quad 1 is lost");
    }
 
    if ( (bitget(inst->PLL_STATUS,3) == 0) && (bitget(inst->POWER_DOWN,2) == 0) )
    {
-      MGT_PRINT("QPLL reference clock for Quad 2 is lost\n");
+      MGT_PRINT("QPLL reference clock for Quad 2 is lost");
    }
 
    if ( (bitget(inst->PLL_STATUS,4) == 1) && (bitget(inst->POWER_DOWN,0) == 0) )
    {
-      MGT_PRINT("QPPL for Data is in reset\n");
+      MGT_PRINT("QPPL for Data is in reset");
    }
 
    if ( (bitget(inst->PLL_STATUS,5) == 1) && (bitget(inst->POWER_DOWN,1) == 0) )
    {
-      MGT_PRINT("QPPL for Video is in reset\n");
+      MGT_PRINT("QPPL for Video is in reset");
    }
 
    if ( (bitget(inst->PLL_STATUS,6) == 1) && (bitget(inst->POWER_DOWN,2) == 0) )
    {
-      MGT_PRINT("QPPL for Exp is in reset\n");
+      MGT_PRINT("QPPL for Exp is in reset");
    }
    
    return inst->PLL_STATUS;

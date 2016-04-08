@@ -23,13 +23,13 @@
 #include <stdint.h>
 
 #ifdef QSPI_VERBOSE
-   #define QSPI_PRINTF(fmt, ...) PRINTF("QSPI: " fmt, ##__VA_ARGS__)
+   #define QSPI_PRINTF(fmt, ...) FPGA_PRINTF("QSPI: " fmt, ##__VA_ARGS__)
 #else
    #define QSPI_PRINTF(fmt, ...) DUMMY_PRINTF("QSPI: " fmt, ##__VA_ARGS__)
 #endif
 
-#define QSPI_ERR(fmt, ...)       PRINTF("QSPI: Error: " fmt "\n", ##__VA_ARGS__)
-#define QSPI_INF(fmt, ...)       PRINTF("QSPI: Info: " fmt "\n", ##__VA_ARGS__)
+#define QSPI_ERR(fmt, ...)       FPGA_PRINTF("QSPI: Error: " fmt "\n", ##__VA_ARGS__)
+#define QSPI_INF(fmt, ...)       FPGA_PRINTF("QSPI: Info: " fmt "\n", ##__VA_ARGS__)
 #define QSPI_DBG(fmt, ...)       QSPI_PRINTF("Debug: " fmt "\n", ##__VA_ARGS__)
 
 /**

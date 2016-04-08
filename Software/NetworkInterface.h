@@ -31,13 +31,13 @@ typedef struct networkCommandStruct networkCommand_t;
 #include "CircularBuffer.h"
 
 #ifdef NI_VERBOSE
-   #define NI_PRINTF(fmt, ...)      PRINTF("NI: " fmt, ##__VA_ARGS__)
+   #define NI_PRINTF(fmt, ...)      FPGA_PRINTF("NI: " fmt, ##__VA_ARGS__)
 #else
    #define NI_PRINTF(fmt, ...)      DUMMY_PRINTF("NI: " fmt, ##__VA_ARGS__)
 #endif
 
-#define NI_ERR(fmt, ...)            PRINTF("NI: Error: " fmt "\n", ##__VA_ARGS__)
-#define NI_INF(fmt, ...)            PRINTF("NI: Info: " fmt "\n", ##__VA_ARGS__)
+#define NI_ERR(fmt, ...)            FPGA_PRINTF("NI: Error: " fmt "\n", ##__VA_ARGS__)
+#define NI_INF(fmt, ...)            FPGA_PRINTF("NI: Info: " fmt "\n", ##__VA_ARGS__)
 #define NI_DBG(fmt, ...)            NI_PRINTF("Debug: " fmt "\n", ##__VA_ARGS__)
 
 #define NI_MAX_NUM_OF_CONNECTIONS   2
@@ -86,6 +86,7 @@ enum niPortEnum {
    NIP_GC_POLLER,       /**< GenICam poller network port */
    NIP_FIRM_UPDATER,    /**< Firmware updater network port */
    NIP_FILE_MANAGER,    /**< File manager network port */
+   NIP_DEBUG_TERMINAL,  /**< DebugTerminal network port */
    NIP_CI_CLINK,        /**< Camera link control interface network port */
    NIP_CI_PLEORA,       /**< Pleora control interface network port */
    NIP_CI_OEM,          /**< OEM control interface network port */

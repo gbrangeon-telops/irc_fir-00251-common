@@ -34,6 +34,9 @@
    #define PRINTF(fmt, ...)      DUMMY_PRINTF(fmt, ##__VA_ARGS__)
 #endif
 
+#define FPGA_PRINTF(fmt, ...)    PRINTF(FPGA_PRINT_PREFIX fmt, ##__VA_ARGS__)
+#define FPGA_PRINT(str)          PRINT(FPGA_PRINT_PREFIX str)
+
 /**< Macros for displaying floating point numbers using printf */
 /** Example of use :
  * PRINTF("PI is " _PCF(4) ". More precisely, it is " _PCF(6) "\n", _FFMT(3.141592f, 4), _FFMT(3.141592f, 6));

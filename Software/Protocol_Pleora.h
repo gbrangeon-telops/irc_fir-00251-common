@@ -24,12 +24,12 @@
 #include "verbose.h"
 
 #ifdef PLEORA_VERBOSE
-   #define PLEORA_PRINTF(fmt, ...)  PRINTF("PLEORA: " fmt, ##__VA_ARGS__)
+   #define PLEORA_PRINTF(fmt, ...)  FPGA_PRINTF("PLEORA: " fmt, ##__VA_ARGS__)
 #else
    #define PLEORA_PRINTF(fmt, ...)  DUMMY_PRINTF("PLEORA: " fmt, ##__VA_ARGS__)
 #endif
 
-#define PLEORA_ERR(fmt, ...)        PRINTF("PLEORA: Error: " fmt "\n", ##__VA_ARGS__)
+#define PLEORA_ERR(fmt, ...)        FPGA_PRINTF("PLEORA: Error: " fmt "\n", ##__VA_ARGS__)
 #define PLEORA_INF(fmt, ...)        PLEORA_PRINTF("Info: " fmt "\n", ##__VA_ARGS__)
 
 // Pleora command codes

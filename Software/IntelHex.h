@@ -22,12 +22,12 @@
 #include "verbose.h"
 
 #ifdef IHEX_VERBOSE
-   #define IHEX_PRINTF(fmt, ...)    PRINTF("IHEX: " fmt, ##__VA_ARGS__)
+   #define IHEX_PRINTF(fmt, ...)    FPGA_PRINTF("IHEX: " fmt, ##__VA_ARGS__)
 #else
    #define IHEX_PRINTF(fmt, ...)    DUMMY_PRINTF("IHEX: " fmt, ##__VA_ARGS__)
 #endif
 
-#define IHEX_ERR(fmt, ...)          PRINTF("IHEX: Error: " fmt "\n", ##__VA_ARGS__)
+#define IHEX_ERR(fmt, ...)          FPGA_PRINTF("IHEX: Error: " fmt "\n", ##__VA_ARGS__)
 #define IHEX_INF(fmt, ...)          IHEX_PRINTF("Info: " fmt "\n", ##__VA_ARGS__)
 
 

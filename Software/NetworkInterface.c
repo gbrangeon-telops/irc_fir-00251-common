@@ -489,7 +489,7 @@ IRC_Status_t NetIntf_RouteCmd(netIntf_t *netIntf, networkCommand_t *netCmd)
  */
 void NetIntf_ShowPacket(netIntf_t *netIntf, networkCommand_t *netCmd)
 {
-   PRINTF("NI: Info: Network command (");
+   FPGA_PRINTF("NI: Info: Network command (");
 
    // Print command data
    switch (netCmd->f1f2.cmd)

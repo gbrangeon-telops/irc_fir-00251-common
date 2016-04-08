@@ -305,9 +305,10 @@ IRC_Status_t F1F2_PayloadDataCountValidator(uint8_t cmd, uint16_t pdc)
          pdcMax = pdcMin;
          break;
 
-      case F1F2_CMD_TEXT:
+      case F1F2_CMD_DEBUG_TEXT:
+      case F1F2_CMD_DEBUG_CMD:
          pdcMin = 0;
-         pdcMax = F1F2_MAX_TEXT_DATA_SIZE;
+         pdcMax = F1F2_MAX_DEBUG_DATA_SIZE;
          break;
 
       case F1F2_CMD_NETWORK:
@@ -544,17 +545,15 @@ IRC_Status_t F1F2_PayloadParser(uint8_t *p_payload, uint16_t pdc, F1F2Command_t 
          }
          break;
 
-      case F1F2_CMD_TEXT:
-         if (pdc > F1F2_MAX_TEXT_DATA_SIZE)
+      case F1F2_CMD_DEBUG_TEXT:
+      case F1F2_CMD_DEBUG_CMD:
+         if (pdc > F1F2_MAX_DEBUG_DATA_SIZE)
          {
             F1F2_ERR("Invalid Payload Data Count (cmd = %d).", f1f2Cmd->cmd);
             return IRC_FAILURE;
          }
-         memcpy(f1f2Cmd->payload.text.data, &p_payload[F1F2_PD_OFFSET_TEXT], pdc);
-         if (pdc < F1F2_MAX_TEXT_DATA_SIZE)
-         {
-            f1f2Cmd->payload.text.data[pdc] = 0;
-         }
+         memcpy(f1f2Cmd->payload.debug.text, &p_payload[F1F2_PD_OFFSET_DEBUG_DATA], pdc);
+         f1f2Cmd->payload.debug.text[pdc] = 0;
          break;
 
       case F1F2_CMD_NETWORK:
@@ -711,12 +710,10 @@ IRC_Status_t F1F2_CircPayloadParser(circByteBuffer_t *circByteBuffer, uint16_t o
          CBB_Peekn(circByteBuffer, offset + F1F2_PD_OFFSET_PROM_CRC16, F1F2_PROM_CRC16_SIZE, (uint8_t *)&f1f2Cmd->payload.promCheck.crc16);
          break;
 
-      case F1F2_CMD_TEXT:
-         CBB_Peekn(circByteBuffer, offset + F1F2_PD_OFFSET_TEXT, pdc, f1f2Cmd->payload.text.data);
-         if (pdc < F1F2_MAX_TEXT_DATA_SIZE)
-         {
-            f1f2Cmd->payload.text.data[pdc] = 0;
-         }
+      case F1F2_CMD_DEBUG_TEXT:
+      case F1F2_CMD_DEBUG_CMD:
+         CBB_Peekn(circByteBuffer, offset + F1F2_PD_OFFSET_DEBUG_DATA, pdc, (uint8_t *)f1f2Cmd->payload.debug.text);
+         f1f2Cmd->payload.debug.text[pdc] = 0;
          break;
 
       case F1F2_CMD_NETWORK:
@@ -1081,14 +1078,10 @@ uint32_t F1F2_CommandBuilder(F1F2Command_t *f1f2Cmd, uint8_t *buffer, uint16_t b
       case F1F2_CMD_FILE_FORMAT:
          break;
 
-      case F1F2_CMD_TEXT:
-         payloadData[dataCount].p_data = f1f2Cmd->payload.text.data;
-         payloadData[dataCount].dataLength = 0;
-         while ((f1f2Cmd->payload.text.data[payloadData[dataCount].dataLength] != 0) &&
-               (payloadData[dataCount].dataLength < F1F2_MAX_TEXT_DATA_SIZE))
-         {
-            payloadData[dataCount].dataLength++;
-         }
+      case F1F2_CMD_DEBUG_TEXT:
+      case F1F2_CMD_DEBUG_CMD:
+         payloadData[dataCount].p_data = f1f2Cmd->payload.debug.text;
+         payloadData[dataCount].dataLength = strlen(f1f2Cmd->payload.debug.text);
          payloadData[dataCount].padLength = 0;
          dataCount++;
          break;
@@ -1182,7 +1175,8 @@ char *F1F2_CommandNameToString(uint8_t cmd)
       case F1F2_CMD_PROM_CHECK_REQ: return "PROM_CHECK_REQ";
       case F1F2_CMD_PROM_CHECK_RSP: return "PROM_CHECK_RSP";
       case F1F2_CMD_PING: return "PING";
-      case F1F2_CMD_TEXT: return "TEXT";
+      case F1F2_CMD_DEBUG_TEXT: return "DEBUG_TEXT";
+      case F1F2_CMD_DEBUG_CMD: return "DEBUG_CMD";
       case F1F2_CMD_NETWORK: return "NETWORK";
       case F1F2_CMD_ERROR: return "ERROR";
       default: return "UNKNOWN";

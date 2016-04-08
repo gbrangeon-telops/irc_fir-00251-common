@@ -22,12 +22,12 @@
 #include "verbose.h"
 
 #ifdef SREC_VERBOSE
-   #define SREC_PRINTF(fmt, ...)    PRINTF("SREC: " fmt, ##__VA_ARGS__)
+   #define SREC_PRINTF(fmt, ...)    FPGA_PRINTF("SREC: " fmt, ##__VA_ARGS__)
 #else
    #define SREC_PRINTF(fmt, ...)    DUMMY_PRINTF("SREC: " fmt, ##__VA_ARGS__)
 #endif
 
-#define SREC_ERR(fmt, ...)          PRINTF("SREC: Error: " fmt "\n", ##__VA_ARGS__)
+#define SREC_ERR(fmt, ...)          FPGA_PRINTF("SREC: Error: " fmt "\n", ##__VA_ARGS__)
 #define SREC_INF(fmt, ...)          SREC_PRINTF("Info: " fmt "\n", ##__VA_ARGS__)
 
 

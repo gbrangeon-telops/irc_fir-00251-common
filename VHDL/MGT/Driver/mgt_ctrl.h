@@ -17,6 +17,7 @@
 
 
 /****************** Include Files ********************/
+#include "verbose.h"
 #include "xbasic_types.h"
 #include <stdint.h>
 
@@ -24,6 +25,15 @@
 #define PLL_STATUS_OFFSET 4
 #define POWER_DOWN_OFFSET 8
 #define LOOPBACK_OFFSET 12
+
+#ifdef MGT_VERBOSE
+   #define MGT_PRINTF(fmt, ...)     FPGA_PRINTF("MGT: " fmt "\n", ##__VA_ARGS__)
+   #define MGT_PRINT(str)           FPGA_PRINT("MGT: " str "\n")
+#else
+   #define MGT_PRINTF(fmt, ...)     DUMMY_PRINTF("MGT: " fmt "\n", ##__VA_ARGS__)
+   #define MGT_PRINT(str)           DUMMY_PRINT("MGT: " str "\n")
+#endif
+
 
 /**
  * MGT driver object

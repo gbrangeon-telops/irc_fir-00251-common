@@ -638,6 +638,12 @@ void CtrlIntf_Process(ctrlIntf_t *ctrlIntf)
                      netCmd.f1f2.destPort = NIP_FIRM_UPDATER;
                      break;
 
+                  case F1F2_CMD_DEBUG_TEXT:
+                  case F1F2_CMD_DEBUG_CMD:
+                     netCmd.f1f2.destAddr = ctrlIntf->port.netIntf->address;
+                     netCmd.f1f2.destPort = NIP_DEBUG_TERMINAL;
+                     break;
+
                   case F1F2_CMD_PING:
                      F1F2_BuildACKResponse(&netCmd.f1f2, &netCmd.f1f2);
                      netCmd.f1f2.destAddr = ctrlIntf->port.netIntf->address;
