@@ -120,7 +120,7 @@ void BuiltInTest_Execute(builtInTestID_t builtInTestID)
       {
          PRINTF(" passed.\n");
       }
-      else if (builtInTest->result == BITR_Passed)
+      else if (builtInTest->result == BITR_Failed)
       {
          PRINTF(" failed.\n");
       }
