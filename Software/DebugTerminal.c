@@ -173,29 +173,26 @@ void DebugTerminal_Input()
          byte = XUartNs550_ReadReg(debugTerminal->uart.BaseAddress, XUN_RBR_OFFSET);
          if ((byte == 0x0A) || (byte == 0x0D))
          {
-            if (CBB_Length(&debugTerminal->rxCircDataBuffer) > 0)
+            if (debugTerminalUnlocked == 1)
             {
-               if (debugTerminalUnlocked == 1)
+               if (DebugTerminalParser(&debugTerminal->rxCircDataBuffer) != IRC_SUCCESS)
                {
-                  if (DebugTerminalParser(&debugTerminal->rxCircDataBuffer) != IRC_SUCCESS)
-                  {
-                     CBB_Flush(&debugTerminal->rxCircDataBuffer);
-                  }
+                  CBB_Flush(&debugTerminal->rxCircDataBuffer);
+               }
+            }
+            else
+            {
+               cmdlen = GetNextArg(&debugTerminal->rxCircDataBuffer, cmdStr, DT_MAX_CMD_SIZE);
+               cmdStr[cmdlen++] = '\0'; // Add string terminator
+
+               if ((strcasecmp((char *)cmdStr, "SPOLET") == 0) && (CBB_Empty(&debugTerminal->rxCircDataBuffer)))
+               {
+                  debugTerminalUnlocked = 1;
+                  DT_INF("Debug terminal unlocked!!!");
                }
                else
                {
-                  cmdlen = GetNextArg(&debugTerminal->rxCircDataBuffer, cmdStr, DT_MAX_CMD_SIZE);
-                  cmdStr[cmdlen++] = '\0'; // Add string terminator
-
-                  if ((strcasecmp((char *)cmdStr, "SPOLET") == 0) && (CBB_Empty(&debugTerminal->rxCircDataBuffer)))
-                  {
-                     debugTerminalUnlocked = 1;
-                     DT_INF("Debug terminal unlocked!!!");
-                  }
-                  else
-                  {
-                     CBB_Flush(&debugTerminal->rxCircDataBuffer);
-                  }
+                  CBB_Flush(&debugTerminal->rxCircDataBuffer);
                }
             }
          }
@@ -214,7 +211,6 @@ void DebugTerminal_Input()
 void DebugTerminal_Output()
 {
    debugTerminal_t *debugTerminal = &gDebugTerminal;
-   networkCommand_t dtRequest;
    uint8_t byte;
 
    if (debugTerminal->uart.IsReady == XIL_COMPONENT_IS_READY)
@@ -232,22 +228,32 @@ void DebugTerminal_Output()
          (debugTerminal->port.netIntf->currentState == NIS_READY))
    {
       // Transmit output to processing FPGA debug terminal
-      F1F2_CommandClear(&dtRequest.f1f2);
-      dtRequest.f1f2.isNetwork = 1;
-      dtRequest.f1f2.srcAddr = debugTerminal->port.netIntf->address;
-      dtRequest.f1f2.srcPort = debugTerminal->port.port;
-      dtRequest.f1f2.destAddr = NIA_PROCESSING_FPGA;
-      dtRequest.f1f2.destPort = NIP_DEBUG_TERMINAL;
-      dtRequest.f1f2.cmd = F1F2_CMD_DEBUG_TEXT;
-      CBB_Popn(&debugTerminal->txCircDataBuffer,
-            MIN(CBB_Length(&debugTerminal->txCircDataBuffer), F1F2_MAX_DEBUG_DATA_SIZE),
-            (uint8_t*)dtRequest.f1f2.payload.debug.text);
-      dtRequest.port = &debugTerminal->port;
+       DebugTerminal_SendMsgRequest(debugTerminal);
+   }
+}
 
-      if (NetIntf_EnqueueCmd(debugTerminal->port.netIntf, &dtRequest) != IRC_SUCCESS)
-      {
-         DT_ERR("Failed to push debug TEXT command in network interface command queue.");
-      }
+/**
+ * Builds a F1F2 TEXT command from the Debug Terminal TX Buffer
+ */
+void DebugTerminal_SendMsgRequest(debugTerminal_t *debugTerminal) {
+
+   networkCommand_t dtRequest;
+  
+   F1F2_CommandClear(&dtRequest.f1f2);
+   dtRequest.f1f2.isNetwork = 1;
+   dtRequest.f1f2.srcAddr = debugTerminal->port.netIntf->address;
+   dtRequest.f1f2.srcPort = debugTerminal->port.port;
+   dtRequest.f1f2.destAddr = NIA_PROCESSING_FPGA;
+   dtRequest.f1f2.destPort = NIP_DEBUG_TERMINAL;
+   dtRequest.f1f2.cmd = F1F2_CMD_DEBUG_TEXT;
+   CBB_Popn(&debugTerminal->txCircDataBuffer,
+      MIN(CBB_Length(&debugTerminal->txCircDataBuffer), F1F2_MAX_DEBUG_DATA_SIZE),
+	  (uint8_t *)dtRequest.f1f2.payload.debug.text);
+   dtRequest.port = &debugTerminal->port;
+
+   if (NetIntf_EnqueueCmd(debugTerminal->port.netIntf, &dtRequest) != IRC_SUCCESS)
+   {
+      DT_ERR("Failed to push debug TEXT command in network interface command queue.");
    }
 }
 
@@ -256,8 +262,8 @@ void DebugTerminal_Output()
  */
 void DebugTerminal_Process()
 {
-   networkCommand_t dtRequest;
-   networkCommand_t dtResponse;
+   static networkCommand_t dtRequest;
+   static networkCommand_t dtResponse;
    debugTerminal_t *debugTerminal = &gDebugTerminal;
    circByteBuffer_t cbufCommand;
 

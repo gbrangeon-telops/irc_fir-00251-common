@@ -5,7 +5,7 @@ use work.tel2000.all;
 
 entity axil32_addr_demux4 is
    generic(
-      SLAVE_ADDR_WIDTH : integer := 16
+      SLAVE_ADDR_WIDTH : integer := 14
    );
    port(
       AXIL_S0_Mosi: in t_axi4_lite_mosi;

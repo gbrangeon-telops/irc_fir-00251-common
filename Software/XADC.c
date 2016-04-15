@@ -253,7 +253,9 @@ void XADC_SM()
          }
          else if (elapsed_time_us(tic_xadcSampling) > XADC_TIMEOUT_PERIOD_US)
          {
+#ifndef STARTUP
             XADC_INF("XADC Timeout");
+#endif
             xadcState = XADC_INIT;
             XADC_Init(xsm.Config.DeviceId);
          }

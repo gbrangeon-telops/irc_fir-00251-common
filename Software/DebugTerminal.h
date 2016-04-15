@@ -88,6 +88,7 @@ IRC_Status_t DebugTerminal_Connect(netIntf_t *netIntf,
       circBuffer_t *cmdQueue);
 void DebugTerminal_Input();
 void DebugTerminal_Output();
+void DebugTerminal_SendMsgRequest(debugTerminal_t *debugTerminal);
 void DebugTerminal_Process();
 uint16_t GetNextArg(circByteBuffer_t *cbuf, uint8_t *buffer, uint16_t buflen);
 IRC_Status_t ParseNumArg(char *str, uint8_t length, uint32_t *value);
