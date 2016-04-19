@@ -16,7 +16,7 @@
 
 /* AUTO-CODE BEGIN */
 // Auto-generated GeniCam library.
-// Generated from XML camera definition file version 11.3.1
+// Generated from XML camera definition file version 11.4.0
 // using generateGenICamCommonCLib.m Matlab script.
 
 // GenICam global variables definition
@@ -258,7 +258,9 @@ gcRegister_t gcRegsDef[GC_REG_COUNT] = {
    /* AECPlusExtrapolationWeight */                {0x0000EB4C, NULL, NULL, 4, 4, GCRO_Processing_FPGA, REG_UNLOCKED|REG_FLOAT|REG_RW|REG_NOTSHARED|REG_BIGENDIAN},
    /* IsActiveFlags */                             {0x0000EB50, NULL, NULL, 4, 4, GCRO_Processing_FPGA, REG_UNLOCKED|REG_INT|REG_RO|REG_NOTSHARED|REG_BIGENDIAN},
    /* DeviceKeyValidationLow */                    {0x0000EB54, NULL, NULL, 4, 4, GCRO_Processing_FPGA, REG_UNLOCKED|REG_INT|REG_RO|REG_NOTSHARED|REG_BIGENDIAN},
-   /* DeviceKeyValidationHigh */                   {0x0000EB58, NULL, NULL, 4, 4, GCRO_Processing_FPGA, REG_UNLOCKED|REG_INT|REG_RO|REG_NOTSHARED|REG_BIGENDIAN}
+   /* DeviceKeyValidationHigh */                   {0x0000EB58, NULL, NULL, 4, 4, GCRO_Processing_FPGA, REG_UNLOCKED|REG_INT|REG_RO|REG_NOTSHARED|REG_BIGENDIAN},
+   /* NDFilterArmedPositionSetpoint */             {0x0000EB5C, NULL, NULL, 4, 4, GCRO_Processing_FPGA, REG_UNLOCKED|REG_INT|REG_RW|REG_NOTSHARED|REG_BIGENDIAN},
+   /* BadPixelReplacement */                       {0x0000EB60, NULL, NULL, 4, 4, GCRO_Processing_FPGA, REG_UNLOCKED|REG_INT|REG_RW|REG_NOTSHARED|REG_BIGENDIAN}
 };
 
 /* AUTO-CODE END */

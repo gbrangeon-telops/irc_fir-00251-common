@@ -127,12 +127,12 @@ typedef struct gcRegister gcRegister_t;
 
 /* AUTO-CODE BEGIN */
 // Auto-generated GeniCam library.
-// Generated from XML camera definition file version 11.3.1
+// Generated from XML camera definition file version 11.4.0
 // using generateGenICamCommonCLib.m Matlab script.
 
 #define GC_XMLMAJORVERSION    11
-#define GC_XMLMINORVERSION    3
-#define GC_XMLSUBMINORVERSION 1
+#define GC_XMLMINORVERSION    4
+#define GC_XMLSUBMINORVERSION 0
 
 // Enumerations values and data types
 ////////////////////////////////////////////////////////////////////////////////
@@ -189,13 +189,28 @@ enum ExposureAutoEnum {
    EA_Once = 1,
    EA_Continuous = 2,
    EA_OnceNDFilter = 4,
-   EA_ContinuousNDFilter = 5
+   EA_ContinuousNDFilter = 5,
+   EA_ArmedNDFilter = 6
 };
 
 /**
  * ExposureAuto enumeration values data type
  */
 typedef enum ExposureAutoEnum ExposureAuto_t;
+
+/**
+ * NDFilterArmedPositionSetpoint enumeration values
+ */
+enum NDFilterArmedPositionSetpointEnum {
+   NDFAPS_NDFilter1 = 0,
+   NDFAPS_NDFilter2 = 1,
+   NDFAPS_NDFilter3 = 2
+};
+
+/**
+ * NDFilterArmedPositionSetpoint enumeration values data type
+ */
+typedef enum NDFilterArmedPositionSetpointEnum NDFilterArmedPositionSetpoint_t;
 
 /**
  * EHDRIMode enumeration values
@@ -1326,6 +1341,8 @@ typedef enum DeviceLedIndicatorStateEnum DeviceLedIndicatorState_t;
 // #define IsActiveFlagsAddr                             0x0000EB50  /**< IsActiveFlags register address */
 // #define DeviceKeyValidationLowAddr                    0x0000EB54  /**< DeviceKeyValidationLow register address */
 // #define DeviceKeyValidationHighAddr                   0x0000EB58  /**< DeviceKeyValidationHigh register address */
+// #define NDFilterArmedPositionSetpointAddr             0x0000EB5C  /**< NDFilterArmedPositionSetpoint register address */
+// #define BadPixelReplacementAddr                       0x0000EB60  /**< BadPixelReplacement register address */
 
 // Registers definition array indices
 ////////////////////////////////////////////////////////////////////////////////
@@ -1563,11 +1580,13 @@ typedef enum DeviceLedIndicatorStateEnum DeviceLedIndicatorState_t;
 #define IsActiveFlagsIdx                              230
 #define DeviceKeyValidationLowIdx                     231
 #define DeviceKeyValidationHighIdx                    232
+#define NDFilterArmedPositionSetpointIdx              233
+#define BadPixelReplacementIdx                        234
 
 // Registers general macros
 ////////////////////////////////////////////////////////////////////////////////
 
-#define GC_REG_COUNT 233 /**< Number of GenICam registers */
+#define GC_REG_COUNT 235 /**< Number of GenICam registers */
 #define GC_REG_MAX_LENGTH 512 /**< GenICam registers maximum length (in bytes) */
 #define GC_REG_MAX_READ_LENGTH 512 /**< GenICam readable registers maximum length (in bytes) */
 #define GC_REG_MAX_WRITE_LENGTH 4 /**< GenICam writable registers maximum length (in bytes) */
