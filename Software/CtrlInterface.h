@@ -43,7 +43,7 @@
       p_ctrlIntf->linkType == CILT_CUART ? CI_ERR("CUART @ 0x%08X: " fmt, p_ctrlIntf->link.cuart.uart.BaseAddress, ##__VA_ARGS__) : \
       CI_ERR("USART @ 0x%08X: " fmt, p_ctrlIntf->link.usart.BaseAddress, ##__VA_ARGS__)
 
-#ifdef DEBUG
+#ifdef TELOPS_DEBUG
 // #define CI_REQUEST_PROCESSING_DURATION_TEST
 #endif
 

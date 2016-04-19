@@ -19,7 +19,7 @@
 #include "IRC_Status.h"
 #include <stdint.h>
 
-#ifdef DEBUG
+#ifdef TELOPS_DEBUG
 #define SHORT_MEMORY_TEST
 #else
 #undef SHORT_MEMORY_TEST
