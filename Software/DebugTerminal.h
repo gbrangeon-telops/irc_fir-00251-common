@@ -44,6 +44,9 @@
 
 #define DT_MAX_CMD_SIZE          6
 
+#define DT_LF                    0x0A
+#define DT_CR                    0x0D
+
 /**
  * Debug terminal command parser function pointer data type.
  */

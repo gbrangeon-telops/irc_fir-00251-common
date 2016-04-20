@@ -160,6 +160,7 @@ IRC_Status_t DebugTerminal_Connect(netIntf_t *netIntf,
 void DebugTerminal_Input()
 {
    static uint8_t debugTerminalUnlocked = 0;
+   static uint8_t lastByte = 0;
    debugTerminal_t *debugTerminal = &gDebugTerminal;
    uint8_t cmdStr[DT_MAX_CMD_SIZE + 1];
    uint32_t cmdlen;
@@ -171,8 +172,15 @@ void DebugTerminal_Input()
       while (XUartNs550_IsReceiveData(debugTerminal->uart.BaseAddress) && !CBB_Full(&debugTerminal->rxCircDataBuffer))
       {
          byte = XUartNs550_ReadReg(debugTerminal->uart.BaseAddress, XUN_RBR_OFFSET);
-         if ((byte == 0x0A) || (byte == 0x0D))
+
+         if ((byte == DT_LF) && (lastByte == DT_CR))
          {
+            // CR + LF
+            // LF char is ignored
+         }
+         else if ((byte == DT_CR) || (byte == DT_LF))
+         {
+            // CR or LF
             if (debugTerminalUnlocked == 1)
             {
                if (DebugTerminalParser(&debugTerminal->rxCircDataBuffer) != IRC_SUCCESS)
@@ -200,6 +208,8 @@ void DebugTerminal_Input()
          {
             CBB_Push(&debugTerminal->rxCircDataBuffer, byte);
          }
+
+         lastByte = byte;
       }
    }
 }
