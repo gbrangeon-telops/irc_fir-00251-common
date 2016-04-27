@@ -98,6 +98,7 @@ IRC_Status_t ParseNumArg(char *str, uint8_t length, uint32_t *value);
 IRC_Status_t ParseNumHex(char *str, uint8_t length, uint32_t *value);
 IRC_Status_t ParseNumDec(char *str, uint8_t length, uint32_t *value);
 IRC_Status_t ParseSignedNumDec(char *str, uint8_t length, int32_t *value);
+IRC_Status_t ParseFloatNumDec(char *str, uint8_t length, float *value);
 
 // Common debug terminal commands
 IRC_Status_t DebugTerminalParseRDM(circByteBuffer_t *cbuf);

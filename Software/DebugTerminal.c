@@ -678,6 +678,80 @@ IRC_Status_t ParseSignedNumDec(char *str, uint8_t length, int32_t *value)
    return IRC_SUCCESS;
 }
 
+/**
+ * Debug terminal float decimal command's arguments parser.
+ * This parser is used to parse a float decimal numeric command's argument.
+ *
+ * @param str is the argument string to be parsed.
+ * @param length is the length of string parameter.
+ * @param value is the pointer to the float value to be returned.
+ *
+ * @return IRC_SUCCESS if the numeric argument was successfully parsed. value parameter content is valid.
+ * @return IRC_FAILURE if the numeric argument cannot be parsed. value parameter content is not valid.
+ */
+IRC_Status_t ParseFloatNumDec(char *str, uint8_t length, float *value)
+{
+   uint8_t dotPos;
+   float negMult = 1.0F;
+   uint32_t intPart = 0;
+   uint32_t fractPart = 0;
+   float precision = 0.0F;
+
+   if (length == 0)
+   {
+      return IRC_FAILURE;
+   }
+
+   // Parse the sign
+   if (str[0] == '-')
+   {
+      negMult = -1.0F;
+
+      // Skip the minus sign
+      str++;
+      length--;
+   }
+
+   dotPos = 0;
+   while ((str[dotPos] != '.') && (dotPos < length))
+   {
+      dotPos++;
+   }
+
+   // Parse the integer part
+   if (dotPos != 0)
+   {
+      if (ParseNumDec(str, dotPos, &intPart) != IRC_SUCCESS)
+      {
+         return IRC_FAILURE;
+      }
+      str += dotPos;
+      length -= dotPos;
+   }
+
+   if (length > 0)
+   {
+      // Skip the dot
+      str++;
+      length--;
+   }
+
+   // Parse the fractional part
+   if (length > 0)
+   {
+      if (ParseNumDec((char *)str, length, &fractPart) != IRC_SUCCESS)
+      {
+         return IRC_FAILURE;
+      }
+
+      precision = 1.0F / pow10f(length);
+   }
+
+   *value = negMult * ( (float)intPart + ((float)fractPart * precision) );
+
+   return IRC_SUCCESS;
+}
+
 /******************************************************************************
  * Common debug terminal commands
  ******************************************************************************/
