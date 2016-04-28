@@ -14,7 +14,7 @@
  */
 
 #include "NetworkInterface.h"
-
+#include <string.h>
 
 netIntfPort_t *NetIntf_FindPort(netIntf_t *netIntf, niPort_t port);
 uint32_t NetIntf_GetConnectionIndex(netIntf_t *netIntf, netIntfPort_t *connection);
@@ -41,7 +41,8 @@ IRC_Status_t NetIntf_Init(netIntf_t *netIntf, niAddress_t address, circBuffer_t 
    netIntf->cmdQueue = cmdQueue;
    netIntf->numberOfPorts = 0;
    netIntf->numberOfConnections = 0;
-   netIntf->showPackets = 0;
+   netIntf->showPacketsMode = NISPM_OFF;
+   netIntf->showPacketsPortFilter = NIP_UNDEFINED;
 
    for (i = 0; i < NI_NUM_OF_HOSTS; i++)
    {
@@ -111,7 +112,10 @@ IRC_Status_t NetIntf_EnqueueCmd(netIntf_t *netIntf, networkCommand_t *netCmd)
 {
    netIntfPort_t *p_localPort;
 
-   if (netIntf->showPackets)
+   if ((netIntf->showPacketsMode == NISPM_NO_FILTER) ||
+         ((netIntf->showPacketsMode == NISPM_FILTERED) &&
+               (((netCmd->f1f2.destAddr == netIntf->address) && (netCmd->f1f2.destPort == netIntf->showPacketsPortFilter)) ||
+               ((netCmd->f1f2.srcAddr == netIntf->address) && (netCmd->f1f2.srcPort == netIntf->showPacketsPortFilter)))))
    {
       NetIntf_ShowPacket(netIntf, netCmd);
    }
@@ -489,14 +493,22 @@ IRC_Status_t NetIntf_RouteCmd(netIntf_t *netIntf, networkCommand_t *netCmd)
  */
 void NetIntf_ShowPacket(netIntf_t *netIntf, networkCommand_t *netCmd)
 {
+   uint32_t regData32;
+
    FPGA_PRINTF("NI: Info: Network command (");
 
    // Print command data
    switch (netCmd->f1f2.cmd)
    {
-      case F1F2_CMD_REG_READ_REQ:
       case F1F2_CMD_REG_READ_RSP:
       case F1F2_CMD_REG_WRITE:
+         if (netCmd->f1f2.payload.regRW.dataLength == sizeof(uint32_t))
+         {
+            memcpy(&regData32, netCmd->f1f2.payload.regRW.data, netCmd->f1f2.payload.regRW.dataLength);
+            PRINTF("%s(0x%08X)@0x%04X", F1F2_CommandNameToString(netCmd->f1f2.cmd), regData32, netCmd->f1f2.payload.regRW.address);
+            break;
+         }
+      case F1F2_CMD_REG_READ_REQ:
          PRINTF("%s@0x%04X", F1F2_CommandNameToString(netCmd->f1f2.cmd), netCmd->f1f2.payload.regRW.address);
          break;
 
@@ -504,21 +516,22 @@ void NetIntf_ShowPacket(netIntf_t *netIntf, networkCommand_t *netCmd)
       case F1F2_CMD_NAK:
          PRINTF("%s:%s", F1F2_CommandNameToString(netCmd->f1f2.cmd), F1F2_CommandNameToString(netCmd->f1f2.payload.ack.cmd));
          break;
+
       default:
          PRINTF("%s", F1F2_CommandNameToString(netCmd->f1f2.cmd));
    }
 
    // Print routing data
-   PRINTF(") from ");
+   PRINTF(") ");
    if (netCmd->port->port == NIP_UNDEFINED)
    {
-      PRINTF("connection %d", NetIntf_GetConnectionIndex(netIntf, netCmd->port));
+      PRINTF("conn %d", NetIntf_GetConnectionIndex(netIntf, netCmd->port));
    }
    else
    {
-      PRINTF("local port %d", netCmd->port->port);
+      PRINTF("port %d", netCmd->port->port);
    }
-   PRINTF(": src = %d:%d, dest = %d:%d.\n",
+   PRINTF(", src: %d:%d, dest: %d:%d.\n",
          netCmd->f1f2.srcAddr, netCmd->f1f2.srcPort,
          netCmd->f1f2.destAddr, netCmd->f1f2.destPort);
 }

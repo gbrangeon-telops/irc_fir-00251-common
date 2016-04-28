@@ -974,20 +974,35 @@ IRC_Status_t DebugTerminalParseWRM(circByteBuffer_t *cbuf)
 IRC_Status_t DebugTerminalParseNET(circByteBuffer_t *cbuf)
 {
    extern netIntf_t gNetworkIntf;
-   uint8_t argStr[2];
+   uint8_t argStr[3];
    uint32_t arglen;
-   uint32_t showPackets;
+   uint32_t showPacketsMode;
+   uint32_t showPacketsPortFilter = 0;
    uint32_t i, j;
 
    if (!CBB_Empty(cbuf))
    {
       // Read show packet value
       arglen = GetNextArg(cbuf, argStr, 1);
-      if ((ParseNumArg((char *)argStr, arglen, &showPackets) != IRC_SUCCESS) ||
-            ((showPackets != 0) && (showPackets != 1)))
+      if ((ParseNumArg((char *)argStr, arglen, &showPacketsMode) != IRC_SUCCESS) ||
+            ((showPacketsMode != 0) && (showPacketsMode != 1)))
       {
          DT_ERR("Invalid logical value.");
          return IRC_FAILURE;
+      }
+
+      if ((showPacketsMode) && (!CBB_Empty(cbuf)))
+      {
+         // Read show packet port filter
+         arglen = GetNextArg(cbuf, argStr, 2);
+         if ((ParseNumArg((char *)argStr, arglen, &showPacketsPortFilter) != IRC_SUCCESS) ||
+               (showPacketsPortFilter > NI_MAX_NUM_OF_PORTS))
+         {
+            DT_ERR("Invalid port value.");
+            return IRC_FAILURE;
+         }
+
+         showPacketsMode = NISPM_FILTERED;
       }
 
       // There is supposed to be no remaining bytes in the buffer
@@ -997,7 +1012,8 @@ IRC_Status_t DebugTerminalParseNET(circByteBuffer_t *cbuf)
          return IRC_FAILURE;
       }
 
-      gNetworkIntf.showPackets = showPackets;
+      gNetworkIntf.showPacketsMode = showPacketsMode;
+      gNetworkIntf.showPacketsPortFilter = showPacketsPortFilter;
    }
 
    DT_PRINTF("Address: %d", gNetworkIntf.address);

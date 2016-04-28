@@ -129,6 +129,19 @@ struct networkCommandStruct {
    F1F2Command_t f1f2;     /**< Network F1F2 command */
 };
 
+/**
+ * Show network packet mode.
+ */
+enum niShowPacketsModeEnum {
+   NISPM_OFF = 0,       /**< Network packets are not shown */
+   NISPM_NO_FILTER,     /**< Network packets are shown */
+   NISPM_FILTERED       /**< Network packets are are shown considering a specified filter */
+};
+
+/**
+ * Show network packet mode data type.
+ */
+typedef enum niShowPacketsModeEnum niShowPacketsMode_t;
 
 /**
  * Network interface data structure.
@@ -145,7 +158,8 @@ struct netIntfStruct {
    uint32_t retryCount;
    uint64_t tic_pingTimeout;
    uint64_t tic_pingStart;
-   uint8_t showPackets;
+   niShowPacketsMode_t showPacketsMode;
+   niPort_t showPacketsPortFilter;
 };
 
 #define NetIntf_HostReached(netIntf, address) (((address - 1) < NI_NUM_OF_HOSTS) && ((netIntf)->routingTable[address - 1] != NULL))
