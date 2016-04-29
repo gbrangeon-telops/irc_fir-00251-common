@@ -37,7 +37,8 @@ entity hder_extractor is
       IMG_HEIGHT        : out std_logic_vector(15 downto 0); -- excluding hdr line
       
       IMG_HDR_LEN       : out std_logic_vector(15 downto 0); -- in pixel
-      IMG_FWPOSITION    : out std_logic_vector(7 downto 0)
+      IMG_FWPOSITION    : out std_logic_vector(7 downto 0);
+      IMG_NDFPOSITION    : out std_logic_vector(7 downto 0)
       
       );
    attribute dont_touch : string;
@@ -81,6 +82,7 @@ architecture rtl of hder_extractor is
    constant OFFSETY_SIZE            : integer := 16;
    constant IMAGEHEADERLENGTH_SIZE  : integer := 16;
    constant IMG_FWPOSITION_SIZE     : integer := 8;
+   constant IMG_NDFPOSITION_SIZE    : integer := 8;
    
    -- Default value
    constant IMG_WIDTH_DEF : std_logic_vector(WIDTH_SIZE-1 downto 0) := std_logic_vector(to_unsigned(640,WIDTH_SIZE));
@@ -88,6 +90,7 @@ architecture rtl of hder_extractor is
    constant IMF_HDR_LEN_DEF : unsigned(IMAGEHEADERLENGTH_SIZE-1  downto 0) := to_unsigned(0,IMAGEHEADERLENGTH_SIZE);
    constant IMG_EXPOSURE_DEF : std_logic_vector(EXPOSURETIME_SIZE-1 downto 0) := std_logic_vector(to_unsigned(0,EXPOSURETIME_SIZE));
    constant IMG_FWPOSITION_DEF : std_logic_vector(IMG_FWPOSITION_SIZE-1 downto 0) := std_logic_vector(to_unsigned(0,IMG_FWPOSITION_SIZE));
+   constant IMG_NDFPOSITION_DEF : std_logic_vector(IMG_NDFPOSITION_SIZE-1 downto 0) := std_logic_vector(to_unsigned(0,IMG_NDFPOSITION_SIZE));
    
    --Constant type cast
    --constant iWidthAdd32 : unsigned(15 downto 0) := TO_UNSIGNED(WidthAdd32,16);
@@ -103,6 +106,7 @@ architecture rtl of hder_extractor is
    signal img_offsetx_o          : std_logic_vector(15 downto 0);
    signal img_offsety_o          : std_logic_vector(15 downto 0);
    signal img_FWPosition_o       : std_logic_vector(7 downto 0);
+   signal img_NDFPosition_o       : std_logic_vector(7 downto 0);
    signal img_hdr_len_o          : unsigned(IMAGEHEADERLENGTH_SIZE-1  downto 0);	--in bytes
    signal test                   : unsigned(IMAGEHEADERLENGTH_SIZE-1  downto 0);
    signal tid                    : std_logic := '1';
@@ -114,6 +118,7 @@ architecture rtl of hder_extractor is
    signal img_offsetx_sync       : std_logic_vector(img_offsetx_o'length-1 downto 0);
    signal img_offsety_sync       : std_logic_vector(img_offsety_o'length-1 downto 0);
    signal img_FWPosition_sync    : std_logic_vector(img_FWPosition_o'length-1 downto 0);
+   signal img_NDFPosition_sync    : std_logic_vector(img_NDFPosition_o'length-1 downto 0);
    
    --signal iHdr_addr_loc32:integer ;
 begin
@@ -123,6 +128,7 @@ begin
    IMG_HEIGHT <= img_height_sync;
    HDR_INFO_VALID <= hder_info_valid_sync;
    IMG_FWPOSITION <= img_FWPosition_sync;
+   IMG_NDFPOSITION <= img_NDFPosition_sync;
    
    -- single output
    DECODED_HDR.DVAL             <= hder_info_valid_sync;
@@ -132,6 +138,7 @@ begin
    DECODED_HDR.OFFSETX <= unsigned(img_offsetx_sync);
    DECODED_HDR.OFFSETY <= unsigned(img_offsety_sync);
    DECODED_HDR.FW_POSITION <= unsigned(img_FWPosition_sync);
+   DECODED_HDR.NDF_POSITION <= unsigned(img_NDFPosition_sync);
    
    --Reset management
    r0: sync_reset port map(ARESET => ARESET, CLK => CLK_STREAM, SRESET => sreset);
@@ -145,6 +152,7 @@ begin
    s8 : double_sync_vector port map(D => img_offsety_o,   Q => img_offsety_sync,     CLK => CLK_HDROUT);
    s9 : double_sync_vector port map(D => img_exposuretime_o,   Q => img_exposuretime_sync,     CLK => CLK_HDROUT);
    s10 : double_sync_vector port map(D => img_FWPosition_o, Q => img_FWPosition_sync,    CLK => CLK_HDROUT);
+   s11 : double_sync_vector port map(D => img_NDFPosition_o, Q => img_NDFPosition_sync,    CLK => CLK_HDROUT);
    
    Hdr_addr_loc32 <= std_logic_vector(uHdr_addr_loc32); --type change
    -- Locate hdr stream information and extract it
@@ -157,6 +165,7 @@ begin
             img_hdr_len_o <= IMF_HDR_LEN_DEF;
             img_exposuretime_o <= IMG_EXPOSURE_DEF;
             img_FWPosition_o <= IMG_FWPOSITION_DEF;
+            img_NDFPosition_o <= IMG_NDFPOSITION_DEF;
          else
             
             if(IMG_DATA_MISO.TREADY = '1' and IMG_DATA_MOSI.TVALID = '1' and tid = '1') then-- we are in a valid hdr transmit
@@ -191,6 +200,8 @@ begin
   
                   when resize(FWPositionAdd32,13) =>   --FWPositionAdd32=0x20
                      img_FWPosition_o    <= IMG_DATA_MOSI.TDATA(IMG_FWPosition_SIZE - 1 downto 0); -- FTA: FWPositionShift non valide dans img_header_define.vhd
+                     img_NDFPosition_o    <= IMG_DATA_MOSI.TDATA((IMG_NDFPOSITION_SIZE + 16) - 1 downto 16);
+                     
                      
                   when others =>
                      img_width_o    <= img_width_o;

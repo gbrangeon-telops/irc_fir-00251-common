@@ -525,6 +525,7 @@ package TEL2000 is
       offsetx        : unsigned(15 downto 0);
       offsety        : unsigned(15 downto 0);
       fw_position    : unsigned(7 downto 0);
+      ndf_position   : unsigned(7 downto 0);
    end record;
    
    -- Response constant.
