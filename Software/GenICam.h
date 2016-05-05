@@ -127,12 +127,12 @@ typedef struct gcRegister gcRegister_t;
 
 /* AUTO-CODE BEGIN */
 // Auto-generated GeniCam library.
-// Generated from XML camera definition file version 11.4.0
+// Generated from XML camera definition file version 11.4.1
 // using generateGenICamCommonCLib.m Matlab script.
 
 #define GC_XMLMAJORVERSION    11
 #define GC_XMLMINORVERSION    4
-#define GC_XMLSUBMINORVERSION 0
+#define GC_XMLSUBMINORVERSION 1
 
 // Enumerations values and data types
 ////////////////////////////////////////////////////////////////////////////////
