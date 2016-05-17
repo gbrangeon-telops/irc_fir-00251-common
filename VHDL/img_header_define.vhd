@@ -22,7 +22,7 @@ use ieee.numeric_std.all;
 
 -- AUTO-CODE BEGIN
 -- Auto-generated IRCam image header definition package.
--- Generated from the IRCam header definition XLS file version 11.4
+-- Generated from the IRCam header definition XLS file version 11.5
 -- using generateIRCamHeaderVHDLLib.m Matlab script.
 
 package img_header_define is

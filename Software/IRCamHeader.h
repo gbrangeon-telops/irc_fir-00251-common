@@ -16,7 +16,7 @@
 
 /* AUTO-CODE BEGIN */
 // Auto-generated IRCam header library.
-// Generated from the IRCam header definition XLS file version 11.4
+// Generated from the IRCam header definition XLS file version 11.5
 // using generateIRCamHeaderCLib.m Matlab script.
 
 #define SignatureHdrAddr                              0x00  /**< Signature header field address */
