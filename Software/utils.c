@@ -986,3 +986,33 @@ int partition(uint32_t* list, int left, int right, int pivotIndex)
 
    return storeIndex;
 }
+
+// (Abramowitz & Stegun, Handbook of Mathematical Functions with Formulas, Graphs, and Mathematical Tables, 1964)
+// approximation coefficients from Paul M. Voutier, A New Approximation to the Normal Distribution Quantile Function, 2010
+double AS_approx(double t)
+{
+   const double c[3] = {2.653962002601684482, 1.561533700212080345, 0.061146735765196993};
+   const double d[3] = {1.904875182836498708, 0.454055536444233510, 0.009547745327068945};
+
+   t = t - ((c[2]*t + c[1])*t + c[0]) /
+         (((d[2]*t + d[1])*t + d[0])*t + 1.0);
+
+   return t;
+}
+double invnormcdf(double p)
+{
+   double xp;
+
+   if (p<=0)
+      return -infinity();
+
+   if (p>=1)
+      return infinity();
+
+   if (p < 0.5)
+      xp = -AS_approx(sqrt(-2.0*log(p)));
+   else
+      xp = AS_approx(sqrt(-2.0*log(1.0-p)));
+
+   return xp;
+}

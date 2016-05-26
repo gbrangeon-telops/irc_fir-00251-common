@@ -106,6 +106,10 @@ uint32_t select(uint32_t* list, int left, int right, int n);
 // used by select()
 int partition(uint32_t* list, int left, int right, int pivotIndex);
 
+// inverse of the CDF of the normal distribution (a.k.a. quantile function)
+// implements the Abramowitz-Stegun approximation formula 26.2.23
+double invnormcdf(double p);
+
 /*
 void ReadStruct(void* pStruct);
 void ReadRS232Struct(void* pStruct);
