@@ -106,8 +106,15 @@ uint32_t select(uint32_t* list, int left, int right, int n);
 // used by select()
 int partition(uint32_t* list, int left, int right, int pivotIndex);
 
-// inverse of the CDF of the normal distribution (a.k.a. quantile function)
-// implements the Abramowitz-Stegun approximation formula 26.2.23
+/**
+ * Inverse of the CDF of the normal distribution (a.k.a. quantile function)
+ * (Abramowitz & Stegun, Handbook of Mathematical Functions with Formulas, Graphs, and Mathematical Tables, 1964)
+ * approximation coefficients from Paul M. Voutier, A New Approximation to the Normal Distribution Quantile Function, 2010
+ *
+ * @param p the probability [0,1] for which the value x_p is to be computed
+ *
+ * @return x_p in p = CDF(x_p).
+ */
 double invnormcdf(double p);
 
 /*

@@ -987,9 +987,15 @@ int partition(uint32_t* list, int left, int right, int pivotIndex)
    return storeIndex;
 }
 
-// utility funtion for invnormcdf()
-// (Abramowitz & Stegun, Handbook of Mathematical Functions with Formulas, Graphs, and Mathematical Tables, 1964)
-// approximation coefficients from Paul M. Voutier, A New Approximation to the Normal Distribution Quantile Function, 2010
+/**
+ * utility funtion used by invnormcdf()
+ * (Abramowitz & Stegun, Handbook of Mathematical Functions with Formulas, Graphs, and Mathematical Tables, 1964)
+ * approximation coefficients from Paul M. Voutier, A New Approximation to the Normal Distribution Quantile Function, 2010
+ *
+ * @param t the value at which to approximate the function
+ *
+ * @return the approximated value.
+ */
 double AS_rationalapprox(double t)
 {
    const double c[3] = {2.653962002601684482, 1.561533700212080345, 0.061146735765196993};
