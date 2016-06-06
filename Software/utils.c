@@ -1059,3 +1059,37 @@ char *dec2bin(const int decimal, uint8_t nbBit)
 
    return str;
 }
+
+int32_t medianOf3(const int32_t a[3])
+{
+   /*
+     table de vérité pour les 6 combinaisons de 3 éléments
+        m
+     0, 1, 2
+     0, 2, 1
+     1, 0, 2
+     1, 2, 0
+     2, 0, 1
+     2, 1, 0
+    */
+
+   int32_t m;
+
+   m = a[1]; // initial assignment to save one comparison
+   if (a[0] < a[1])
+   {
+      if (a[2] < a[0])
+         m = a[0];
+      else if (a[2] < a[1])
+         m = a[2];
+   }
+   else
+   {
+      if (a[0] < a[2])
+         m = a[0];
+      else if (a[1] < a[2])
+         m = a[2];
+   }
+
+   return m;
+}

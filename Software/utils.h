@@ -107,6 +107,9 @@ uint32_t select(uint32_t* list, int left, int right, int n);
 int partition(uint32_t* list, int left, int right, int pivotIndex);
 char *dec2bin(const int decimal, uint8_t nbBit);
 
+// median of three integer values
+int32_t medianOf3(const int32_t a[3]);
+
 /**
  * Inverse of the CDF of the normal distribution (a.k.a. quantile function)
  * (Abramowitz & Stegun, Handbook of Mathematical Functions with Formulas, Graphs, and Mathematical Tables, 1964)
