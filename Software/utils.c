@@ -17,6 +17,7 @@
 #include "printf_utils.h"
 #include <math.h>
 #include <float.h>
+#include "verbose.h"
 
 #ifdef SIM
    #include <systemc.h> // For sc_time_stamp().value()
@@ -1022,4 +1023,39 @@ double invnormcdf(double p)
       xp = AS_rationalapprox(sqrt(-2.0*log(1.0-p)));
 
    return xp;
+}
+
+/**
+ * Convert a decimal number to a binary string.
+ * @warning Truncation is done by keeping the lsb (sign may be lost).
+ *
+ * @param decimal Number to convert.
+ * @param nbBit Number of char to write (max = NB_BIT_MAX).
+ *
+ * @return Pointer to result string.
+ */
+char *dec2bin(const int decimal, uint8_t nbBit)
+{
+#define NB_BIT_MAX 32
+
+   // Declare str as static to be returnable
+   static char str[NB_BIT_MAX + 1];
+   uint8_t n;
+
+   if (nbBit > NB_BIT_MAX)
+   {
+      // Return empty string
+      str[0] = '\0';
+      FPGA_PRINT("Error dec2bin: nbBit > NB_BIT_MAX");
+   }
+   else
+   {
+      // Write string with msb as 1st char
+      for (n = 0; n < nbBit; n++)
+         str[nbBit - n - 1] = (decimal & (1 << n)) ? '1' : '0';
+      // Terminate string
+      str[nbBit] = '\0';
+   }
+
+   return str;
 }

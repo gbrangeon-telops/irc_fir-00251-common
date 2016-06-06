@@ -105,6 +105,7 @@ int lcm(int a, int b); /*< lowest common multiple of a and b */
 uint32_t select(uint32_t* list, int left, int right, int n);
 // used by select()
 int partition(uint32_t* list, int left, int right, int pivotIndex);
+char *dec2bin(const int decimal, uint8_t nbBit);
 
 /**
  * Inverse of the CDF of the normal distribution (a.k.a. quantile function)
