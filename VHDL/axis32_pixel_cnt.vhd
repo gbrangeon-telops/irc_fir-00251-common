@@ -58,11 +58,11 @@ architecture axis32_pixel_cnt of axis32_pixel_cnt is
    signal cnt_invalid : unsigned(31 downto 0);
    signal tlast : std_logic := '0';
    
-   attribute MARK_DEBUG : string;
-   attribute MARK_DEBUG of cnt : signal is "TRUE";
-   attribute MARK_DEBUG of cnt_prev_img : signal is "TRUE";
-   attribute MARK_DEBUG of cnt_invalid : signal is "TRUE";
-   attribute MARK_DEBUG of tlast : signal is "TRUE";
+   -- attribute MARK_DEBUG : string;
+   -- attribute MARK_DEBUG of cnt : signal is "TRUE";
+   -- attribute MARK_DEBUG of cnt_prev_img : signal is "TRUE";
+   -- attribute MARK_DEBUG of cnt_invalid : signal is "TRUE";
+   -- attribute MARK_DEBUG of tlast : signal is "TRUE";
    
    attribute dont_touch of cnt             : signal is "true";
    attribute dont_touch of cnt_prev_img    : signal is "true";

@@ -205,6 +205,33 @@ ATTRIBUTE BLACK_BOX_PAD_PIN OF t_axi4_stream32_sfifo_d512 : COMPONENT IS "s_aclk
          );      
    end component;
    
+   component t_axi4_stream32_afifo_d2048
+      port (
+         s_aclk : IN STD_LOGIC;
+         s_aresetn : IN STD_LOGIC;
+         s_axis_tvalid : IN STD_LOGIC;
+         s_axis_tready : OUT STD_LOGIC;
+         s_axis_tdata : IN STD_LOGIC_VECTOR(31 DOWNTO 0);
+         s_axis_tstrb : IN STD_LOGIC_VECTOR(3 DOWNTO 0);
+         s_axis_tkeep : IN STD_LOGIC_VECTOR(3 DOWNTO 0);
+         s_axis_tlast : IN STD_LOGIC;
+         s_axis_tdest : IN STD_LOGIC_VECTOR(2 DOWNTO 0);
+         s_axis_tuser : IN STD_LOGIC_VECTOR(7 DOWNTO 0);
+         s_axis_tid   : in STD_LOGIC_VECTOR ( 0 to 0 );
+         m_aclk : IN STD_LOGIC;
+         m_axis_tvalid : OUT STD_LOGIC;
+         m_axis_tready : IN STD_LOGIC;
+         m_axis_tdata : OUT STD_LOGIC_VECTOR(31 DOWNTO 0);
+         m_axis_tstrb : OUT STD_LOGIC_VECTOR(3 DOWNTO 0);
+         m_axis_tkeep : OUT STD_LOGIC_VECTOR(3 DOWNTO 0);
+         m_axis_tlast : OUT STD_LOGIC;
+         m_axis_tdest : OUT STD_LOGIC_VECTOR(2 DOWNTO 0);
+         m_axis_tuser : OUT STD_LOGIC_VECTOR(7 DOWNTO 0);
+         m_axis_tid   : OUT STD_LOGIC_VECTOR ( 0 to 0 );
+         axis_overflow : OUT STD_LOGIC
+         );      
+   end component;
+   
    component t_axi4_stream32_sfifo_d256
      port (
        s_aclk : IN STD_LOGIC;
@@ -296,7 +323,7 @@ begin
    
    
    OVFL <= ovfl_i;
-   --RX_MISO.TREADY <= rx_tready; 
+   RX_MISO.TREADY <= rx_tready; 
    --rx_tvalid <= RX_MOSI.TVALID and rx_tready;
    
    -- synchrnonous fifo types...
@@ -308,7 +335,7 @@ begin
          s_aclk        => TX_CLK,
          s_aresetn     => ARESETN,
          s_axis_tvalid => RX_MOSI.TVALID,
-         s_axis_tready => RX_MISO.TREADY,
+         s_axis_tready => rx_tready,
          s_axis_tdata  => RX_MOSI.TDATA,
          s_axis_tstrb  => RX_MOSI.TSTRB,
          s_axis_tkeep  => RX_MOSI.TKEEP,
@@ -337,7 +364,7 @@ begin
          s_aclk        => TX_CLK,
          s_aresetn     => ARESETN,
          s_axis_tvalid => RX_MOSI.TVALID,
-         s_axis_tready => RX_MISO.TREADY,
+         s_axis_tready => rx_tready,
          s_axis_tdata  => RX_MOSI.TDATA,
          s_axis_tstrb  => RX_MOSI.TSTRB,
          s_axis_tkeep  => RX_MOSI.TKEEP,
@@ -366,7 +393,7 @@ begin
          s_aclk        => TX_CLK,
          s_aresetn     => ARESETN,
          s_axis_tvalid => RX_MOSI.TVALID,
-         s_axis_tready => RX_MISO.TREADY,
+         s_axis_tready => rx_tready,
          s_axis_tdata  => RX_MOSI.TDATA,
          s_axis_tstrb  => RX_MOSI.TSTRB,
          s_axis_tkeep  => RX_MOSI.TKEEP,
@@ -395,7 +422,7 @@ begin
          s_aclk        => TX_CLK,
          s_aresetn     => ARESETN,
          s_axis_tvalid => RX_MOSI.TVALID,
-         s_axis_tready => RX_MISO.TREADY,
+         s_axis_tready => rx_tready,
          s_axis_tdata  => RX_MOSI.TDATA,
          s_axis_tstrb  => RX_MOSI.TSTRB,
          s_axis_tkeep  => RX_MOSI.TKEEP,
@@ -424,7 +451,7 @@ begin
          s_aclk        => TX_CLK,
          s_aresetn     => ARESETN,
          s_axis_tvalid => RX_MOSI.TVALID,
-         s_axis_tready => RX_MISO.TREADY,
+         s_axis_tready => rx_tready,
          s_axis_tdata  => RX_MOSI.TDATA,
          s_axis_tstrb  => RX_MOSI.TSTRB,
          s_axis_tkeep  => RX_MOSI.TKEEP,
@@ -453,7 +480,7 @@ begin
          s_aclk        => TX_CLK,
          s_aresetn     => ARESETN,
          s_axis_tvalid => RX_MOSI.TVALID,
-         s_axis_tready => RX_MISO.TREADY,
+         s_axis_tready => rx_tready,
          s_axis_tdata  => RX_MOSI.TDATA,
          s_axis_tstrb  => RX_MOSI.TSTRB,
          s_axis_tkeep  => RX_MOSI.TKEEP,
@@ -483,7 +510,37 @@ begin
          s_aclk        => RX_CLK,
          s_aresetn     => ARESETN,
          s_axis_tvalid => RX_MOSI.TVALID,
-         s_axis_tready => RX_MISO.TREADY,
+         s_axis_tready => rx_tready,
+         s_axis_tdata  => RX_MOSI.TDATA,
+         s_axis_tstrb  => RX_MOSI.TSTRB,
+         s_axis_tkeep  => RX_MOSI.TKEEP,
+         s_axis_tlast  => RX_MOSI.TLAST,
+         s_axis_tdest  => RX_MOSI.TDEST,
+         s_axis_tuser  => RX_MOSI.TUSER,
+         s_axis_tid    => RX_MOSI.TID,
+         m_aclk        => TX_CLK,
+         m_axis_tvalid => TX_MOSI.TVALID,
+         m_axis_tready => TX_MISO.TREADY,
+         m_axis_tdata  => TX_MOSI.TDATA,
+         m_axis_tstrb  => TX_MOSI.TSTRB,
+         m_axis_tkeep  => TX_MOSI.TKEEP,
+         m_axis_tlast  => TX_MOSI.TLAST,
+         m_axis_tdest  => TX_MOSI.TDEST,
+         m_axis_tuser  => TX_MOSI.TUSER,
+         m_axis_tid    => TX_MOSI.TID,
+         axis_overflow => axis_overflow
+         );
+   end generate;
+
+   agen_d2048 : if (FifoSize > 512 and FifoSize <= 2048 and ASYNC) generate
+      begin                  
+      FoundGenCase <= true; 
+      t_axi4_stream32_afifo_d2048_inst : t_axi4_stream32_afifo_d2048
+      PORT MAP (
+         s_aclk        => RX_CLK,
+         s_aresetn     => ARESETN,
+         s_axis_tvalid => RX_MOSI.TVALID,
+         s_axis_tready => rx_tready,
          s_axis_tdata  => RX_MOSI.TDATA,
          s_axis_tstrb  => RX_MOSI.TSTRB,
          s_axis_tkeep  => RX_MOSI.TKEEP,
@@ -513,7 +570,7 @@ begin
          s_aclk        => RX_CLK,
          s_aresetn     => ARESETN,
          s_axis_tvalid => RX_MOSI.TVALID,
-         s_axis_tready => RX_MISO.TREADY,
+         s_axis_tready => rx_tready,
          s_axis_tdata  => RX_MOSI.TDATA,
          s_axis_tstrb  => RX_MOSI.TSTRB,
          s_axis_tkeep  => RX_MOSI.TKEEP,
@@ -540,7 +597,10 @@ begin
       if ARESETN = '0' then 
          ovfl_i <= '0';
       elsif rising_edge(RX_CLK) then
-         ovfl_i <= axis_overflow; 
+         if (rx_tready = '0' and RX_MOSI.TVALID = '1') then
+            ovfl_i <= '1';
+         end if;
+
          -- pragma translate_off
          assert (FoundGenCase or FifoSize = 0) report "Invalid LocalLink fifo generic settings!" severity FAILURE;
          if FoundGenCase then

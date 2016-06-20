@@ -94,6 +94,33 @@ architecture rtl of t_axi4_stream16_fifo is
          );      
    end component;
 
+component t_axi4_stream16_afifo_d16
+  port (
+    m_aclk : in std_logic;
+    s_aclk : in std_logic;
+    s_aresetn : in std_logic;
+    s_axis_tvalid : in std_logic;
+    s_axis_tready : out std_logic;
+    s_axis_tdata : in std_logic_vector(15 downto 0);
+    s_axis_tstrb : in std_logic_vector(1 downto 0);
+    s_axis_tkeep : in std_logic_vector(1 downto 0);
+    s_axis_tlast : in std_logic;
+    s_axis_tid : in std_logic_vector(0 downto 0);
+    s_axis_tdest : in std_logic_vector(2 downto 0);
+    s_axis_tuser : in std_logic_vector(3 downto 0);
+    m_axis_tvalid : out std_logic;
+    m_axis_tready : in std_logic;
+    m_axis_tdata : out std_logic_vector(15 downto 0);
+    m_axis_tstrb : out std_logic_vector(1 downto 0);
+    m_axis_tkeep : out std_logic_vector(1 downto 0);
+    m_axis_tlast : out std_logic;
+    m_axis_tid : out std_logic_vector(0 downto 0);
+    m_axis_tdest : out std_logic_vector(2 downto 0);
+    m_axis_tuser : out std_logic_vector(3 downto 0);
+    axis_overflow : out std_logic
+  );
+end component;
+
    signal FoundGenCase     : boolean := FALSE;
    signal axis_overflow    : std_logic;
    signal ovfl_i           : std_logic;
@@ -105,7 +132,7 @@ begin
    
    
    OVFL <= ovfl_i;
-   --RX_MISO.TREADY <= rx_tready; 
+   RX_MISO.TREADY <= rx_tready; 
    --rx_tvalid <= RX_MOSI.TVALID and rx_tready;
    
    -- synchrnonous fifo types...
@@ -117,7 +144,7 @@ begin
          s_aclk        => TX_CLK,
          s_aresetn     => ARESETN,
          s_axis_tvalid => RX_MOSI.TVALID,
-         s_axis_tready => RX_MISO.TREADY,
+         s_axis_tready => rx_tready,
          s_axis_tdata  => RX_MOSI.TDATA,
          s_axis_tstrb  => RX_MOSI.TSTRB,
          s_axis_tkeep  => RX_MOSI.TKEEP,
@@ -138,6 +165,37 @@ begin
          );
    end generate;
       
+   -- synchrnonous fifo types...
+   agen_d16 : if (FifoSize > 0 and FifoSize <= 16 and ASYNC) generate
+      begin                  
+      FoundGenCase <= true; 
+      t_axi4_stream16_afifo_d16_inst : t_axi4_stream16_afifo_d16
+      PORT MAP (
+         s_aclk        => RX_CLK,
+         s_aresetn     => ARESETN,
+         s_axis_tvalid => RX_MOSI.TVALID,
+         s_axis_tready => rx_tready,
+         s_axis_tdata  => RX_MOSI.TDATA,
+         s_axis_tstrb  => RX_MOSI.TSTRB,
+         s_axis_tkeep  => RX_MOSI.TKEEP,
+         s_axis_tlast  => RX_MOSI.TLAST,
+         s_axis_tdest  => RX_MOSI.TDEST,
+         s_axis_tuser  => RX_MOSI.TUSER,
+         s_axis_tid    => RX_MOSI.TID,
+         m_aclk        => TX_CLK,
+         m_axis_tvalid => TX_MOSI.TVALID,
+         m_axis_tready => TX_MISO.TREADY,
+         m_axis_tdata  => TX_MOSI.TDATA,
+         m_axis_tstrb  => TX_MOSI.TSTRB,
+         m_axis_tkeep  => TX_MOSI.TKEEP,
+         m_axis_tlast  => TX_MOSI.TLAST,
+         m_axis_tdest  => TX_MOSI.TDEST,
+         m_axis_tuser  => TX_MOSI.TUSER,
+         m_axis_tid    => TX_MOSI.TID,
+         axis_overflow => axis_overflow
+         );
+   end generate;
+   
    sgen_d512 : if (FifoSize > 16 and FifoSize <= 512 and not ASYNC) generate
       begin                  
       FoundGenCase <= true; 
@@ -146,7 +204,7 @@ begin
          s_aclk        => TX_CLK,
          s_aresetn     => ARESETN,
          s_axis_tvalid => RX_MOSI.TVALID,
-         s_axis_tready => RX_MISO.TREADY,
+         s_axis_tready => rx_tready,
          s_axis_tdata  => RX_MOSI.TDATA,
          s_axis_tstrb  => RX_MOSI.TSTRB,
          s_axis_tkeep  => RX_MOSI.TKEEP,
@@ -172,7 +230,10 @@ begin
       if ARESETN = '0' then 
          ovfl_i <= '0';
       elsif rising_edge(RX_CLK) then
-         ovfl_i <= axis_overflow; 
+         if (rx_tready = '0' and RX_MOSI.TVALID = '1') then
+            ovfl_i <= '1';
+         end if;
+         
          -- pragma translate_off
          assert (FoundGenCase or FifoSize = 0) report "Invalid LocalLink fifo generic settings!" severity FAILURE;
          if FoundGenCase then

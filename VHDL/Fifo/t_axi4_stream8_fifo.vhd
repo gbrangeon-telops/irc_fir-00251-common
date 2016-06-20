@@ -103,7 +103,10 @@ begin
       if ARESETN = '0' then 
          ovfl_i <= '0';
       elsif rising_edge(RX_CLK) then
-         ovfl_i <= axis_overflow; 
+         if (rx_tready = '0' and RX_MOSI.TVALID = '1') then
+            ovfl_i <= '1';
+         end if;
+
          -- pragma translate_off
          assert (FoundGenCase or FifoSize = 0) report "Invalid LocalLink fifo generic settings!" severity FAILURE;
          if FoundGenCase then
