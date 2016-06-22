@@ -127,11 +127,11 @@ typedef struct gcRegister gcRegister_t;
 
 /* AUTO-CODE BEGIN */
 // Auto-generated GeniCam library.
-// Generated from XML camera definition file version 11.5.0
+// Generated from XML camera definition file version 12.0.0
 // using generateGenICamCommonCLib.m Matlab script.
 
-#define GC_XMLMAJORVERSION    11
-#define GC_XMLMINORVERSION    5
+#define GC_XMLMAJORVERSION    12
+#define GC_XMLMINORVERSION    0
 #define GC_XMLSUBMINORVERSION 0
 
 // Enumerations values and data types
@@ -279,17 +279,17 @@ enum CalibrationCollectionActiveTypeEnum {
 typedef enum CalibrationCollectionActiveTypeEnum CalibrationCollectionActiveType_t;
 
 /**
- * CalibrationActualizationMode enumeration values
+ * ImageCorrectionMode enumeration values
  */
-enum CalibrationActualizationModeEnum {
-   CAM_BlackBody = 0,
-   CAM_ICU = 1
+enum ImageCorrectionModeEnum {
+   ICM_BlackBody = 0,
+   ICM_ICU = 1
 };
 
 /**
- * CalibrationActualizationMode enumeration values data type
+ * ImageCorrectionMode enumeration values data type
  */
-typedef enum CalibrationActualizationModeEnum CalibrationActualizationMode_t;
+typedef enum ImageCorrectionModeEnum ImageCorrectionMode_t;
 
 /**
  * NDFilterPositionSetpoint enumeration values
@@ -840,11 +840,11 @@ enum EventErrorCodeDescEnum {
    EECD_FPATemperatureDifferent = 11,
    EECD_NUCNotAvailable = 12,
    EECD_InvalidCoolerTemperature = 13,
-   EECD_WaitingForCalibrationActualization = 14,
+   EECD_WaitingForImageCorrection = 14,
    EECD_CoolerNotCooling = 15,
-   EECD_ActualizationFileIOError = 16,
-   EECD_ActualizationInvalidReferenceBlock = 17,
-   EECD_ActualizationAcquisitionTimeout = 18,
+   EECD_ImageCorrectionFileIOError = 16,
+   EECD_ImageCorrectionInvalidReferenceBlock = 17,
+   EECD_ImageCorrectionAcquisitionTimeout = 18,
    EECD_FilterWheelTimeout = 19,
    EECD_FilterWheelHomingError = 20,
    EECD_NDFilterTimeout = 21,
@@ -872,7 +872,7 @@ typedef enum EventErrorCodeDescEnum EventErrorCodeDesc_t;
 enum EventTelopsCodeDescEnum {
    ETCD_NoEvent = 0,
    ETCD_DeviceIsBusyEvent = 1,
-   ETCD_CalibrationActualizationEvent = 2
+   ETCD_ImageCorrectionEvent = 2
 };
 
 /**
@@ -1160,8 +1160,8 @@ typedef enum DeviceLedIndicatorStateEnum DeviceLedIndicatorState_t;
 // #define CalibrationCollectionPOSIXTimeAddr            0x0000E878  /**< CalibrationCollectionPOSIXTime register address */
 // #define CalibrationCollectionLoadAddr                 0x0000E87C  /**< CalibrationCollectionLoad register address */
 // #define CalibrationCollectionActivePOSIXTimeAddr      0x0000E880  /**< CalibrationCollectionActivePOSIXTime register address */
-// #define CalibrationActualizationModeAddr              0x0000E884  /**< CalibrationActualizationMode register address */
-// #define CalibrationActualizeAddr                      0x0000E888  /**< CalibrationActualize register address */
+// #define ImageCorrectionModeAddr                       0x0000E884  /**< ImageCorrectionMode register address */
+// #define ImageCorrectionAddr                           0x0000E888  /**< ImageCorrection register address */
 // #define NDFilterPositionSetpointAddr                  0x0000E88C  /**< NDFilterPositionSetpoint register address */
 // #define NDFilterPositionAddr                          0x0000E890  /**< NDFilterPosition register address */
 // #define NDFilterNumberAddr                            0x0000E894  /**< NDFilterNumber register address */
@@ -1343,6 +1343,8 @@ typedef enum DeviceLedIndicatorStateEnum DeviceLedIndicatorState_t;
 // #define DeviceKeyValidationHighAddr                   0x0000EB58  /**< DeviceKeyValidationHigh register address */
 // #define NDFilterArmedPositionSetpointAddr             0x0000EB5C  /**< NDFilterArmedPositionSetpoint register address */
 // #define BadPixelReplacementAddr                       0x0000EB60  /**< BadPixelReplacement register address */
+// #define DeviceDetectorElectricalTapsRefAddr           0x0000EB64  /**< DeviceDetectorElectricalTapsRef register address */
+// #define DeviceDetectorElectricalRefOffsetAddr         0x0000EB68  /**< DeviceDetectorElectricalRefOffset register address */
 
 // Registers definition array indices
 ////////////////////////////////////////////////////////////////////////////////
@@ -1399,8 +1401,8 @@ typedef enum DeviceLedIndicatorStateEnum DeviceLedIndicatorState_t;
 #define CalibrationCollectionPOSIXTimeIdx             49
 #define CalibrationCollectionLoadIdx                  50
 #define CalibrationCollectionActivePOSIXTimeIdx       51
-#define CalibrationActualizationModeIdx               52
-#define CalibrationActualizeIdx                       53
+#define ImageCorrectionModeIdx                        52
+#define ImageCorrectionIdx                            53
 #define NDFilterPositionSetpointIdx                   54
 #define NDFilterPositionIdx                           55
 #define NDFilterNumberIdx                             56
@@ -1582,11 +1584,13 @@ typedef enum DeviceLedIndicatorStateEnum DeviceLedIndicatorState_t;
 #define DeviceKeyValidationHighIdx                    232
 #define NDFilterArmedPositionSetpointIdx              233
 #define BadPixelReplacementIdx                        234
+#define DeviceDetectorElectricalTapsRefIdx            235
+#define DeviceDetectorElectricalRefOffsetIdx          236
 
 // Registers general macros
 ////////////////////////////////////////////////////////////////////////////////
 
-#define GC_REG_COUNT 235 /**< Number of GenICam registers */
+#define GC_REG_COUNT 237 /**< Number of GenICam registers */
 #define GC_REG_MAX_LENGTH 512 /**< GenICam registers maximum length (in bytes) */
 #define GC_REG_MAX_READ_LENGTH 512 /**< GenICam readable registers maximum length (in bytes) */
 #define GC_REG_MAX_WRITE_LENGTH 4 /**< GenICam writable registers maximum length (in bytes) */

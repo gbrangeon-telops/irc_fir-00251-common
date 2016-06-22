@@ -16,7 +16,7 @@
 
 /* AUTO-CODE BEGIN */
 // Auto-generated IRCam header library.
-// Generated from the IRCam header definition XLS file version 11.5
+// Generated from the IRCam header definition XLS file version 12.0
 // using generateIRCamHeaderCLib.m Matlab script.
 
 #define SignatureHdrAddr                              0x00  /**< Signature header field address */
@@ -45,6 +45,7 @@
 #define TriggerSourceHdrAddr                          0x35  /**< TriggerSource header field address */
 #define IntegrationModeHdrAddr                        0x36  /**< IntegrationMode header field address */
 #define AveragingNumberHdrAddr                        0x38  /**< AveragingNumber header field address */
+#define ADCReadoutHdrAddr                             0x39  /**< ADCReadout header field address */
 #define ExposureAutoHdrAddr                           0x3B  /**< ExposureAuto header field address */
 #define AECResponseTimeHdrAddr                        0x3C  /**< AECResponseTime header field address */
 #define AECImageFractionHdrAddr                       0x40  /**< AECImageFraction header field address */
@@ -69,6 +70,8 @@
 #define PostProcessedHdrAddr                          0x85  /**< PostProcessed header field address */
 #define SensorTemperatureRawHdrAddr                   0x86  /**< SensorTemperatureRaw header field address */
 #define AlarmVectorHdrAddr                            0x88  /**< AlarmVector header field address */
+#define LowCutHdrAddr                                 0x94  /**< LowCut header field address */
+#define HighCutHdrAddr                                0x98  /**< HighCut header field address */
 #define ExternalBlackBodyTemperatureHdrAddr           0x9C  /**< ExternalBlackBodyTemperature header field address */
 #define TemperatureSensorHdrAddr                      0xA0  /**< TemperatureSensor header field address */
 #define TemperatureInternalLensHdrAddr                0xA4  /**< TemperatureInternalLens header field address */
@@ -92,7 +95,7 @@
 #define DeviceFirmwareMinorVersionHdrAddr             0xF1  /**< DeviceFirmwareMinorVersion header field address */
 #define DeviceFirmwareSubMinorVersionHdrAddr          0xF2  /**< DeviceFirmwareSubMinorVersion header field address */
 #define DeviceFirmwareBuildVersionHdrAddr             0xF3  /**< DeviceFirmwareBuildVersion header field address */
-#define ActualizationPOSIXTimeHdrAddr                 0xF4  /**< ActualizationPOSIXTime header field address */
+#define ImageCorrectionPOSIXTimeHdrAddr               0xF4  /**< ImageCorrectionPOSIXTime header field address */
 #define DeviceSerialNumberHdrAddr                     0xF8  /**< DeviceSerialNumber header field address */
 
 /* AUTO-CODE END */

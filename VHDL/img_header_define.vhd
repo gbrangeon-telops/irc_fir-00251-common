@@ -22,7 +22,7 @@ use ieee.numeric_std.all;
 
 -- AUTO-CODE BEGIN
 -- Auto-generated IRCam image header definition package.
--- Generated from the IRCam header definition XLS file version 11.5
+-- Generated from the IRCam header definition XLS file version 12.0
 -- using generateIRCamHeaderVHDLLib.m Matlab script.
 
 package img_header_define is
@@ -154,6 +154,11 @@ package img_header_define is
    constant AveragingNumberBWE                           : std_logic_vector(3 downto 0) := "1000";                               --! AveragingNumber field's word mask
    constant AveragingNumberShift                         : natural := 24;                                                        --! AveragingNumber field's shift value
 
+   constant ADCReadoutAdd8                               : std_logic_vector(7 downto 0) := x"39";                                --! ADCReadout field's 8-bit address
+   constant ADCReadoutAdd32                              : std_logic_vector(5 downto 0) := std_logic_vector(to_unsigned(14,6));  --! ADCReadout field's 32-bit address
+   constant ADCReadoutBWE                                : std_logic_vector(3 downto 0) := "0110";                               --! ADCReadout field's word mask
+   constant ADCReadoutShift                              : natural := 8;                                                         --! ADCReadout field's shift value
+
    constant ExposureAutoAdd8                             : std_logic_vector(7 downto 0) := x"3B";                                --! ExposureAuto field's 8-bit address
    constant ExposureAutoAdd32                            : std_logic_vector(5 downto 0) := std_logic_vector(to_unsigned(14,6));  --! ExposureAuto field's 32-bit address
    constant ExposureAutoBWE                              : std_logic_vector(3 downto 0) := "0001";                               --! ExposureAuto field's word mask
@@ -274,6 +279,16 @@ package img_header_define is
    constant AlarmVectorBWE                               : std_logic_vector(3 downto 0) := "1111";                               --! AlarmVector field's word mask
    constant AlarmVectorShift                             : natural := 0;                                                         --! AlarmVector field's shift value
 
+   constant LowCutAdd8                                   : std_logic_vector(7 downto 0) := x"94";                                --! LowCut field's 8-bit address
+   constant LowCutAdd32                                  : std_logic_vector(5 downto 0) := std_logic_vector(to_unsigned(37,6));  --! LowCut field's 32-bit address
+   constant LowCutBWE                                    : std_logic_vector(3 downto 0) := "1111";                               --! LowCut field's word mask
+   constant LowCutShift                                  : natural := 0;                                                         --! LowCut field's shift value
+
+   constant HighCutAdd8                                  : std_logic_vector(7 downto 0) := x"98";                                --! HighCut field's 8-bit address
+   constant HighCutAdd32                                 : std_logic_vector(5 downto 0) := std_logic_vector(to_unsigned(38,6));  --! HighCut field's 32-bit address
+   constant HighCutBWE                                   : std_logic_vector(3 downto 0) := "1111";                               --! HighCut field's word mask
+   constant HighCutShift                                 : natural := 0;                                                         --! HighCut field's shift value
+
    constant ExternalBlackBodyTemperatureAdd8             : std_logic_vector(7 downto 0) := x"9C";                                --! ExternalBlackBodyTemperature field's 8-bit address
    constant ExternalBlackBodyTemperatureAdd32            : std_logic_vector(5 downto 0) := std_logic_vector(to_unsigned(39,6));  --! ExternalBlackBodyTemperature field's 32-bit address
    constant ExternalBlackBodyTemperatureBWE              : std_logic_vector(3 downto 0) := "1111";                               --! ExternalBlackBodyTemperature field's word mask
@@ -389,10 +404,10 @@ package img_header_define is
    constant DeviceFirmwareBuildVersionBWE                : std_logic_vector(3 downto 0) := "0001";                               --! DeviceFirmwareBuildVersion field's word mask
    constant DeviceFirmwareBuildVersionShift              : natural := 0;                                                         --! DeviceFirmwareBuildVersion field's shift value
 
-   constant ActualizationPOSIXTimeAdd8                   : std_logic_vector(7 downto 0) := x"F4";                                --! ActualizationPOSIXTime field's 8-bit address
-   constant ActualizationPOSIXTimeAdd32                  : std_logic_vector(5 downto 0) := std_logic_vector(to_unsigned(61,6));  --! ActualizationPOSIXTime field's 32-bit address
-   constant ActualizationPOSIXTimeBWE                    : std_logic_vector(3 downto 0) := "1111";                               --! ActualizationPOSIXTime field's word mask
-   constant ActualizationPOSIXTimeShift                  : natural := 0;                                                         --! ActualizationPOSIXTime field's shift value
+   constant ImageCorrectionPOSIXTimeAdd8                 : std_logic_vector(7 downto 0) := x"F4";                                --! ImageCorrectionPOSIXTime field's 8-bit address
+   constant ImageCorrectionPOSIXTimeAdd32                : std_logic_vector(5 downto 0) := std_logic_vector(to_unsigned(61,6));  --! ImageCorrectionPOSIXTime field's 32-bit address
+   constant ImageCorrectionPOSIXTimeBWE                  : std_logic_vector(3 downto 0) := "1111";                               --! ImageCorrectionPOSIXTime field's word mask
+   constant ImageCorrectionPOSIXTimeShift                : natural := 0;                                                         --! ImageCorrectionPOSIXTime field's shift value
 
    constant DeviceSerialNumberAdd8                       : std_logic_vector(7 downto 0) := x"F8";                                --! DeviceSerialNumber field's 8-bit address
    constant DeviceSerialNumberAdd32                      : std_logic_vector(5 downto 0) := std_logic_vector(to_unsigned(62,6));  --! DeviceSerialNumber field's 32-bit address

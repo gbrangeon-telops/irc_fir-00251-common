@@ -31,6 +31,10 @@
 #define XSTR(s) STR(s)
 #define STR(s) #s
 
+// Concatenation macros
+#define JOIN(x, y) JOIN_AGAIN(x, y)
+#define JOIN_AGAIN(x, y) x ## y
+
 #define BitMaskSet(arg, mask) ((arg) |= (mask))             /**< Set masked bits in arg */
 #define BitMaskClr(arg, mask) ((arg) &= ~(mask))            /**< Clear masked bits in arg */
 #define BitMaskTst(arg, mask) (((arg) & (mask)) == (mask))  /**< Test if masked bits in arg are all set */
