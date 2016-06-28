@@ -14,12 +14,15 @@ acom -incr -nowarn DAGGEN_0523 \
  "$COMMON_HDL\Utilities\double_sync.vhd" \
  "$COMMON_HDL\Utilities\double_sync_vector.vhd" \
  "$COMMON_HDL\Utilities\sync_resetn.vhd" \
+ "$COMMON_HDL\Utilities\dcm_reset.vhd" \
   "$COMMON_HDL\gh_vhdl_lib\custom_MSI\gh_stretch.vhd"
 
 #common
 
-acom -nowarn -incr DAGGEN_0523 "$D:\Telops\FIR-00251-Proc\IP\t_axi4_stream32_afifo_d512_funcsim.vhdl" \
-	"$COMMON\Fifo\t_axi4_stream32_fifo.vhd" 
+acom -incr -nowarn DAGGEN_0523 \
+	"D:\Telops\FIR-00251-Proc\IP\t_axi4_stream32_afifo_d512\t_axi4_stream32_afifo_d512_funcsim.vhdl" \
+	"$COMMON\Fifo\t_axi4_stream32_fifo.vhd" \
+	"D:\Telops\FIR-00251-Proc\IP\usart_mmcm\usart_mmcm_funcsim.vhdl"
 
 #source USART
 acom  -incr 	"$USART\usart_rx.vhd" \
