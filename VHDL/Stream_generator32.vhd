@@ -45,6 +45,16 @@ end Stream_generator32;
 
 architecture Stream_generator32 of Stream_generator32 is
 
+   component SYNC_RESETN is
+      port(
+         CLK     : in std_logic;
+         ARESETN : in std_logic;
+         SRESETN : out std_logic
+         );
+   end component;
+   
+   signal sresetn : std_logic;
+
 signal data_to_send : std_logic_vector(31 downto 0);
 signal cnt_end : std_logic;
 signal cnt : unsigned(31 downto 0);
@@ -52,11 +62,13 @@ signal cnt : unsigned(31 downto 0);
 
 begin
 
+sync_resetn_inst : sync_resetn port map(ARESETN => aresetn, SRESETN => sresetn, CLK => CLK);
+
    -- enter your statements here --
 process(CLK)
 begin
    if rising_edge(CLK) then
-      if ARESETN = '0' then
+      if sresetn = '0' then
          AXI4S_MOSI.tvalid <= '0';
       else
          if AXI4S_MISO.tready = '1' then
@@ -80,7 +92,7 @@ end process;
 process(CLK)
 begin
    if rising_edge(CLK) then
-      if ARESETN = '0' then
+      if sresetn = '0' then
          cnt_end <= '0';
          data_to_send <= (others => '0');
          cnt <= (others => '0');

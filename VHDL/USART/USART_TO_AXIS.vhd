@@ -25,6 +25,16 @@ end USART_TO_AXIS;
 
 architecture RTL of USART_TO_AXIS is
 
+   component SYNC_RESETN is
+      port(
+         CLK     : in std_logic;
+         ARESETN : in std_logic;
+         SRESETN : out std_logic
+         );
+   end component;
+   
+   signal sresetn : std_logic;
+
 type sm_Rx_State is (STANDBY, FIRST_BYTE, SECOND_BYTE, THIRD_BYTE, LAST_BYTE);
 
 SIGNAL rs_state : sm_Rx_State := STANDBY;
@@ -43,6 +53,8 @@ signal active_transmision : std_logic;
     
 
 begin
+
+   sync_resetn_inst : sync_resetn port map(ARESETN => ARESETN, SRESETN => sresetn, CLK => RX_CLK);
   
   AXIS_MOSI.TDATA <= tdata;
   AXIS_MOSI.TSTRB <= (others => '1');
@@ -55,7 +67,7 @@ begin
   AXIS_PACKAGE : process (RX_CLK)
   begin
     if rising_edge(RX_CLK) then
-        if(ARESETN = '0') then
+        if(sresetn = '0') then
             tdata <= (others => '0');
             AXIS_MOSI.TVALID <= '0';
             AXIS_MOSI.TLAST <= '0';
@@ -155,7 +167,7 @@ begin
   timeout_proc : process (RX_CLK)
   begin
     if rising_edge(RX_CLK) then
-        if(ARESETN = '0') then
+        if(sresetn = '0') then
             timeout_o <= '0';
             time_delay_s <= (others => '0');
             active_transmision <= '0';

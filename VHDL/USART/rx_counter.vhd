@@ -33,10 +33,19 @@ port(
     );
 end component;
 
+component SYNC_RESETN is
+   port(
+      CLK     : in std_logic;
+      ARESETN : in std_logic;
+      SRESETN : out std_logic
+      );
+end component;
+
+signal sresetn : std_logic;
+
 signal rx_valid_d1  : std_logic;
 signal rx_valid_d2  : std_logic;
 signal rx_fifo_bytes_count : unsigned(15 downto 0);
-signal reset :    std_logic;
 
 --    attribute keep : string; 
 --   attribute keep of rs_state : signal is "TRUE"; 
@@ -44,15 +53,15 @@ signal reset :    std_logic;
     
 
 begin
-    reset <= not ARESETN or CLEAR;
-    U1A : double_sync port map(D => RX_VALID,Q =>  rx_valid_d1, RESET => reset, CLK => MB_CLK);
+    sync_resetn_inst : sync_resetn port map(ARESETN => ARESETN, SRESETN => sresetn, CLK => MB_CLK);
+    U1A : double_sync port map(D => RX_VALID,Q =>  rx_valid_d1, RESET => '0', CLK => MB_CLK);
   
   RX_COUNT <= rx_fifo_bytes_count;
   
   FIFO_COUNT : process (MB_CLK)
   begin
     if rising_edge(MB_CLK) then
-        if(ARESETN = '0' or CLEAR = '1') then
+        if(sresetn = '0' or CLEAR = '1') then
             rx_fifo_bytes_count <= to_unsigned(0,16);
             rx_valid_d2 <= '0';
         else

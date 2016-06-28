@@ -27,18 +27,30 @@ end fp32_axis_mult_2exp_fp32;
 
 architecture RTL of fp32_axis_mult_2exp_fp32 is
    
+   component SYNC_RESETN is
+      port(
+         CLK     : in std_logic;
+         ARESETN : in std_logic;
+         SRESETN : out std_logic
+         );
+   end component;
+   
+   signal sresetn : std_logic;
+   
    signal TX_EXP_MOSI    : t_axi4_stream_mosi32;
 
 	signal exponent_value	:std_logic_vector(7 downto 0);
    
 begin
    
+   sync_resetn_inst : sync_resetn port map(ARESETN => ARESETN, SRESETN => sresetn, CLK => CLK);
+   
    RX_MISO.TREADY <= TX_MISO.TREADY;
    
    EXPONENT_PROCESS : process (CLK) is
    begin
       if CLK'EVENT and CLK = '1' then  -- rising clock edge
-         if ARESETN = '0' then
+         if sresetn = '0' then
              TX_EXP_MOSI.TVALID <= '0';
              TX_EXP_MOSI.TSTRB <= "0000";
              TX_EXP_MOSI.TKEEP <= "0000";
@@ -62,7 +74,7 @@ begin
    OUTPUT_PROCESS : process (CLK) is
    begin
       if CLK'EVENT and CLK = '1' then  -- rising clock edge
-         if ARESETN = '0' then
+         if sresetn = '0' then
              TX_MOSI.TVALID <= '0';
              TX_MOSI.TSTRB <= "0000";
              TX_MOSI.TKEEP <= "0000";
@@ -80,7 +92,7 @@ begin
    WRITEEXPONENT_PROCESS : process (CLK) is
    begin
       if CLK'EVENT and CLK = '1' then  -- rising clock edge
-         if ARESETN = '0' then
+         if sresetn = '0' then
             exponent_value <= X"00";
             IN_BUSY <= '0';
          elsif IN_DVAL = '1' then

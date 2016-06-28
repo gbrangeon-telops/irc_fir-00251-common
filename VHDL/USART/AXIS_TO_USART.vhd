@@ -26,6 +26,16 @@ end AXIS_TO_USART;
 
 architecture RTL of AXIS_TO_USART is
 
+   component SYNC_RESETN is
+      port(
+         CLK     : in std_logic;
+         ARESETN : in std_logic;
+         SRESETN : out std_logic
+         );
+   end component;
+   
+   signal sresetn : std_logic;
+
 type sm_Tx_State is (STANDBY, FIRST_BYTE, SECOND_BYTE, THIRD_BYTE, LAST_BYTE, PAUSE);
 
 
@@ -49,6 +59,8 @@ signal bytes_to_send : unsigned(15 downto 0);
 
 begin
 
+sync_resetn_inst : sync_resetn port map(ARESETN => ARESETN, SRESETN => sresetn, CLK => TX_CLK);
+
 AXIS_MISO.TREADY <= tx_ready;
 
 --TODO SET ERROR
@@ -57,7 +69,7 @@ ERROR <= '0';
 USART_TX_INTF : process (TX_CLK)
 begin
     if rising_edge(TX_CLK) then
-        if(ARESETN = '0') then
+        if(sresetn = '0') then
             tx_state <= STANDBY;
             next_tx_state <= STANDBY;
             tx_data <= (others => '0');
@@ -163,7 +175,7 @@ end process USART_TX_INTF;
 USART_RDY: process (TX_CLK)
 begin
     if rising_edge(TX_CLK) then
-        if(ARESETN = '0') then
+        if(sresetn = '0') then
             tx_ready <= '0';
         else
             if (AXIS_MOSI.TVALID = '1' and tx_ready = '1' and tx_state = STANDBY) then

@@ -32,7 +32,18 @@ end axil32_to_native;
 
 
 architecture rtl of axil32_to_native is
-	-- Width of S_AXI data bus
+	
+   component SYNC_RESET is
+      port(
+         CLK    : in std_logic;
+         ARESET : in std_logic;
+         SRESET : out std_logic
+         );
+   end component;
+
+   signal sreset : std_logic;
+   
+   -- Width of S_AXI data bus
 	constant C_S_AXI_DATA_WIDTH	: integer	:= 32;
 	-- Width of S_AXI address bus
 	constant C_S_AXI_ADDR_WIDTH	: integer	:= 32;
@@ -68,7 +79,10 @@ architecture rtl of axil32_to_native is
 	signal byte_index	: integer;
 
 begin
-	-- I/O Connections assignments
+	
+   sync_reset_inst : sync_reset port map(ARESET => ARESET, SRESET => sreset, CLK => CLK);
+   
+   -- I/O Connections assignments
 
 	AXIL_MISO.AWREADY	<= axi_awready;
 	AXIL_MISO.WREADY	<= axi_wready;
@@ -87,7 +101,7 @@ begin
 	process (CLK)
 	begin
 	  if rising_edge(CLK) then 
-	    if ARESET = '1' then
+	    if sreset = '1' then
 	      axi_awready <= '0';
 	    else
 	      if ((axi_awready = '0' and WR_BUSY = '0') and AXIL_MOSI.AWVALID = '1' and AXIL_MOSI.WVALID = '1') then
@@ -111,7 +125,7 @@ begin
 	process (CLK)
 	begin
 	  if rising_edge(CLK) then 
-	    if ARESET = '1' then
+	    if sreset = '1' then
 	      axi_awaddr <= (others => '0');
 	    else
 	      if (axi_awready = '0' and AXIL_MOSI.AWVALID = '1' and AXIL_MOSI.WVALID = '1') then
@@ -130,7 +144,7 @@ begin
 	process (CLK)
 	begin
 	  if rising_edge(CLK) then 
-	    if ARESET = '1' then
+	    if sreset = '1' then
 	      axi_wready <= '0';
 	    else
 	      if ((axi_wready = '0' and WR_BUSY = '0') and AXIL_MOSI.WVALID = '1' and AXIL_MOSI.AWVALID = '1') then
@@ -161,7 +175,7 @@ begin
 	variable loc_addr :std_logic_vector(OPT_MEM_ADDR_BITS downto 0); 
 	begin
 	  if rising_edge(CLK) then 
-	    if ARESET = '1' then
+	    if sreset = '1' then
 	      slv_reg0 <= (others => '0');
 	    else
 	      loc_addr := axi_awaddr(ADDR_LSB + OPT_MEM_ADDR_BITS downto ADDR_LSB);
@@ -190,7 +204,7 @@ begin
 	process (CLK)
 	begin
 	  if rising_edge(CLK) then 
-	    if ARESET = '1' then
+	    if sreset = '1' then
 	      axi_bvalid  <= '0';
 	      axi_bresp   <= "00"; --need to work more on the responses
 	    else
@@ -214,7 +228,7 @@ begin
 	process (CLK)
 	begin
 	  if rising_edge(CLK) then 
-	    if ARESET = '1' then
+	    if sreset = '1' then
 	      axi_arready <= '0';
 	      axi_araddr  <= (others => '1');
 	    else
@@ -247,7 +261,7 @@ begin
 	process (CLK)
 	begin
 	  if rising_edge(CLK) then
-	    if ARESET = '1' then
+	    if sreset = '1' then
 	      axi_rvalid <= '0';
 	      axi_rresp  <= "00";
 	    else
@@ -281,7 +295,7 @@ begin
 	process( CLK ) is
 	begin
 	  if (rising_edge (CLK)) then
-	    if ( ARESET = '1' ) then
+	    if ( sreset = '1' ) then
 	      axi_rdata  <= (others => '0');
 	    else
 	      if (slv_reg_rden = '1') then

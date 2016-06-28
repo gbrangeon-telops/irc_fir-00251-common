@@ -29,6 +29,16 @@ end USART_RX;
 
 architecture rtl of USART_RX is
 
+   component SYNC_RESETN is
+      port(
+         CLK     : in std_logic;
+         ARESETN : in std_logic;
+         SRESETN : out std_logic
+         );
+   end component;
+   
+   signal sresetn : std_logic;
+  
   type t_SM_Main is (s_Idle, s_RX_Start_Bit, s_RX_Data_Bits,
                      s_RX_Stop_Bit, s_Cleanup);
   signal r_SM_Main : t_SM_Main := s_Idle;
@@ -54,13 +64,15 @@ architecture rtl of USART_RX is
   
 begin
 
+   sync_resetn_inst : sync_resetn port map(ARESETN => ARESETN, SRESETN => sresetn, CLK => USART_CLK);
+  
   -- Purpose: Double-register the incoming data.
   -- This allows it to be used in the UART RX Clock Domain.
   -- (It removes problems caused by metastabiliy)
   p_SAMPLE : process (USART_CLK)
   begin
     if rising_edge(USART_CLK) then
-        if(ARESETN = '0') then
+        if(sresetn = '0') then
             r_RX_Data_R <= '1';
             r_RX_Data   <= '1';
         else
@@ -76,7 +88,7 @@ begin
   p_USART_RX : process (USART_CLK)
   begin
     if rising_edge(USART_CLK) then
-        if (ARESETN = '0') then
+        if (sresetn = '0') then
             r_SM_Main <= s_Idle;   
         else 
           case r_SM_Main is
