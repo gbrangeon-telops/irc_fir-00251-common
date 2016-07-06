@@ -31,5 +31,6 @@ acom  -incr 	"$USART\usart_rx.vhd" \
 	"$USART\USART_TO_AXIS.vhd" \
 	"$USART\AXIS_TO_USART.vhd" \
 	"$USART\rx_counter.vhd" \
-	"$USART\USART.bde" \
+	"$USART\usart_mmcm_rst.vhd" \
+	"$USART\USART.bde"
 
