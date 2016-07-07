@@ -82,7 +82,7 @@ begin
       if rising_edge(CLK_100M) then 
          
          -- pipe pour l'usart clock
-         usart_clk_raw_pipe(USART_CLK_FACTOR downto 0) <=  usart_clk_raw_pipe(USART_CLK_FACTOR_M1 downto 1)& USART_CLK_RAW;
+         usart_clk_raw_pipe <= usart_clk_raw_pipe(USART_CLK_FACTOR_M1 downto 0) & USART_CLK_RAW;
          
          -- detection de l'arrêt de l'horloge
          if usart_clk_raw_pipe = ALL_ZEROS or usart_clk_raw_pipe = ALL_ONES then
