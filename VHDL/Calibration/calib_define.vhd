@@ -65,6 +65,8 @@ package calib_define is
       offset_fp32       : std_logic_vector(31 downto 0);
       data_exponent     : std_logic_vector(7 downto 0);
       block_act_posix   : std_logic_vector(31 downto 0);
+      low_cut           : std_logic_vector(31 downto 0);
+      high_cut          : std_logic_vector(31 downto 0);
    end record;
    
    -- Calibration block infos
@@ -75,14 +77,14 @@ package calib_define is
    end record;
    type calib_block_array_type is array (0 to NB_CALIB_BLOCK_MAX-1) of calib_block_info_type;
    constant CALIB_BLOCK_ARRAY_TYPE_DEF : calib_block_array_type := ( 
-      ((others => '0'), (CAL_BLOCK_INDEX_0, (others => '0'), (others => '0'), (others => '0'), (others => '0'))),
-      ((others => '0'), (CAL_BLOCK_INDEX_1, (others => '0'), (others => '0'), (others => '0'), (others => '0'))),
-      ((others => '0'), (CAL_BLOCK_INDEX_2, (others => '0'), (others => '0'), (others => '0'), (others => '0'))),
-      ((others => '0'), (CAL_BLOCK_INDEX_3, (others => '0'), (others => '0'), (others => '0'), (others => '0'))),
-      ((others => '0'), (CAL_BLOCK_INDEX_4, (others => '0'), (others => '0'), (others => '0'), (others => '0'))),
-      ((others => '0'), (CAL_BLOCK_INDEX_5, (others => '0'), (others => '0'), (others => '0'), (others => '0'))),
-      ((others => '0'), (CAL_BLOCK_INDEX_6, (others => '0'), (others => '0'), (others => '0'), (others => '0'))),
-      ((others => '0'), (CAL_BLOCK_INDEX_7, (others => '0'), (others => '0'), (others => '0'), (others => '0'))) );
+      ((others => '0'), (CAL_BLOCK_INDEX_0, (others => '0'), (others => '0'), (others => '0'), (others => '0'), (others => '0'), (others => '0'))),
+      ((others => '0'), (CAL_BLOCK_INDEX_1, (others => '0'), (others => '0'), (others => '0'), (others => '0'), (others => '0'), (others => '0'))),
+      ((others => '0'), (CAL_BLOCK_INDEX_2, (others => '0'), (others => '0'), (others => '0'), (others => '0'), (others => '0'), (others => '0'))),
+      ((others => '0'), (CAL_BLOCK_INDEX_3, (others => '0'), (others => '0'), (others => '0'), (others => '0'), (others => '0'), (others => '0'))),
+      ((others => '0'), (CAL_BLOCK_INDEX_4, (others => '0'), (others => '0'), (others => '0'), (others => '0'), (others => '0'), (others => '0'))),
+      ((others => '0'), (CAL_BLOCK_INDEX_5, (others => '0'), (others => '0'), (others => '0'), (others => '0'), (others => '0'), (others => '0'))),
+      ((others => '0'), (CAL_BLOCK_INDEX_6, (others => '0'), (others => '0'), (others => '0'), (others => '0'), (others => '0'), (others => '0'))),
+      ((others => '0'), (CAL_BLOCK_INDEX_7, (others => '0'), (others => '0'), (others => '0'), (others => '0'), (others => '0'), (others => '0'))) );
    
    -- error_type
    type error_reg_type is array (0 to 4) of std_logic_vector(31 downto 0);
