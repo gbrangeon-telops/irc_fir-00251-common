@@ -118,7 +118,7 @@ architecture rtl of axis16_hder_extractor is
    signal img_hdr_len_o          : std_logic_vector(IMAGEHEADERLENGTH_SIZE-1  downto 0);
    signal img_fwposition_o       : std_logic_vector(FWPOSITION_SIZE-1 downto 0);
    signal tid                    : std_logic := '1';
-
+   
    signal hder_info_valid_sync   : std_logic;
    signal cal_block_index_valid_sync : std_logic;
    signal img_exposuretime_sync  : std_logic_vector(img_exposuretime_o'length-1 downto 0);
@@ -156,23 +156,24 @@ begin
    r0: sync_reset port map(ARESET => areset, CLK => CLK_STREAM, SRESET => sreset);
    
    --Signal sync crossing
-   s3 : double_sync_vector port map(D => img_width_o,    Q => img_width_sync,      CLK => CLK_HDROUT);
-   s4 : double_sync_vector port map(D => img_height_o,   Q => img_height_sync,     CLK => CLK_HDROUT);
-   s5 : double_sync_vector port map(D => img_hdr_len_o,  Q => IMG_HDR_LEN,    CLK => CLK_HDROUT);
-   s6 : double_sync port map(D => hdr_info_valid_o,  Q => hder_info_valid_sync, RESET=> sreset,    CLK => CLK_HDROUT);
-   s7 : double_sync_vector port map(D => img_offsetx_o,   Q => img_offsetx_sync,     CLK => CLK_HDROUT);
-   s8 : double_sync_vector port map(D => img_offsety_o,   Q => img_offsety_sync,     CLK => CLK_HDROUT);
-   s9 : double_sync_vector port map(D => img_exposuretime_o,   Q => img_exposuretime_sync,     CLK => CLK_HDROUT);
-   s10: double_sync_vector port map(D => img_ehdriindex_o,   Q => img_ehdriindex_sync,     CLK => CLK_HDROUT);
-   s11: double_sync_vector port map(D => cal_block_index_o,   Q => cal_block_index_sync,     CLK => CLK_HDROUT);
-   s12: double_sync port map(D => cal_block_index_valid_o,  Q => cal_block_index_valid_sync, RESET=> sreset,    CLK => CLK_HDROUT);
-   s13: double_sync_vector port map(D => img_fwposition_o,  Q => img_fwposition_sync, CLK => CLK_HDROUT);
+   img_width_sync <= img_width_o;                           -- s3 : double_sync_vector port map(D => img_width_o,    Q => img_width_sync,      CLK => CLK_HDROUT);
+   img_height_sync <= img_height_o;                         -- s4 : double_sync_vector port map(D => img_height_o,   Q => img_height_sync,     CLK => CLK_HDROUT);
+   IMG_HDR_LEN <= img_hdr_len_o;                            -- s5 : double_sync_vector port map(D => img_hdr_len_o,  Q => IMG_HDR_LEN,    CLK => CLK_HDROUT);
+   s6 : double_sync port map(D => hdr_info_valid_o,  Q => hder_info_valid_sync, RESET=> sreset,    CLK => CLK_HDROUT); -- introduit dun delai de 2 CLK_HDEROUT. Ce qui est convenable 
+   img_offsetx_sync <= img_offsetx_o;                       -- s7 : double_sync_vector port map(D => img_offsetx_o,   Q => img_offsetx_sync,     CLK => CLK_HDROUT);
+   img_offsety_sync <= img_offsety_o;                       -- s8 : double_sync_vector port map(D => img_offsety_o,   Q => img_offsety_sync,     CLK => CLK_HDROUT);
+   img_exposuretime_sync <= img_exposuretime_o;             -- s9 : double_sync_vector port map(D => img_exposuretime_o,   Q => img_exposuretime_sync,     CLK => CLK_HDROUT);
+   img_ehdriindex_sync <= img_ehdriindex_o;                 -- s10: double_sync_vector port map(D => img_ehdriindex_o,   Q => img_ehdriindex_sync,     CLK => CLK_HDROUT);
+   cal_block_index_sync <= cal_block_index_o;               -- s11: double_sync_vector port map(D => cal_block_index_o,   Q => cal_block_index_sync,     CLK => CLK_HDROUT);
+   cal_block_index_valid_sync <= cal_block_index_valid_o;   -- s12: double_sync port map(D => cal_block_index_valid_o,  Q => cal_block_index_valid_sync, RESET=> sreset,    CLK => CLK_HDROUT);
+   img_fwposition_sync <= img_fwposition_o;                 -- s13: double_sync_vector port map(D => img_fwposition_o,  Q => img_fwposition_sync, CLK => CLK_HDROUT);
    
    -- Locate hdr stream information and extract it
    hdr_extract: process(CLK_STREAM)
    begin
       if rising_edge(CLK_STREAM) then
          if sreset = '1' then
+            -- pragma translate_off
             img_width_o <= IMG_WIDTH_DEF;
             img_height_o <= IMG_HEIGHT_DEF;
             img_hdr_len_o <= IMF_HDR_LEN_DEF;
@@ -182,7 +183,8 @@ begin
             img_ehdriindex_o <= IMG_EHDRIINDEX_DEF;
             cal_block_index_o <= CAL_BLOCK_INDEX_DEF;
             img_fwposition_o <= IMG_FWPOSITION_DEF;
-
+            -- pragma translate_on
+            
             hdr_info_valid_o <= '0';
             cal_block_index_valid_o <= '0';
             uHdr_addr_loc8 <= (others => '0');
@@ -193,9 +195,9 @@ begin
                
                if (IMG_DATA_MOSI.TLAST = '1') then
                   if ((unsigned(img_hdr_len_o) - 2) = uHdr_addr_loc8) then
-                      uHdr_addr_loc8 <= (others => '0');
-                      hdr_info_valid_o <= '1';
-                      tid <= not tid;
+                     uHdr_addr_loc8 <= (others => '0');
+                     hdr_info_valid_o <= '1';
+                     tid <= not tid;
                   end if;
                else
                   uHdr_addr_loc8 <= uHdr_addr_loc8 + 2;
@@ -213,7 +215,7 @@ begin
                      img_ehdriindex_o <= img_ehdriindex_o;
                      cal_block_index_o <= cal_block_index_o;
                      img_fwposition_o <= img_fwposition_o;
-
+                  
                   when resize(HeightAdd8, uHdr_addr_loc8'length) =>
                      img_height_o   <= IMG_DATA_MOSI.TDATA;
                      img_width_o    <= img_width_o;
@@ -235,7 +237,7 @@ begin
                      img_ehdriindex_o <= img_ehdriindex_o;
                      cal_block_index_o <= cal_block_index_o;
                      img_fwposition_o <= img_fwposition_o;
-
+                  
                   when resize(OffsetYAdd8, uHdr_addr_loc8'length) =>
                      img_offsety_o    <= IMG_DATA_MOSI.TDATA;
                      img_width_o    <= img_width_o;
@@ -268,9 +270,9 @@ begin
                      img_ehdriindex_o <= img_ehdriindex_o;
                      cal_block_index_o <= cal_block_index_o;
                      img_fwposition_o <= img_fwposition_o;
-
+                  
                   when resize(std_logic_vector(unsigned(ExposureTimeAdd8) + 2), uHdr_addr_loc8'length) =>
-				  	      img_exposuretime_o(31 downto 16) <= IMG_DATA_MOSI.TDATA;
+                     img_exposuretime_o(31 downto 16) <= IMG_DATA_MOSI.TDATA;
                      img_width_o    <= img_width_o;
                      img_height_o   <= img_height_o;
                      img_offsetx_o  <= img_offsetx_o;
@@ -282,7 +284,7 @@ begin
                   
                   when resize(FWPositionAdd8, uHdr_addr_loc8'length) =>
                      img_fwposition_o <= IMG_DATA_MOSI.TDATA(7 downto 0);
-				  	      img_exposuretime_o <= img_exposuretime_o;
+                     img_exposuretime_o <= img_exposuretime_o;
                      img_width_o    <= img_width_o;
                      img_height_o   <= img_height_o;
                      img_offsetx_o  <= img_offsetx_o;
@@ -290,7 +292,7 @@ begin
                      img_hdr_len_o  <= img_hdr_len_o;
                      img_ehdriindex_o <= img_ehdriindex_o;
                      cal_block_index_o <= cal_block_index_o;
-				  
+                  
                   when others =>
                      img_width_o    <= img_width_o;
                      img_height_o   <= img_height_o;
@@ -309,12 +311,12 @@ begin
                   when resize(EHDRIExposureIndexAdd8, uHdr_addr_loc8'length) =>
                      img_ehdriindex_o    <= IMG_DATA_MOSI.TDATA(15 downto 8);
                      cal_block_index_o <= cal_block_index_o;
-                     
+                  
                   when resize(CalibrationBlockIndexAdd8, uHdr_addr_loc8'length) =>
                      cal_block_index_o <= resize(IMG_DATA_MOSI.TDATA(15 downto 8), cal_block_index_o'length);
                      cal_block_index_valid_o <= '1';
                      img_ehdriindex_o <= img_ehdriindex_o;
-                     
+                  
                   when others =>
                      img_ehdriindex_o <= img_ehdriindex_o;
                      cal_block_index_o <= cal_block_index_o;
@@ -324,7 +326,7 @@ begin
                tid <= not tid;
                hdr_info_valid_o <= '0';
                cal_block_index_valid_o <= '0';
-        end if;
+            end if;
          end if;
       end if;
    end process hdr_extract;
