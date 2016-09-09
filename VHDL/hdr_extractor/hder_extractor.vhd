@@ -144,15 +144,15 @@ begin
    r0: sync_reset port map(ARESET => ARESET, CLK => CLK_STREAM, SRESET => sreset);
    
    --Signal sync crossing
-   img_width_sync <= img_width_o; -- s3 : double_sync_vector port map(D => img_width_o,    Q => img_width_sync,      CLK => CLK_HDROUT);
-   img_height_sync <= img_height_o;  -- s4 : double_sync_vector port map(D => img_height_o,   Q => img_height_sync,     CLK => CLK_HDROUT);
-   IMG_HDR_LEN <= std_logic_vector(img_hdr_len_o); -- s5 : double_sync_vector port map(D => std_logic_vector(img_hdr_len_o),  Q => IMG_HDR_LEN,    CLK => CLK_HDROUT);
+   s3 : double_sync_vector port map(D => img_width_o,    Q => img_width_sync,      CLK => CLK_HDROUT);
+   s4 : double_sync_vector port map(D => img_height_o,   Q => img_height_sync,     CLK => CLK_HDROUT);
+   s5 : double_sync_vector port map(D => std_logic_vector(img_hdr_len_o),  Q => IMG_HDR_LEN,    CLK => CLK_HDROUT);
    s6 : double_sync port map(D => hdr_info_valid_o,  Q => hder_info_valid_sync, RESET=>sreset,    CLK => CLK_HDROUT);
-   img_offsetx_sync <= img_offsetx_o; -- s7 : double_sync_vector port map(D => img_offsetx_o,   Q => img_offsetx_sync,     CLK => CLK_HDROUT);
-   img_offsety_sync <= img_offsety_o; -- s8 : double_sync_vector port map(D => img_offsety_o,   Q => img_offsety_sync,     CLK => CLK_HDROUT);
-   img_exposuretime_sync <= img_exposuretime_o; --s9 : double_sync_vector port map(D => img_exposuretime_o,   Q => img_exposuretime_sync,     CLK => CLK_HDROUT);
-   img_FWPosition_sync <= img_FWPosition_o; -- s10 : double_sync_vector port map(D => img_FWPosition_o, Q => img_FWPosition_sync,    CLK => CLK_HDROUT);
-   img_NDFPosition_sync <= img_NDFPosition_o; --s11 : double_sync_vector port map(D => img_NDFPosition_o, Q => img_NDFPosition_sync,    CLK => CLK_HDROUT);
+   s7 : double_sync_vector port map(D => img_offsetx_o,   Q => img_offsetx_sync,     CLK => CLK_HDROUT);
+   s8 : double_sync_vector port map(D => img_offsety_o,   Q => img_offsety_sync,     CLK => CLK_HDROUT);
+   s9 : double_sync_vector port map(D => img_exposuretime_o,   Q => img_exposuretime_sync,     CLK => CLK_HDROUT);
+   s10 : double_sync_vector port map(D => img_FWPosition_o, Q => img_FWPosition_sync,    CLK => CLK_HDROUT);
+   s11 : double_sync_vector port map(D => img_NDFPosition_o, Q => img_NDFPosition_sync,    CLK => CLK_HDROUT);
    
    Hdr_addr_loc32 <= std_logic_vector(uHdr_addr_loc32); --type change
    -- Locate hdr stream information and extract it

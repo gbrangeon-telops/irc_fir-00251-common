@@ -153,18 +153,18 @@ begin
     U0A : sync_resetn port map(ARESETN => ARESETN, SRESETN => sresetn, CLK => CLK_MB);
     
     -- Input ctrl double Sync
-    rx_full_i <= RX_FULL;                                      -- U1A : double_sync port map(D => RX_FULL,Q =>  rx_full_i, RESET =>  sresetn, CLK => CLK_MB);
-    rx_timeout_i <= RX_TIMEOUT;                                -- U1B : double_sync port map(D => RX_TIMEOUT,Q =>  rx_timeout_i, RESET =>  sresetn, CLK => CLK_MB);
+    U1A : double_sync port map(D => RX_FULL,Q =>  rx_full_i, RESET =>  sresetn, CLK => CLK_MB);
+    U1B : double_sync port map(D => RX_TIMEOUT,Q =>  rx_timeout_i, RESET =>  sresetn, CLK => CLK_MB);
     U1C : double_sync port map(D => TX_DONE,Q =>  tx_done_i, RESET => sresetn, CLK => CLK_MB);
-    rx_bytes_cnt_i <= std_logic_vector(RX_BYTES_COUNT);        -- U2A : double_sync_vector port map(D => std_logic_vector(RX_BYTES_COUNT) , Q => rx_bytes_cnt_i ,  CLK => CLK_MB);
+    U2A : double_sync_vector port map(D => std_logic_vector(RX_BYTES_COUNT) , Q => rx_bytes_cnt_i ,  CLK => CLK_MB);
 
     -- Output ctrl double Sync
-    TX_BYTES_TO_TRANSMIT <= tx_bytes_to_transmit_o;            -- U3A : double_sync_vector port map(D => tx_bytes_to_transmit_o   ,Q => TX_BYTES_TO_TRANSMIT  , CLK => CLK_USART);
-    TIMOUT_LENGTH <= rx_timeout_length_o;                      -- U3B : double_sync_vector port map(D => rx_timeout_length_o      ,Q => TIMOUT_LENGTH         , CLK => CLK_USART);
+    U3A : double_sync_vector port map(D => tx_bytes_to_transmit_o   ,Q => TX_BYTES_TO_TRANSMIT  , CLK => CLK_USART);
+    U3B : double_sync_vector port map(D => rx_timeout_length_o      ,Q => TIMOUT_LENGTH         , CLK => CLK_USART);
     
     --TODO Utiliser un CDC plutot qu'un double sync. LE signal MB est beaucoup plus rapide que CLK USART -- voir le strech signal
     -- Aussi il devrais être pulser ^plutot qu'ecrit à 1 plutot que 0
-    CLEAR_INTR <= clear_intr_o;                                -- U3C : double_sync_vector port map(D => clear_intr_o ,Q =>  CLEAR_INTR, CLK => CLK_USART);
+    U3C : double_sync_vector port map(D => clear_intr_o ,Q =>  CLEAR_INTR, CLK => CLK_USART);
     
     --Strech signal
     U4A : gh_stretch 
