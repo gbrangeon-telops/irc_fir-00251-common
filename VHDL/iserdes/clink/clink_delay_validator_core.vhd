@@ -48,7 +48,7 @@ architecture rtl of clink_delay_validator_core is
    constant C_ALL_ONES        : std_logic_vector(DONE'LENGTH-1 downto 0) := (others => '1');
    constant C_TEMP_POS_MAX    : integer := SUCCESS'LENGTH-1;
    
-   type core_fsm_type is (idle, start_stretch_st, wait_data_st, rst_validator_st1, rst_validator_st2, output_st);   
+   type core_fsm_type is (idle, start_stretch_st, wait_data_st, rst_validator_st1, rst_validator_st2, output_st, pause_st);   
    
    signal core_fsm            : core_fsm_type;
    signal sreset              : std_logic;
@@ -145,7 +145,13 @@ begin
                
                when output_st =>                    -- lancer la seconde fsm qui se chargera de generer dly_fdb_success_i
                   dly_fdb_rdy_i <= '1';
-                  core_fsm <= idle;
+                  core_fsm <= pause_st;
+               
+               when pause_st =>
+                  dly_fdb_rdy_i <= '0';
+                  if DLY_FDB_EN = '0' then          -- ainsi on est certain qu'on aura un seul DLY_FDB_EN pour un DLY_FDB_RDY
+                     core_fsm <= idle; 
+                  end if;
                
                when others => 
                
