@@ -462,7 +462,7 @@ package TEL2000 is
    record      
       exp_time     : unsigned(31 downto 0); --! temps d'integration en coups d'horloge de 100MHz
       exp_indx     : std_logic_vector(7 downto 0); --! index associé au temps d'intégration.
-      exp_dval     : std_logic;  --! signal de validation du temps d'integration. Attention !! Il peut subvenir après exposure_feedbk.
+      exp_dval     : std_logic;  --! signal de validation du temps d'integration. Attention !! Il peut subvenir après ou avant exposure_feedbk.
    end record;
    
    
