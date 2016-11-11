@@ -114,11 +114,11 @@ architecture rtl of clink_delay_ctrl is
    signal failure_area_middle_pos2           : signed(end_pos'length  downto 0);
    signal failure_area_middle_pos            : unsigned(DLY_DATA'LENGTH -1  downto 0);
    
-   attribute dont_touch : string;
-   attribute dont_touch of edge_vector_i : signal is "true";
-   attribute dont_touch of dly_data_i    : signal is "true";
-   attribute dont_touch of begin_pos     : signal is "true";
-   attribute dont_touch of end_pos       : signal is "true";
+--   attribute dont_touch : string;
+--   attribute dont_touch of edge_vector_i : signal is "true";
+--   attribute dont_touch of dly_data_i    : signal is "true";
+--   attribute dont_touch of begin_pos     : signal is "true";
+--   attribute dont_touch of end_pos       : signal is "true";
    
 begin
    

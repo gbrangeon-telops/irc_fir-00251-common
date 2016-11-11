@@ -37,8 +37,8 @@ entity axis32_pixel_cnt is
       CNT_RESET : in STD_LOGIC;
       PIXEL_CNT : out STD_LOGIC_VECTOR(31 downto 0)
       );
-   attribute dont_touch : string;
-   attribute dont_touch of axis32_pixel_cnt : entity is "true";
+   attribute KEEP_HIERARCHY : string;
+   attribute KEEP_HIERARCHY of axis32_pixel_cnt : entity is "true";
 end axis32_pixel_cnt;
 
 --}} End of automatically maintained section
@@ -64,10 +64,11 @@ architecture axis32_pixel_cnt of axis32_pixel_cnt is
    -- attribute MARK_DEBUG of cnt_invalid : signal is "TRUE";
    -- attribute MARK_DEBUG of tlast : signal is "TRUE";
    
-   attribute dont_touch of cnt             : signal is "true";
-   attribute dont_touch of cnt_prev_img    : signal is "true";
-   attribute dont_touch of cnt_invalid     : signal is "true";
-   attribute dont_touch of tlast           : signal is "true";
+--   attribute dont_touch : string;
+--   attribute dont_touch of cnt             : signal is "true";
+--   attribute dont_touch of cnt_prev_img    : signal is "true";
+--   attribute dont_touch of cnt_invalid     : signal is "true";
+--   attribute dont_touch of tlast           : signal is "true";
    
 begin
    

@@ -1,12 +1,12 @@
 -------------------------------------------------------------------------------
 --
--- Title       : axis32_img_eof
+-- Title       : axis64_img_eof
 -- Author      : Jean-Alexis Boulet
 -- Company     : Telops
 --
 -------------------------------------------------------------------------------
 --
--- Description : axis32 image end of frame detection
+-- Description : axis64 image end of frame detection
 --
 -------------------------------------------------------------------------------
 
@@ -15,18 +15,18 @@ use IEEE.STD_LOGIC_1164.all;
 use IEEE.numeric_std.all;
 use work.Tel2000.all;
 
-entity axis32_img_eof is
+entity axis64_img_eof is
    
    port(
-      RX_MOSI  : in  t_axi4_stream_mosi32;
+      RX_MOSI  : in  t_axi4_stream_mosi64;
       RX_MISO  : in t_axi4_stream_miso;
 
       EOF      : out  std_logic 
       );
-end axis32_img_eof;
+end axis64_img_eof;
 
 
-architecture RTL of axis32_img_eof is 
+architecture RTL of axis64_img_eof is 
    
 
    

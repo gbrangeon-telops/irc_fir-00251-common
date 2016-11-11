@@ -29,8 +29,10 @@ do "$COMMON\VHDL\PWM_CTRL\hdl\compile_pwm.do"
 # Fifo
 acom \
  "$COMMON\VHDL\Fifo\t_axi4_lite32_fifo.vhd" \
+ "$COMMON\VHDL\Fifo\t_axi4_stream8_fifo.vhd" \
+ "$COMMON\VHDL\Fifo\t_axi4_stream16_fifo.vhd" \
  "$COMMON\VHDL\Fifo\t_axi4_stream32_fifo.vhd" \
- "$COMMON\VHDL\Fifo\t_axi4_stream8_fifo.vhd"
+ "$COMMON\VHDL\Fifo\t_axi4_stream64_fifo.vhd"
 
 #hdr extractor
 acom -relax "$COMMON\VHDL\hdr_extractor\hder_extractor.vhd"
@@ -38,6 +40,7 @@ acom -relax "$COMMON\VHDL\hdr_extractor\hder_extractor.vhd"
 # Utilities
 acom \
  "$COMMON\VHDL\Utilities\axil32_to_native.vhd" \
+ "$COMMON\VHDL\Utilities\axil32_to_native96.vhd" \
  "$COMMON\VHDL\Utilities\axis_sync_flow.vhd" \
  "$COMMON\VHDL\Utilities\axis8_fanout2.vhd" \
  "$COMMON\VHDL\Utilities\axis32_tdata_extractor.vhd" \
@@ -47,9 +50,14 @@ acom \
  "$COMMON\VHDL\Utilities\axis32_fanout2.vhd" \
  "$COMMON\VHDL\Utilities\axis32_fanout3.vhd" \
  "$COMMON\VHDL\Utilities\axis32_hole.vhd"   \
- "$COMMON\VHDL\Utilities\axis32_hole_sync.vhd"   \
  "$COMMON\VHDL\Utilities\axis32_img_boundaries.vhd"   \
+ "$COMMON\VHDL\Utilities\axis64_img_boundaries.vhd"   \
+ "$COMMON\VHDL\Utilities\axis32_reg.vhd" \
+ "$COMMON\VHDL\Utilities\axis64_reg.vhd" \
+ "$COMMON\VHDL\Utilities\axis32_hole_sync.vhd"   \
+ "$COMMON\VHDL\Utilities\axis64_hole_sync.vhd"   \
  "$COMMON\VHDL\Utilities\axis32_tid_gen.vhd"   \
+ "$COMMON\VHDL\Utilities\axis64_tid_gen.vhd"   \
  "$COMMON\VHDL\Utilities\axis16_to_axis32.vhd" \
  "$COMMON\VHDL\Utilities\axis16_sw_1_2.vhd" \
  "$COMMON\VHDL\Utilities\axis16_auto_sw_1_2.vhd" \
@@ -64,6 +72,8 @@ acom \
  "$COMMON\VHDL\axis32_pixel_cnt.vhd" \
  "$COMMON\VHDL\axis16_pixel_cnt.vhd" \
  "$COMMON\VHDL\Utilities\axis16_merge_axis32.vhd" \
+ "$COMMON\VHDL\Utilities\axis16_merge_axis64.vhd" \
+ "$COMMON\VHDL\Utilities\axis32_merge_axis64.vhd" \
  "$COMMON\VHDL\Utilities\badpixel_handler.vhd" \
  "$COMMON\IP\axis_32_to_16\axis_32_to_16_funcsim.vhdl" \
  "$COMMON\VHDL\Utilities\axis_32_to_16_wrap.vhd"

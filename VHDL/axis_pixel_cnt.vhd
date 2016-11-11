@@ -36,8 +36,8 @@ entity axis_pixel_cnt is
 		 CNT_RESET : in STD_LOGIC;
 		 PIXEL_CNT : out STD_LOGIC_VECTOR(31 downto 0)
 	     );
-	     attribute dont_touch : string;
-        attribute dont_touch of axis_pixel_cnt : entity is "yes";
+        attribute KEEP_HIERARCHY : string;
+        attribute KEEP_HIERARCHY of axis_pixel_cnt : entity is "yes";
 end axis_pixel_cnt;
 
 --}} End of automatically maintained section

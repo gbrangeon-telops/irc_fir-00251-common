@@ -44,8 +44,8 @@ entity axis16_hder_extractor is
       FW_POSITION       : out std_logic_vector(7 downto 0)
       
       );
-   attribute dont_touch : string;
-   attribute dont_touch of axis16_hder_extractor : entity is "yes";
+   attribute KEEP_HIERARCHY : string;
+   attribute KEEP_HIERARCHY of axis16_hder_extractor : entity is "yes";
 end axis16_hder_extractor;
 
 

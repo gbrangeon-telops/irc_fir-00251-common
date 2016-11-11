@@ -41,8 +41,8 @@ entity hder_extractor is
       IMG_NDFPOSITION    : out std_logic_vector(7 downto 0)
       
       );
-   attribute dont_touch : string;
-   attribute dont_touch of hder_extractor : entity is "yes";
+   attribute KEEP_HIERARCHY : string;
+   attribute KEEP_HIERARCHY of hder_extractor : entity is "yes";
 end hder_extractor;
 
 

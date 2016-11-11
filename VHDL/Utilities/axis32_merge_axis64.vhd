@@ -1,11 +1,11 @@
 ------------------------------------------------------------------
---!   @file : axis16_merge_axis32
+--!   @file : axis32_merge_axis64
 --!   @brief
---!   @details: ce module permet de transformer un lien axis 16 en axis 32 par concatenation de deux données en entrées (pix0 puis pix1 =>  pix1pix0)
---!   $Rev: 14009 $
---!   $Author: jboulet $
---!   $Date: 2014-09-16 12:13:53 -0400 (mar., 16 sept. 2014) $
---!   $Id: axis16_merge_axis32.vhd 14009 2014-09-16 16:13:53Z jboulet $
+--!   @details: ce module permet de transformer un lien axis 32 en axis 64 par concatenation de deux données en entrées (pix1pix0 puis pix3pix2 =>  pix3pix2pix1pix0)
+--!   $Rev$
+--!   $Author$
+--!   $Date$
+--!   $Id$
 --!   $URL$
 ------------------------------------------------------------------
 
@@ -15,51 +15,51 @@ use IEEE.STD_LOGIC_1164.all;
 use IEEE.numeric_std.ALL;
 use work.Tel2000.all;
 
-entity axis16_merge_axis32 is
+entity axis32_merge_axis64 is
    port(
       ARESETN        : in std_logic;
       CLK            : in std_logic;      
       
-      RX_MOSI        : in t_axi4_stream_mosi16;
+      RX_MOSI        : in t_axi4_stream_mosi32;
       RX_MISO        : out t_axi4_stream_miso;
       
-      TX_MOSI        : out t_axi4_stream_mosi32;
+      TX_MOSI        : out t_axi4_stream_mosi64;
       TX_MISO        : in t_axi4_stream_miso
       );
-end axis16_merge_axis32;
+end axis32_merge_axis64;
 
 
 
-architecture rtl of axis16_merge_axis32 is
+architecture rtl of axis32_merge_axis64 is
    
-   COMPONENT ip_axis16_merge_axis32
+   COMPONENT ip_axis32_merge_axis64
       PORT (
          aclk : IN STD_LOGIC;
          aresetn : IN STD_LOGIC;
          s_axis_tvalid : IN STD_LOGIC;
          s_axis_tready : OUT STD_LOGIC;
-         s_axis_tdata : IN STD_LOGIC_VECTOR(15 DOWNTO 0);
-         s_axis_tstrb : IN STD_LOGIC_VECTOR(1 DOWNTO 0);
-         s_axis_tkeep : IN STD_LOGIC_VECTOR(1 DOWNTO 0);
+         s_axis_tdata : IN STD_LOGIC_VECTOR(31 DOWNTO 0);
+         s_axis_tstrb : IN STD_LOGIC_VECTOR(3 DOWNTO 0);
+         s_axis_tkeep : IN STD_LOGIC_VECTOR(3 DOWNTO 0);
          s_axis_tlast : IN STD_LOGIC;
          s_axis_tid : IN STD_LOGIC_VECTOR(0 DOWNTO 0);
          s_axis_tdest : IN STD_LOGIC_VECTOR(2 DOWNTO 0);
-         s_axis_tuser : IN STD_LOGIC_VECTOR(3 DOWNTO 0);
+         s_axis_tuser : IN STD_LOGIC_VECTOR(7 DOWNTO 0);
          m_axis_tvalid : OUT STD_LOGIC;
          m_axis_tready : IN STD_LOGIC;
-         m_axis_tdata : OUT STD_LOGIC_VECTOR(31 DOWNTO 0);
-         m_axis_tstrb : OUT STD_LOGIC_VECTOR(3 DOWNTO 0);
-         m_axis_tkeep : OUT STD_LOGIC_VECTOR(3 DOWNTO 0);
+         m_axis_tdata : OUT STD_LOGIC_VECTOR(63 DOWNTO 0);
+         m_axis_tstrb : OUT STD_LOGIC_VECTOR(7 DOWNTO 0);
+         m_axis_tkeep : OUT STD_LOGIC_VECTOR(7 DOWNTO 0);
          m_axis_tlast : OUT STD_LOGIC;
          m_axis_tid : OUT STD_LOGIC_VECTOR(0 DOWNTO 0);
          m_axis_tdest : OUT STD_LOGIC_VECTOR(2 DOWNTO 0);
-         m_axis_tuser : OUT STD_LOGIC_VECTOR(7 DOWNTO 0)
-         );
+         m_axis_tuser : OUT STD_LOGIC_VECTOR(15 DOWNTO 0)
+      );
    END COMPONENT;
    
 begin
    
-   U1 : ip_axis16_merge_axis32
+   U1 : ip_axis32_merge_axis64
    PORT MAP (
       aclk => CLK,
       aresetn => ARESETN,

@@ -40,8 +40,8 @@ entity axil32_to_native96 is
       
       ERR          : out std_logic  
       );
-    attribute dont_touch : string;
-    attribute dont_touch of axil32_to_native96 : entity is "true";
+    attribute KEEP_HIERARCHY : string;
+    attribute KEEP_HIERARCHY of axil32_to_native96 : entity is "true";
 end axil32_to_native96;
 
 

@@ -1,6 +1,6 @@
 -------------------------------------------------------------------------------
 --
--- Title       : axis32_sw_1_2
+-- Title       : axis32_img_boundaries
 -- Author      : Jean-Alexis Boulet
 -- Company     : Telops
 --

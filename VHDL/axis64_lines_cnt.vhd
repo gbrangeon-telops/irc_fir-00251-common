@@ -36,8 +36,8 @@ entity axis64_lines_cnt is
        FRAME_HEIGHT : in std_logic_vector(15 downto 0);
 		 LINE_CNT : out STD_LOGIC_VECTOR(31 downto 0)
 	     );
-	     attribute dont_touch : string;
-        attribute dont_touch of axis64_lines_cnt : entity is "yes";
+      attribute KEEP_HIERARCHY : string;
+      attribute KEEP_HIERARCHY of axis64_lines_cnt : entity is "yes";
 end axis64_lines_cnt;
 
 --}} End of automatically maintained section
@@ -53,8 +53,8 @@ architecture axis64_lines_cnt of axis64_lines_cnt is
 
    signal sresetn : std_logic;
    signal cnt : unsigned(31 downto 0);
-   attribute MARK_DEBUG : string;
-   attribute MARK_DEBUG of cnt : signal is "TRUE";
+--   attribute MARK_DEBUG : string;
+--   attribute MARK_DEBUG of cnt : signal is "TRUE";
    
    signal height_i : unsigned(15 downto 0);
    

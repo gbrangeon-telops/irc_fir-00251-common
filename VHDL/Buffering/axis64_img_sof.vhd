@@ -1,12 +1,12 @@
 -------------------------------------------------------------------------------
 --
--- Title       : axis32_img_sof
+-- Title       : axis64_img_sof
 -- Author      : Jean-Alexis Boulet
 -- Company     : Telops
 --
 -------------------------------------------------------------------------------
 --
--- Description : axis32 image start of frame detection
+-- Description : axis64 image start of frame detection
 --
 -------------------------------------------------------------------------------
 
@@ -15,10 +15,10 @@ use IEEE.STD_LOGIC_1164.all;
 use IEEE.numeric_std.all;
 use work.Tel2000.all;
 
-entity axis32_img_sof is
+entity axis64_img_sof is
    
    port(
-      RX_MOSI  : in  t_axi4_stream_mosi32;
+      RX_MOSI  : in  t_axi4_stream_mosi64;
       RX_MISO  : in t_axi4_stream_miso;
 
       SOF      : out  std_logic;
@@ -26,10 +26,10 @@ entity axis32_img_sof is
       ARESETN  : in  std_logic;
       CLK      : in  std_logic     
       );
-end axis32_img_sof;
+end axis64_img_sof;
 
 
-architecture RTL of axis32_img_sof is 
+architecture RTL of axis64_img_sof is 
    
    signal sresetn   : std_logic;   
    signal eof_s     : std_logic;

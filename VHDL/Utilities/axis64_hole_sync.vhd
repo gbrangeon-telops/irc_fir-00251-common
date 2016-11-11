@@ -1,12 +1,12 @@
 -------------------------------------------------------------------------------
 --
--- Title       : axis32_hole_sync
+-- Title       : axis64_hole_sync
 -- Author      : SSA
 -- Company     : Telops
 --
 -------------------------------------------------------------------------------
 --
--- Description : This is a AXIS32 "hole". When FALL is asserted, the data
+-- Description : This is a AXIS64 "hole". When FALL is asserted, the data
 --               just "falls" into a hole, it is not transmitted to the TX port.
 --               When FALL is 0, data flows through normally.
 --               This unit is registered. The FALL input can be forced to be 
@@ -20,15 +20,15 @@ library IEEE;
 use IEEE.STD_LOGIC_1164.all;
 use work.tel2000.all; 
 
-entity axis32_hole_sync is
+entity axis64_hole_sync is
    generic (
       sync_eof : boolean := false -- set to true to synchronize a change on FALL between two images
       );
    port(     
-      RX_MOSI  : in  t_axi4_stream_mosi32; 
+      RX_MOSI  : in  t_axi4_stream_mosi64; 
       RX_MISO  : out t_axi4_stream_miso;
       
-      TX_MOSI  : out t_axi4_stream_mosi32;
+      TX_MOSI  : out t_axi4_stream_mosi64;
       TX_MISO  : in  t_axi4_stream_miso; 
       
       FALL     : in std_logic;
@@ -36,9 +36,9 @@ entity axis32_hole_sync is
       ARESETN  : in  std_logic;
       CLK      : in  std_logic 
       );
-end axis32_hole_sync;
+end axis64_hole_sync;
 
-architecture RTL of axis32_hole_sync is
+architecture RTL of axis64_hole_sync is
    component sync_reset
       port(
          ARESET : in std_logic;
@@ -46,9 +46,9 @@ architecture RTL of axis32_hole_sync is
          CLK    : in std_logic);
    end component; 
    
-   component axis32_img_boundaries is
+   component axis64_img_boundaries is
       port(
-         RX_MOSI  : in  t_axi4_stream_mosi32;
+         RX_MOSI  : in  t_axi4_stream_mosi64;
          RX_MISO  : in t_axi4_stream_miso;
          
          SOF      : out std_logic; -- pulse at the beginning of a frame
@@ -59,11 +59,11 @@ architecture RTL of axis32_hole_sync is
          );
    end component;
    
-   component axis32_reg is
+   component axis64_reg is
       port(
-         RX_MOSI  : in  t_axi4_stream_mosi32;
+         RX_MOSI  : in  t_axi4_stream_mosi64;
          RX_MISO  : out t_axi4_stream_miso;
-         TX_MOSI  : out  t_axi4_stream_mosi32;
+         TX_MOSI  : out  t_axi4_stream_mosi64;
          TX_MISO  : in t_axi4_stream_miso;
          
          ARESETN  : in  std_logic;
@@ -74,10 +74,10 @@ architecture RTL of axis32_hole_sync is
    signal sof_s, eof_s : std_logic;
    signal fall_i, fall_sync : std_logic;
    
-   signal tx_mosi_i        : t_axi4_stream_mosi32;
+   signal tx_mosi_i        : t_axi4_stream_mosi64;
    signal rx_miso_i        : t_axi4_stream_miso;
    
-   signal rx_mosi_hold : t_axi4_stream_mosi32;
+   signal rx_mosi_hold : t_axi4_stream_mosi64;
    signal tx_miso_i, tx_miso_1p : t_axi4_stream_miso;
    
    signal areset, sreset : std_logic;   
@@ -93,7 +93,7 @@ begin
       SRESET => sreset
       ); 
    
-   U2: axis32_reg
+   U2: axis64_reg
    port map(
       RX_MOSI => RX_MOSI,
       RX_MISO => rx_miso_i,
@@ -131,7 +131,7 @@ begin
    
    detect_eof : 
       if sync_eof = true generate
-      detect_frame_done0 : axis32_img_boundaries
+      detect_frame_done0 : axis64_img_boundaries
       port map (
          RX_MOSI => RX_MOSI, 
          RX_MISO => rx_miso_i,

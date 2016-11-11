@@ -1,6 +1,6 @@
 -------------------------------------------------------------------------------
 --
--- Title       : axis32_tid_gen
+-- Title       : axis64_tid_gen
 -- Author      : Simon Savary
 -- Company     : Telops
 --
@@ -16,23 +16,23 @@ use IEEE.STD_LOGIC_1164.all;
 use IEEE.numeric_std.all;
 use work.Tel2000.all;
 
-entity axis32_tid_gen is
+entity axis64_tid_gen is
    generic(
       init_tid : std_logic := '1' -- the first TID value to inject
       );
    port(
-      RX_MOSI  : in  t_axi4_stream_mosi32;
+      RX_MOSI  : in  t_axi4_stream_mosi64;
       RX_MISO  : out t_axi4_stream_miso;
-      TX_MOSI  : out  t_axi4_stream_mosi32;
+      TX_MOSI  : out  t_axi4_stream_mosi64;
       TX_MISO  : in t_axi4_stream_miso;
       
       ARESETN  : in  std_logic;
       CLK      : in  std_logic     
       );
-end axis32_tid_gen;
+end axis64_tid_gen;
 
 
-architecture RTL of axis32_tid_gen is 
+architecture RTL of axis64_tid_gen is 
    component sync_resetn
       port(
          ARESETN : in std_logic;
@@ -42,7 +42,7 @@ architecture RTL of axis32_tid_gen is
    
    signal sresetn   : std_logic;
    
-   signal tx_mosi_s : t_axi4_stream_mosi32;
+   signal tx_mosi_s : t_axi4_stream_mosi64;
    signal rx_miso_s : t_axi4_stream_miso;
    signal tid_s : std_logic_vector(0 downto 0);
 begin    

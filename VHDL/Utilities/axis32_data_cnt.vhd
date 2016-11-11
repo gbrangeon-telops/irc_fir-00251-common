@@ -33,8 +33,8 @@ entity axis32_data_cnt is
       D32_CNT        : out std_logic_vector(31 downto 0);
       D32_CNT_DVAL   : out std_logic
       );
-   attribute dont_touch : string;
-   attribute dont_touch of axis32_data_cnt : entity is "yes";
+   attribute KEEP_HIERARCHY : string;
+   attribute KEEP_HIERARCHY of axis32_data_cnt : entity is "yes";
 end axis32_data_cnt;
 
 

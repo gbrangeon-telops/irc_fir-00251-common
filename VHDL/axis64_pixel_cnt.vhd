@@ -36,8 +36,8 @@ entity axis64_pixel_cnt is
 		 CNT_RESET : in STD_LOGIC;
 		 PIXEL_CNT : out STD_LOGIC_VECTOR(31 downto 0)
 	     );
-	    attribute dont_touch : string;
-       attribute dont_touch of axis64_pixel_cnt : entity is "true";
+       attribute KEEP_HIERARCHY : string;
+       attribute KEEP_HIERARCHY of axis64_pixel_cnt : entity is "true";
 
 end axis64_pixel_cnt;
 
@@ -54,10 +54,11 @@ architecture axis64_pixel_cnt of axis64_pixel_cnt is
 
    signal sresetn : std_logic;
    signal cnt : unsigned(31 downto 0);
-   attribute MARK_DEBUG : string;
-   attribute MARK_DEBUG of cnt : signal is "TRUE";
+--   attribute MARK_DEBUG : string;
+--   attribute MARK_DEBUG of cnt : signal is "TRUE";
    
-   attribute dont_touch of cnt             : signal is "true";
+--   attribute dont_touch : string;
+--   attribute dont_touch of cnt : signal is "true";
    
 begin
 
