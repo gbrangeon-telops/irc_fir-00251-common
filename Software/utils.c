@@ -78,7 +78,7 @@ uint64_t elapsed_time_us(uint64_t tic)
       etime_ticks = toc - tic;
    #endif
    // Translate elapsed time in us
-   etime_us = etime_ticks * 1000000 / XPAR_CPU_CORE_CLOCK_FREQ_HZ;
+   etime_us = etime_ticks * TIME_ONE_SECOND_US / XPAR_CPU_CORE_CLOCK_FREQ_HZ;
 
 #ifdef SIM
    // JRO : This verification is added because sometime in simulation the counter restart for no reason
