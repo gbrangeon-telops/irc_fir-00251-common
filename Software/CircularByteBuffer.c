@@ -420,8 +420,8 @@ IRC_Status_t CBB_Dump(circByteBuffer_t *circByteBuffer, uint32_t lineSize)
    }
 
 #ifdef ENABLE_PRINTF
-   uint32_t i;
-   uint32_t length = CBB_Length(circByteBuffer);
+   uint16_t i;
+   uint16_t length = CBB_Length(circByteBuffer);
    uint32_t baseAddr = 0;
 
    for (i = 0; i < length; i++)
