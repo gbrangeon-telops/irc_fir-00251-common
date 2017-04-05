@@ -63,6 +63,8 @@ IRC_Status_t GC_RegisterReadRequest(F1F2Command_t *p_request, F1F2Command_t *p_r
 IRC_Status_t GC_RegisterWriteRequest(F1F2Command_t *p_request, F1F2Command_t *p_response);
 IRC_Status_t GC_RegisterWrite(gcRegister_t *p_register, void *p_data, uint16_t dataLength);
 IRC_Status_t GC_RegisterWriteUI32(gcRegister_t *p_register, uint32_t value);
+IRC_Status_t GC_RegisterSetBitsUI32(gcRegister_t *p_register, uint32_t mask);
+IRC_Status_t GC_RegisterClearBitsUI32(gcRegister_t *p_register, uint32_t mask);
 IRC_Status_t GC_RegisterWriteI32(gcRegister_t *p_register, int32_t value);
 IRC_Status_t GC_RegisterWriteFloat(gcRegister_t *p_register, float value);
 IRC_Status_t GC_BroadcastRegisterWrite(gcRegister_t *p_register);

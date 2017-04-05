@@ -125,14 +125,35 @@ struct gcRegister
 typedef struct gcRegister gcRegister_t;
 
 
+/*
+ * MemoryBufferStatus register bit field definition
+ */
+#define MemoryBufferRecordingMask               0x00000001  /**< MemoryBufferStatus register bit mask for MemoryBufferRecording field */
+#define MemoryBufferTransmittingMask            0x00000002  /**< MemoryBufferStatus register bit mask for MemoryBufferTransmitting field */
+#define MemoryBufferDefraggingMask              0x00000004  /**< MemoryBufferStatus register bit mask for MemoryBufferDefragging field */
+#define MemoryBufferIsUpdatingMask              0x00000008  /**< MemoryBufferStatus register bit mask for MemoryBufferIsUpdating field */
+
+#define MEMORY_BUFFER_STATUS_INIT               (0)
+
+#define MemoryBufferStatusSet(mask) GC_RegisterSetBitsUI32(&gcRegsDef[MemoryBufferStatusIdx], mask)  /**< Set masked bits in MemoryBufferStatus register */
+#define MemoryBufferStatusClr(mask) GC_RegisterClearBitsUI32(&gcRegsDef[MemoryBufferStatusIdx], mask)  /**< Clear masked bits in MemoryBufferStatus register */
+#define MemoryBufferStatusTst(mask) BitMaskTst(gcRegsData.MemoryBufferStatus, mask)  /**< Test if masked bits in MemoryBufferStatus register are all set */
+#define MemoryBufferStatusTstAny(mask) BitMaskTstAny(gcRegsData.MemoryBufferStatus, mask)  /**< Test if at least one of the masked bits in MemoryBufferStatus register is set */
+
+#define GC_MemoryBufferIsRecording     MemoryBufferStatusTst(MemoryBufferRecordingMask)
+#define GC_MemoryBufferIsTransmitting  MemoryBufferStatusTst(MemoryBufferTransmittingMask)
+#define GC_MemoryBufferIsDefragging    MemoryBufferStatusTst(MemoryBufferDefraggingMask)
+#define GC_MemoryBufferIsUpdating      MemoryBufferStatusTst(MemoryBufferUpdatingMask)
+#define GC_MemoryBufferIsBusy          MemoryBufferStatusTstAny(MemoryBufferRecordingMask | MemoryBufferTransmittingMask | MemoryBufferDefraggingMask | MemoryBufferUpdatingMask)
+
 /* AUTO-CODE BEGIN */
 // Auto-generated GeniCam library.
-// Generated from XML camera definition file version 12.0.1
+// Generated from XML camera definition file version 12.1.0
 // using generateGenICamCommonCLib.m Matlab script.
 
 #define GC_XMLMAJORVERSION    12
-#define GC_XMLMINORVERSION    0
-#define GC_XMLSUBMINORVERSION 1
+#define GC_XMLMINORVERSION    1
+#define GC_XMLSUBMINORVERSION 0
 
 // Enumerations values and data types
 ////////////////////////////////////////////////////////////////////////////////
@@ -570,12 +591,26 @@ enum MemoryBufferModeEnum {
 typedef enum MemoryBufferModeEnum MemoryBufferMode_t;
 
 /**
+ * MemoryBufferLegacyMode enumeration values
+ */
+enum MemoryBufferLegacyModeEnum {
+   MBLM_Off = 0,
+   MBLM_On = 1
+};
+
+/**
+ * MemoryBufferLegacyMode enumeration values data type
+ */
+typedef enum MemoryBufferLegacyModeEnum MemoryBufferLegacyMode_t;
+
+/**
  * MemoryBufferMOISource enumeration values
  */
 enum MemoryBufferMOISourceEnum {
    MBMOIS_AcquisitionStarted = 0,
    MBMOIS_Software = 1,
-   MBMOIS_ExternalSignal = 2
+   MBMOIS_ExternalSignal = 2,
+   MBMOIS_None = 255
 };
 
 /**
@@ -753,8 +788,8 @@ typedef enum VideoDigitalZoomModeEnum VideoDigitalZoomMode_t;
  */
 enum DeviceSerialPortSelectorEnum {
    DSPS_CameraLink = 0,
-   DSPS_OEM = 2,
-   DSPS_Console = 3
+   DSPS_RS232 = 1,
+   DSPS_USB = 2
 };
 
 /**
@@ -780,6 +815,20 @@ enum DeviceSerialPortBaudRateEnum {
  * DeviceSerialPortBaudRate enumeration values data type
  */
 typedef enum DeviceSerialPortBaudRateEnum DeviceSerialPortBaudRate_t;
+
+/**
+ * DeviceSerialPortFunction enumeration values
+ */
+enum DeviceSerialPortFunctionEnum {
+   DSPF_Disabled = 0,
+   DSPF_Control = 1,
+   DSPF_Terminal = 2
+};
+
+/**
+ * DeviceSerialPortFunction enumeration values data type
+ */
+typedef enum DeviceSerialPortFunctionEnum DeviceSerialPortFunction_t;
 
 /**
  * PixelDataResolution enumeration values
@@ -858,7 +907,11 @@ enum EventErrorCodeDescEnum {
    EECD_WaitingForOutputFPGA = 29,
    EECD_WaitingForPower = 30,
    EECD_GPSCommunicationLost = 31,
-   EECD_BuiltInTestFailed = 32
+   EECD_BuiltInTestFailed = 32,
+   EECD_MemoryBufferInitialisationError = 33,
+   EECD_MemoryBufferDownloadFrameSizeMissmatch = 34,
+   EECD_MemoryBufferDownloadClearedSequence = 35,
+   EECD_MemoryBufferDefragError = 36
 };
 
 /**
@@ -1345,6 +1398,26 @@ typedef enum DeviceLedIndicatorStateEnum DeviceLedIndicatorState_t;
 // #define BadPixelReplacementAddr                       0x0000EB60  /**< BadPixelReplacement register address */
 // #define DeviceDetectorElectricalTapsRefAddr           0x0000EB64  /**< DeviceDetectorElectricalTapsRef register address */
 // #define DeviceDetectorElectricalRefOffsetAddr         0x0000EB68  /**< DeviceDetectorElectricalRefOffset register address */
+// #define ExposureTimeSetToMinAddr                      0x0000EB6C  /**< ExposureTimeSetToMin register address */
+// #define MemoryBufferAvailableFreeSpaceHighAddr        0x0000EB70  /**< MemoryBufferAvailableFreeSpaceHigh register address */
+// #define MemoryBufferAvailableFreeSpaceLowAddr         0x0000EB74  /**< MemoryBufferAvailableFreeSpaceLow register address */
+// #define MemoryBufferFragmentedFreeSpaceHighAddr       0x0000EB78  /**< MemoryBufferFragmentedFreeSpaceHigh register address */
+// #define MemoryBufferFragmentedFreeSpaceLowAddr        0x0000EB7C  /**< MemoryBufferFragmentedFreeSpaceLow register address */
+// #define MemoryBufferTotalSpaceHighAddr                0x0000EB80  /**< MemoryBufferTotalSpaceHigh register address */
+// #define MemoryBufferTotalSpaceLowAddr                 0x0000EB84  /**< MemoryBufferTotalSpaceLow register address */
+// #define MemoryBufferSequenceOffsetXAddr               0x0000EB88  /**< MemoryBufferSequenceOffsetX register address */
+// #define MemoryBufferSequenceOffsetYAddr               0x0000EB8C  /**< MemoryBufferSequenceOffsetY register address */
+// #define MemoryBufferSequenceWidthAddr                 0x0000EB90  /**< MemoryBufferSequenceWidth register address */
+// #define MemoryBufferSequenceHeightAddr                0x0000EB94  /**< MemoryBufferSequenceHeight register address */
+// #define MemoryBufferSequenceClearAddr                 0x0000EB98  /**< MemoryBufferSequenceClear register address */
+// #define MemoryBufferSequenceDefragAddr                0x0000EB9C  /**< MemoryBufferSequenceDefrag register address */
+// #define MemoryBufferSequenceSizeMinAddr               0x0000EBA0  /**< MemoryBufferSequenceSizeMin register address */
+// #define MemoryBufferSequenceSizeIncAddr               0x0000EBA4  /**< MemoryBufferSequenceSizeInc register address */
+// #define MemoryBufferSequenceDownloadFrameIDAddr       0x0000EBA8  /**< MemoryBufferSequenceDownloadFrameID register address */
+// #define MemoryBufferSequenceDownloadFrameCountAddr    0x0000EBAC  /**< MemoryBufferSequenceDownloadFrameCount register address */
+// #define MemoryBufferStatusAddr                        0x0000EBB0  /**< MemoryBufferStatus register address */
+// #define MemoryBufferLegacyModeAddr                    0x0000EBB4  /**< MemoryBufferLegacyMode register address */
+// #define DeviceSerialPortFunctionAddr                  0x0000EBB8  /**< DeviceSerialPortFunction register address */
 
 // Registers definition array indices
 ////////////////////////////////////////////////////////////////////////////////
@@ -1586,11 +1659,31 @@ typedef enum DeviceLedIndicatorStateEnum DeviceLedIndicatorState_t;
 #define BadPixelReplacementIdx                        234
 #define DeviceDetectorElectricalTapsRefIdx            235
 #define DeviceDetectorElectricalRefOffsetIdx          236
+#define ExposureTimeSetToMinIdx                       237
+#define MemoryBufferAvailableFreeSpaceHighIdx         238
+#define MemoryBufferAvailableFreeSpaceLowIdx          239
+#define MemoryBufferFragmentedFreeSpaceHighIdx        240
+#define MemoryBufferFragmentedFreeSpaceLowIdx         241
+#define MemoryBufferTotalSpaceHighIdx                 242
+#define MemoryBufferTotalSpaceLowIdx                  243
+#define MemoryBufferSequenceOffsetXIdx                244
+#define MemoryBufferSequenceOffsetYIdx                245
+#define MemoryBufferSequenceWidthIdx                  246
+#define MemoryBufferSequenceHeightIdx                 247
+#define MemoryBufferSequenceClearIdx                  248
+#define MemoryBufferSequenceDefragIdx                 249
+#define MemoryBufferSequenceSizeMinIdx                250
+#define MemoryBufferSequenceSizeIncIdx                251
+#define MemoryBufferSequenceDownloadFrameIDIdx        252
+#define MemoryBufferSequenceDownloadFrameCountIdx     253
+#define MemoryBufferStatusIdx                         254
+#define MemoryBufferLegacyModeIdx                     255
+#define DeviceSerialPortFunctionIdx                   256
 
 // Registers general macros
 ////////////////////////////////////////////////////////////////////////////////
 
-#define GC_REG_COUNT 237 /**< Number of GenICam registers */
+#define GC_REG_COUNT 257 /**< Number of GenICam registers */
 #define GC_REG_MAX_LENGTH 512 /**< GenICam registers maximum length (in bytes) */
 #define GC_REG_MAX_READ_LENGTH 512 /**< GenICam readable registers maximum length (in bytes) */
 #define GC_REG_MAX_WRITE_LENGTH 4 /**< GenICam writable registers maximum length (in bytes) */

@@ -368,6 +368,54 @@ IRC_Status_t GC_RegisterWriteUI32(gcRegister_t *p_register, uint32_t value)
 }
 
 /**
+ * Set masked bit(s) in unsigned integer bit field register.
+ *
+ * @param p_register is the pointer to the register definition data structure.
+ * @param mask is the bit mask. Bits to be set are masked on.
+ *
+ * @return IRC_SUCCESS if the register write is successful.
+ * @return IRC_FAILURE if the register write failed.
+ */
+IRC_Status_t GC_RegisterSetBitsUI32(gcRegister_t *p_register, uint32_t mask)
+{
+   uint32_t value;
+
+   if (!RegIsInt(p_register))
+   {
+      return IRC_FAILURE;
+   }
+
+   value = *((uint32_t*)p_register->p_data);
+   BitMaskSet(value, mask);
+
+   return GC_RegisterWrite(p_register, &value, sizeof(value));
+}
+
+/**
+ * Clear masked bit(s) in unsigned integer bit field register.
+ *
+ * @param p_register is the pointer to the register definition data structure.
+ * @param mask is the bit mask. Bits to be cleared are masked on.
+ *
+ * @return IRC_SUCCESS if the register write is successful.
+ * @return IRC_FAILURE if the register write failed.
+ */
+IRC_Status_t GC_RegisterClearBitsUI32(gcRegister_t *p_register, uint32_t mask)
+{
+   uint32_t value;
+
+   if (!RegIsInt(p_register))
+   {
+      return IRC_FAILURE;
+   }
+
+   value = *((uint32_t*)p_register->p_data);
+   BitMaskClr(value, mask);
+
+   return GC_RegisterWrite(p_register, &value, sizeof(value));
+}
+
+/**
  * Process a register write on a signed integer register.
  *
  * @param p_register is the pointer to the register definition data structure.
