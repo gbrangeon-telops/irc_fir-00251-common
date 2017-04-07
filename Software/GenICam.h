@@ -128,9 +128,9 @@ typedef struct gcRegister gcRegister_t;
 /*
  * MemoryBufferStatus register bit field definition
  */
-#define MemoryBufferRecordingMask               0x00000001  /**< MemoryBufferStatus register bit mask for MemoryBufferRecording field */
-#define MemoryBufferTransmittingMask            0x00000002  /**< MemoryBufferStatus register bit mask for MemoryBufferTransmitting field */
-#define MemoryBufferDefraggingMask              0x00000004  /**< MemoryBufferStatus register bit mask for MemoryBufferDefragging field */
+#define MemoryBufferIsRecordingMask             0x00000001  /**< MemoryBufferStatus register bit mask for MemoryBufferIsRecording field */
+#define MemoryBufferIsTransmittingMask          0x00000002  /**< MemoryBufferStatus register bit mask for MemoryBufferIsTransmitting field */
+#define MemoryBufferIsDefraggingMask            0x00000004  /**< MemoryBufferStatus register bit mask for MemoryBufferIsDefragging field */
 #define MemoryBufferIsUpdatingMask              0x00000008  /**< MemoryBufferStatus register bit mask for MemoryBufferIsUpdating field */
 
 #define MEMORY_BUFFER_STATUS_INIT               (0)
