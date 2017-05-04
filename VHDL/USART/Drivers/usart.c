@@ -21,8 +21,11 @@
 #include "printf_utils.h"
 #include "utils.h"   // WAIT_US
 
-void Usart_InterruptHandler(usart_t *usart);
+static void Usart_InterruptHandler(usart_t *usart);
 
+static uint32_t Usart_SendCircBuffer(usart_t *usart);
+static uint32_t Usart_ReceiveData(usart_t *usart);
+static uint32_t Usart_Loopback(usart_t *usart);
 
 /**
  * Initializes USART link.
@@ -33,10 +36,6 @@ void Usart_InterruptHandler(usart_t *usart);
  * @param baseAddress is the base address of the USART device.
  * @param intc is the pointer to the Interrupt controller instance.
  * @param usartIntrId is the USART interrupt ID that can be found in xparameters.h file.
- * @param handler is a the pointer to the USART interrupt handling function
- *        (Must complies to Usart_Handler function prototype).
- * @param callbackRef is a pointer to the data that is passed to the handler function as reference.
- * @param timeoutLength is the USART link timeout length in char.
  *
  * @return IRC_SUCCESS if successfully initialized
  * @return IRC_FAILURE if failed to initialize.
@@ -44,31 +43,28 @@ void Usart_InterruptHandler(usart_t *usart);
 IRC_Status_t Usart_Init(usart_t *usart,
       uint32_t baseAddress,
       XIntc *intc,
-      uint16_t usartIntrId,
-      Usart_Handler handler,
-      void *callbackRef,
-      uint32_t timeoutLength)
+      uint16_t usartIntrId)
 {
    int status;
 
    if (usart == NULL) return IRC_FAILURE;
    if (baseAddress == 0) return IRC_FAILURE;
-   if (handler == NULL) return IRC_FAILURE;
    if (intc == NULL) return IRC_FAILURE;
 
    // Initialize USART data structure
    usart->BaseAddress = baseAddress;
-   usart->Handler = handler;
-   usart->CallBackRef = callbackRef;
+   usart->intc = intc;
+   usart->usartIntrId = usartIntrId;
+   usart->loopback = 0;
 
    // Set USART timeout length
-   Usart_WriteReg(usart->BaseAddress, USART_TIMEOUT_LENGTH_OFFSET, timeoutLength);
+   Usart_WriteReg(usart->BaseAddress, USART_TIMEOUT_LENGTH_OFFSET, 7);
 
    /*
     * Connect a device driver handler that will be called when an interrupt
     * for the device occurs.
     */
-   status = XIntc_Connect(intc, usartIntrId,
+   status = XIntc_Connect(usart->intc, usart->usartIntrId,
                         (XInterruptHandler)Usart_InterruptHandler,
                         usart);
    if (status != XST_SUCCESS)
@@ -80,38 +76,110 @@ IRC_Status_t Usart_Init(usart_t *usart,
 }
 
 /**
- * Transmit data through USART link.
+ * Set USART interrupt handler and callback reference.
  *
- * @param usart is the pointer to the USART link data structure.
- * @param buffer is a pointer to the bytes buffer to transmit.
- * @param byteCount is the number of bytes to transmit.
+ * @param usart is the pointer to the USART data structure.
+ * @param handler is a callback function pointer (see CircularUART_Handler definition).
+ * @param callbackRef is a pointer to the callback reference.
  *
- * @return IRC_SUCCESS if successfully transmitted.
- * @return IRC_FAILURE if failed to transmit.
+ * @return IRC_SUCCESS
  */
-IRC_Status_t Usart_SendData(usart_t *usart, uint8_t *buffer, uint32_t byteCount)
+IRC_Status_t Usart_SetHandler(usart_t *usart, Usart_Handler handler, void *callbackRef)
 {
-   uint32_t bytesToTransmit;
+   usart->handler = handler;
+   usart->callBackRef = callbackRef;
+
+   return IRC_SUCCESS;
+}
+
+/**
+ * Set USART circular byte buffers.
+ *
+ * @param usart is the pointer to the USART data structure.
+ * @param rxCircBuffer is the RX circular byte buffer.
+ * @param txCircBuffer is the TX circular byte buffer.
+ *
+ * @return IRC_SUCCESS
+ */
+IRC_Status_t Usart_SetCircularBuffers(usart_t *usart, circByteBuffer_t *rxCircBuffer, circByteBuffer_t *txCircBuffer)
+{
+   usart->rxCircBuffer = rxCircBuffer;
+   usart->txCircBuffer = txCircBuffer;
+
+   return IRC_SUCCESS;
+}
+
+/**
+ * Enable circular UART interrupt.
+ *
+ * @param usart is the pointer to the USART data structure.
+ *
+ * @return IRC_SUCCESS
+ */
+IRC_Status_t Usart_Enable(usart_t *usart)
+{
+   XIntc_Enable(usart->intc, usart->usartIntrId);
+
+   return IRC_SUCCESS;
+}
+
+/**
+ * Disable circular UART interrupt.
+ *
+ * @param usart is the pointer to the USART data structure.
+ *
+ * @return IRC_SUCCESS
+ */
+IRC_Status_t Usart_Disable(usart_t *usart)
+{
+   XIntc_Disable(usart->intc, usart->usartIntrId);
+
+   return IRC_SUCCESS;
+}
+
+/**
+ * Send data contained in USART TX circular buffer.
+ *
+ * @param usart is the pointer to the USART data structure.
+ *
+ * @return the number of characters that have been transmit.
+ */
+uint32_t Usart_SendData(usart_t *usart)
+{
+   return Usart_SendCircBuffer(usart);
+}
+
+/**
+ * Copy data contained in the TX circular byte buffer into USART TX FIFO.
+ *
+ * @param usart is the pointer to the USART data structure.
+ *
+ * @return the number of characters that have been transmit.
+ */
+uint32_t Usart_SendCircBuffer(usart_t *usart)
+{
+   uint32_t byteCount;
    uint32_t data;
    uint8_t *p_data;
    uint32_t i;
 
-   if (byteCount == 0) return IRC_FAILURE;
+   if (usart == NULL) return 0;
+   if (usart->txCircBuffer == NULL) return 0;
 
    // Reset bytes to transmit
    Usart_WriteReg(usart->BaseAddress, USART_BYTES_TO_TRANSMIT_OFFSET, 0);
 
-   bytesToTransmit = byteCount;
-   while (bytesToTransmit  > 0)
+   byteCount = 0;
+   while (!CBB_Empty(usart->txCircBuffer))
    {
       p_data = (uint8_t *)&data;
       i = 0;
 
       // Copy data bytes
-      while ((i < sizeof(data)) && (bytesToTransmit > 0))
+      while ((i < sizeof(data)) && (!CBB_Empty(usart->txCircBuffer)))
       {
-         p_data[i++] = buffer[byteCount - bytesToTransmit];
-         bytesToTransmit--;
+         CBB_Pop(usart->txCircBuffer, &p_data[i++]);
+         byteCount++;
       }
 
       // Pad remaining bytes with 0
@@ -125,33 +193,32 @@ IRC_Status_t Usart_SendData(usart_t *usart, uint8_t *buffer, uint32_t byteCount)
 
    Usart_WriteReg(usart->BaseAddress, USART_BYTES_TO_TRANSMIT_OFFSET, byteCount);
 
-   return IRC_SUCCESS;
+   return byteCount;
 }
 
 /**
- * Receive data from USART link and store it in linear buffer.
+ * Copy data contained in the USART RX FIFO into the RX circular byte buffer.
  *
- * @param usart is the pointer to the USART link data structure.
- * @param buffer is a pointer to the bytes buffer to store received data.
- * @param buflen is the bytes buffer length.
- * @param byteCount is the number of received bytes.
+ * @param usart is the pointer to the USART data structure.
  *
- * @return IRC_SUCCESS if successfully received.
- * @return IRC_FAILURE if failed to receive.
+ * @return the number of characters that have been received.
  */
-IRC_Status_t Usart_ReceiveData(usart_t *usart, uint8_t *buffer, uint32_t buflen, uint32_t *byteCount)
+uint32_t Usart_ReceiveData(usart_t *usart)
 {
+   uint32_t byteCount;
    uint32_t bytesToReceive;
    uint32_t data;
    uint8_t *p_data;
    uint32_t i;
-   uint8_t bufferOverflow = 0;
+
+   if (usart == NULL) return 0;
+   if (usart->rxCircBuffer == NULL) return 0;
 
    bytesToReceive = Usart_ReadReg(usart->BaseAddress, USART_RX_BYTES_COUNT_OFFSET);
 
-   *byteCount = 0;
+   byteCount = 0;
 
-   while (bytesToReceive > 0)
+   while ((bytesToReceive > 0) && (!CBB_Full(usart->rxCircBuffer)))
    {
       getfsl(data, XPAR_MICROBLAZE_FSL_LINKS);
 
@@ -159,73 +226,18 @@ IRC_Status_t Usart_ReceiveData(usart_t *usart, uint8_t *buffer, uint32_t buflen,
       i = 0;
       while ((i < sizeof(data)) && (bytesToReceive > 0))
       {
-         if (*byteCount < buflen)
+         if (!CBB_Full(usart->rxCircBuffer))
          {
-            buffer[(*byteCount)++] = p_data[i];
+            CBB_Push(usart->rxCircBuffer, p_data[i]);
+            byteCount++;
          }
          else
          {
-            bufferOverflow = 1;
+            break;
          }
          i++;
          bytesToReceive--;
       }
-   }
-
-   if (bufferOverflow == 1)
-   {
-      return IRC_FAILURE;
-   }
-
-   return IRC_SUCCESS;
-}
-
-/**
- * Receive data from USART link and store it in circular buffer.
- *
- * @param usart is the pointer to the USART link data structure.
- * @param circByteBuffer is a pointer to the circular bytes buffer to store received data.
- * @param byteCount is the number of received bytes.
- *
- * @return IRC_SUCCESS if successfully received.
- * @return IRC_FAILURE if failed to receive.
- */
-IRC_Status_t Usart_ReceiveCircularData(usart_t *usart, circByteBuffer_t *circByteBuffer, uint32_t *byteCount)
-{
-   uint32_t bytesToReceive;
-   uint32_t data;
-   uint8_t *p_data;
-   uint32_t i;
-   uint8_t bufferOverflow = 0;
-
-   bytesToReceive = Usart_ReadReg(usart->BaseAddress, USART_RX_BYTES_COUNT_OFFSET);
-
-   *byteCount = 0;
-
-   while (bytesToReceive > 0)
-   {
-      getfsl(data, XPAR_MICROBLAZE_FSL_LINKS);
-
-      p_data = (uint8_t *)&data;
-      i = 0;
-      while ((i < sizeof(data)) && (bytesToReceive > 0))
-      {
-         if (!CBB_Full(circByteBuffer))
-         {
-            CBB_Push(circByteBuffer, p_data[i]);
-         }
-         else
-         {
-            bufferOverflow = 1;
-         }
-         i++;
-         bytesToReceive--;
-      }
-   }
-
-   if (bufferOverflow == 1)
-   {
-      return IRC_FAILURE;
    }
 
    return IRC_SUCCESS;
@@ -236,24 +248,25 @@ IRC_Status_t Usart_ReceiveCircularData(usart_t *usart, circByteBuffer_t *circByt
  *
  * @param usart is the pointer to the USART link data structure.
  *
- * @return IRC_SUCCESS if loop back succeeded.
- * @return IRC_FAILURE if loop back failed.
+ * @return the number of characters that have been transmit.
  */
-IRC_Status_t Usart_Loopback(usart_t *usart)
+uint32_t Usart_Loopback(usart_t *usart)
 {
    uint32_t byteCount;
    uint32_t bytesToReceive;
    uint32_t data;
    uint32_t receivedBytes;
 
-   byteCount = Usart_ReadReg(usart->BaseAddress, USART_RX_BYTES_COUNT_OFFSET);
+   bytesToReceive = Usart_ReadReg(usart->BaseAddress, USART_RX_BYTES_COUNT_OFFSET);
+
+   // Reset bytes to transmit
    Usart_WriteReg(usart->BaseAddress, USART_BYTES_TO_TRANSMIT_OFFSET, 0);
 
 #ifndef STARTUP
    PRINTF("0x");
 #endif
 
-   bytesToReceive = byteCount;
+   byteCount = 0;
    while (bytesToReceive > 0)
    {
       getfsl(data, XPAR_MICROBLAZE_FSL_LINKS);
@@ -262,6 +275,7 @@ IRC_Status_t Usart_Loopback(usart_t *usart)
       receivedBytes = MIN(sizeof(data), bytesToReceive);
 
       bytesToReceive -= receivedBytes;
+      byteCount += receivedBytes;
 
 #if defined(ENABLE_PRINTF) && !defined(STARTUP)
       uint8_t *p_data = (uint8_t *)&data;
@@ -301,8 +315,16 @@ void Usart_InterruptHandler(usart_t *usart)
    {
       case USART_EVENT_RX_FULL:
       case USART_EVENT_RX_TIMEOUT:
-         // Read the RX byte count
-         eventData = Usart_ReadReg(usart->BaseAddress, USART_RX_BYTES_COUNT_OFFSET);
+         if (usart->loopback == 0)
+         {
+            // Read the RX bytes
+            eventData = Usart_ReceiveData(usart);
+         }
+         else
+         {
+            // Loopback
+            eventData = Usart_Loopback(usart);
+         }
          break;
 
       case USART_EVENT_TX_DONE:
@@ -311,12 +333,10 @@ void Usart_InterruptHandler(usart_t *usart)
          break;
    }
 
+   if ((usart->handler != NULL) && (usart->loopback == 0))
+      usart->handler(usart->callBackRef, event, eventData);
+
    // Clear interrupt
    Usart_WriteReg(usart->BaseAddress, USART_CLEAR_INTR_VECT_OFFSET, event);
    Usart_WriteReg(usart->BaseAddress, USART_CLEAR_INTR_VECT_OFFSET, 0);
-
-   if (usart->Handler != NULL)
-   {
-      usart->Handler(usart->CallBackRef, event, eventData);
-   }
 }

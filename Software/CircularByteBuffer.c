@@ -139,6 +139,46 @@ IRC_Status_t CBB_Pushn(circByteBuffer_t *circByteBuffer, uint16_t length, uint8_
 }
 
 /**
+ * Push a byte many times in the circular byte buffer.
+ * This function pushes 'length' times a byte at the head position of the circular byte buffer.
+ *
+ * @param circByteBuffer is the pointer to the circular byte buffer structure.
+ * @param length is a the number of bytes to be pushed.
+ * @param data is the byte value to push in the circular byte buffer.
+ *
+ * @return IRC_SUCCESS if the byte was successfully pushed in the circular byte buffer.
+ * @return IRC_FAILURE if the circular could not fit the entire byte buffer.
+ */
+IRC_Status_t CBB_Pushvaln(circByteBuffer_t *circByteBuffer, uint16_t length, uint8_t data)
+{
+   uint16_t i;
+
+   if ((circByteBuffer == NULL) ||
+         ((length + CBB_Length(circByteBuffer)) > circByteBuffer->size))
+   {
+      return IRC_FAILURE;
+   }
+
+   if (length > 0)
+   {
+      for (i = 0; i < length; ++i)
+      {
+         circByteBuffer->buffer[circByteBuffer->idxHead++] = data;
+         circByteBuffer->idxHead %= circByteBuffer->size;
+      }
+
+      circByteBuffer->length += length;
+
+      if (circByteBuffer->length > circByteBuffer->maxLength)
+      {
+         circByteBuffer->maxLength = circByteBuffer->length;
+      }
+   }
+
+   return IRC_SUCCESS;
+}
+
+/**
  * Pop one byte from the circular byte buffer.
  * This function pops one byte at the tail position of the circular byte buffer.
  * The tail position is updated.
@@ -390,6 +430,11 @@ uint16_t CBB_CRC16n(uint16_t crc, circByteBuffer_t *circByteBuffer, uint16_t ind
       return 0;
    }
 
+   if (index + length > CBB_Length(circByteBuffer))
+   {
+      return IRC_FAILURE;
+   }
+
    index += circByteBuffer->idxTail;
    index %= circByteBuffer->size;
 
@@ -414,14 +459,34 @@ uint16_t CBB_CRC16n(uint16_t crc, circByteBuffer_t *circByteBuffer, uint16_t ind
  */
 IRC_Status_t CBB_Dump(circByteBuffer_t *circByteBuffer, uint32_t lineSize)
 {
+   return CBB_Dumpn(circByteBuffer, 0, CBB_Length(circByteBuffer), lineSize);
+}
+
+/**
+ * Circular buffer data dump.
+ *
+ * @param circByteBuffer is a pointer to the circular buffer.
+ * @param index is the index of the first byte to print relative to the tail (from 0 to circular byte buffer length -1).
+ * @param length is the number of byte to be print.
+ * @param lineSize is the number of bytes to print on a single line.
+ *
+ * @return IRC_SUCCESS if the bytes were successfully dumped.
+ * @return IRC_FAILURE if failed to dump bytes from circular buffer.
+ */
+IRC_Status_t CBB_Dumpn(circByteBuffer_t *circByteBuffer, uint16_t index, uint16_t length, uint32_t lineSize)
+{
    if (circByteBuffer == NULL)
+   {
+      return IRC_FAILURE;
+   }
+
+   if (index + length > CBB_Length(circByteBuffer))
    {
       return IRC_FAILURE;
    }
 
 #ifdef ENABLE_PRINTF
    uint16_t i;
-   uint16_t length = CBB_Length(circByteBuffer);
    uint32_t baseAddr = 0;
 
    for (i = 0; i < length; i++)
@@ -431,7 +496,7 @@ IRC_Status_t CBB_Dump(circByteBuffer_t *circByteBuffer, uint32_t lineSize)
        PRINTF("0x%08X: 0x", baseAddr + i);
      }
 
-     PRINTF("%02X", circByteBuffer->buffer[(i + circByteBuffer->idxTail) % circByteBuffer->size]);
+     PRINTF("%02X", circByteBuffer->buffer[(index + i + circByteBuffer->idxTail) % circByteBuffer->size]);
 
      if ( i % lineSize == lineSize - 1)
      {
@@ -451,4 +516,3 @@ IRC_Status_t CBB_Dump(circByteBuffer_t *circByteBuffer, uint32_t lineSize)
 
    return IRC_SUCCESS;
 }
-

@@ -20,7 +20,6 @@
 #include "CircularBuffer.h"
 #include "NetworkInterface.h"
 #include "IRC_Status.h"
-#include "xuartns550.h"
 #include "CircularUART.h"
 #include "usart.h"
 #include "xintc.h"
@@ -38,10 +37,13 @@
 #define CI_INF(fmt, ...)            FPGA_PRINTF("CI: Info: " fmt "\n", ##__VA_ARGS__)
 #define CI_DBG(fmt, ...)            CI_PRINTF("Debug: " fmt "\n", ##__VA_ARGS__)
 
-#define CI_LINKERR(p_ctrlIntf, fmt, ...) \
-      p_ctrlIntf->linkType == CILT_UART ? CI_ERR("UART @ 0x%08X: " fmt, p_ctrlIntf->link.uart.BaseAddress, ##__VA_ARGS__) : \
-      p_ctrlIntf->linkType == CILT_CUART ? CI_ERR("CUART @ 0x%08X: " fmt, p_ctrlIntf->link.cuart.uart.BaseAddress, ##__VA_ARGS__) : \
-      CI_ERR("USART @ 0x%08X: " fmt, p_ctrlIntf->link.usart.BaseAddress, ##__VA_ARGS__)
+#define CtrlIntf_GetLink(p_ctrlIntf) p_ctrlIntf->linkType == CILT_CUART ? ((circularUART_t *)p_ctrlIntf->p_link) : ((usart_t *)p_ctrlIntf->p_link)
+#define CtrlIntf_GetLinkTypeStr(p_ctrlIntf) p_ctrlIntf->linkType == CILT_CUART ? "CUART": (p_ctrlIntf->linkType == CILT_USART ? "USART" : "UNDEFINED")
+#define CtrlIntf_GetLinkBaseAddress(p_ctrlIntf) \
+      p_ctrlIntf->linkType == CILT_CUART ? ((circularUART_t *)p_ctrlIntf->p_link)->uart.BaseAddress : \
+      (p_ctrlIntf->linkType == CILT_USART ? ((usart_t *)p_ctrlIntf->p_link)->BaseAddress : 0)
+#define CI_LINKERR(p_ctrlIntf, fmt, ...) CI_ERR("%s @ 0x%08X: " fmt, CtrlIntf_GetLinkTypeStr(p_ctrlIntf), CtrlIntf_GetLinkBaseAddress(p_ctrlIntf), ##__VA_ARGS__)
+
 
 #ifdef TELOPS_DEBUG
 // #define CI_REQUEST_PROCESSING_DURATION_TEST
@@ -70,9 +72,9 @@ typedef enum ciProtocolEnum ciProtocol_t;
  * Control interface link type.
  */
 enum ciLinkTypeEnum {
-   CILT_UART = 0,          /**< The control interface uses UART link */
-   CILT_CUART,             /**< The control interface uses circular buffer UART link */
-   CILT_USART              /**< The control interface uses USART link */
+   CILT_UNDEFINED = 0,  /**< Undefined link for the control interface */
+   CILT_CUART,          /**< The control interface uses circular buffer UART link */
+   CILT_USART           /**< The control interface uses USART link */
 };
 
 /**
@@ -98,30 +100,19 @@ typedef enum ciTxStatusEnum ciTxStatus_t;
  */
 struct ctrlIntfStruct {
    ciProtocol_t protocol;     /**< The control interface protocol */
-
    ciLinkType_t linkType;     /**< The control interface link type */
-   union {
-      XUartNs550 uart;        /**< The UART link of the control interface */
-      circularUART_t cuart;   /**< The circular buffer UART link of the control interface */
-      usart_t usart;          /**< The USART link of the control interface */
-   } link;                    /**< The physical link of the control interface */
-   XIntc *intc;               /**< The pointer to the Interrupt controller instance */
-   uint16_t linkIntrId;       /**< The physical link interrupt ID */
+   void *p_link;              /**< Pointer to the physical link of the control interface */
    uint32_t linkErrorCount;   /**< The physical link error counter */
 
-   uint8_t *rxDataBuffer;     /**< Buffer for receiving data */
-   uint16_t rxDataBufferSize; /**< Receiving data buffer size */
-   circByteBuffer_t rxCircDataBuffer; /**< Circular buffer to receive data */
-   uint8_t rxDataReady;       /**< Indicates whether new data is ready to be processed */
+   circByteBuffer_t *rxCircBuffer;
+   circByteBuffer_t *txCircBuffer;
+
    uint64_t rxByteTime;       /**< Indicates when the last byte was received */
+   ciTxStatus_t txStatus;
 
 #ifdef CI_REQUEST_PROCESSING_DURATION_TEST
    uint64_t rxCmdTime;        /**< Indicates when the last command was received */
 #endif
-
-   uint8_t *txDataBuffer;     /**< Buffer for transmitting data */
-   uint16_t txDataBufferSize; /**< Transmitting data buffer size */
-   ciTxStatus_t txStatus;     /**< Indicates control interface transmission status */
 
    netIntfPort_t port;        /**< Control interface network port. */
 
@@ -129,7 +120,6 @@ struct ctrlIntfStruct {
    uint64_t tic_errorCount;   /**< Control interface error counter reset timer */
 
    uint8_t showBytes;         /**< Show RX and TX bytes flag */
-   uint8_t loopback;          /**< Loopback flag */
 };
 
 /**
@@ -137,48 +127,17 @@ struct ctrlIntfStruct {
  */
 typedef struct ctrlIntfStruct ctrlIntf_t;
 
-
-IRC_Status_t CtrlIntf_InitUART(ctrlIntf_t *ctrlIntf,
+IRC_Status_t CtrlIntf_Init(ctrlIntf_t *ctrlIntf,
       ciProtocol_t protocol,
-      uint16_t uartDeviceId,
-      XIntc *intc,
-      uint16_t uartIntrId,
-      uint8_t *rxBuffer,
-      uint16_t rxBufferSize,
-      uint8_t *rxCircBuffer,
-      uint16_t rxCircBufferSize,
-      uint8_t *txBuffer,
-      uint16_t txBufferSize,
+      circByteBuffer_t *rxCircBuffer,
+      circByteBuffer_t *txCircBuffer,
       netIntf_t *netIntf,
       circBuffer_t *cmdQueue,
       niPort_t niPort);
-
-IRC_Status_t CtrlIntf_InitCircularUART(ctrlIntf_t *ctrlIntf,
-      ciProtocol_t protocol,
-      uint16_t uartDeviceId,
-      XIntc *intc,
-      uint16_t uartIntrId,
-      uint8_t *rxCircBuffer,
-      uint16_t rxCircBufferSize,
-      uint8_t *txBuffer,
-      uint16_t txBufferSize,
-      netIntf_t *netIntf,
-      circBuffer_t *cmdQueue,
-      niPort_t niPort);
-
-IRC_Status_t CtrlIntf_InitUSART(ctrlIntf_t *ctrlIntf,
-      ciProtocol_t protocol,
-      uint32_t usartBaseAddress,
-      XIntc *intc,
-      uint16_t uartIntrId,
-      uint8_t *rxCircBuffer,
-      uint16_t rxCircBufferSize,
-      uint8_t *txBuffer,
-      uint16_t txBufferSize,
-      netIntf_t *netIntf,
-      circBuffer_t *cmdQueue,
-      niPort_t niPort);
-
+IRC_Status_t CtrlIntf_SetLink(ctrlIntf_t *ctrlIntf, ciLinkType_t linkType, void *p_link);
+IRC_Status_t CtrlIntf_Enable(ctrlIntf_t *ctrlIntf);
+IRC_Status_t CtrlIntf_Disable(ctrlIntf_t *ctrlIntf);
+IRC_Status_t CtrlIntf_Reset(ctrlIntf_t *ctrlIntf);
 void CtrlIntf_Process(ctrlIntf_t *ctrlIntf);
 
 #endif // CTRLINTERFACE_H

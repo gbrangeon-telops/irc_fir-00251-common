@@ -17,31 +17,33 @@
 #include "StackUtils.h"
 #include <string.h>
 
-static IRC_Status_t DebugTerminalParser(circByteBuffer_t *cbuf);
-
-debugTerminal_t gDebugTerminal;
+static IRC_Status_t DebugTerminalParser(debugTerminal_t *debugTerminal, circByteBuffer_t *cbuf);
+static void DebugTerminal_Input(debugTerminal_t *debugTerminal);
+static void DebugTerminal_Output(debugTerminal_t *debugTerminal);
+static uint8_t DebugTerminal_CommandLength(circByteBuffer_t *cbuf);
+static void DebugTerminal_FlushCommand(circByteBuffer_t *cbuf);
 
 char inbyte(void)
 {
+   extern debugTerminal_t gDebugTerminal;
    char c = 0;
 
-   if (gDebugTerminal.uart.IsReady == XIL_COMPONENT_IS_READY)
-   {
-      c = XUartNs550_RecvByte(gDebugTerminal.uart.BaseAddress);
-   }
+   CBB_Pop(gDebugTerminal.rxCircBuffer, (uint8_t *)&c);
 
    return c;
 }
 
 void outbyte(char c)
 {
-   if (gDebugTerminal.uart.IsReady == XIL_COMPONENT_IS_READY)
+   extern debugTerminal_t gDebugTerminal;
+
+   if (gDebugTerminal.cuart != NULL)
    {
-      XUartNs550_SendByte(gDebugTerminal.uart.BaseAddress, c);
+      XUartNs550_SendByte(gDebugTerminal.cuart->uart.BaseAddress, c);
    }
    else
    {
-      CBB_Push(&gDebugTerminal.txCircDataBuffer, c);
+      CBB_Push(gDebugTerminal.txCircBuffer, c);
       GETTIME(&gDebugTerminal.txByteTime);
    }
 }
@@ -49,79 +51,71 @@ void outbyte(char c)
 /**
  * Initialize debug terminal.
  *
- * @param rxCircBuffer is a pointer to the buffer used to initialize received data circular buffer.
- * @param rxCircBufferSize is the size of the buffer used to initialize received data circular buffer.
- * @param txCircBuffer is a pointer to the buffer used to initialize transmitted data circular buffer.
- * @param txCircBufferSize is the size of the buffer used to initialize transmitted data circular buffer.
+ * @param debugTerminal is a pointer to the debug terminal data structure.
+ * @param rxCircBuffer is a pointer to the circular buffer used to receive data.
+ * @param txCircBuffer is a pointer to the circular buffer used to transmit data.
  *
  * @return IRC_SUCCESS when debug terminal successfully initialized.
  * @return IRC_FAILURE when debug terminal failed to initialize.
  */
-IRC_Status_t DebugTerminal_Init(uint8_t *rxCircBuffer,
-      uint16_t rxCircBufferSize,
-      uint8_t *txCircBuffer,
-      uint16_t txCircBufferSize)
+IRC_Status_t DebugTerminal_Init(debugTerminal_t *debugTerminal,
+      circByteBuffer_t *rxCircBuffer,
+      circByteBuffer_t *txCircBuffer)
 {
-   debugTerminal_t *debugTerminal = &gDebugTerminal;
-
-   CBB_Init(&debugTerminal->rxCircDataBuffer, rxCircBuffer, rxCircBufferSize);
-   CBB_Init(&debugTerminal->txCircDataBuffer, txCircBuffer, txCircBufferSize);
+   debugTerminal->cuart = NULL;
+   debugTerminal->rxCircBuffer = rxCircBuffer;
+   debugTerminal->txCircBuffer = txCircBuffer;
+   debugTerminal->txByteTime = 0;
 
    return IRC_SUCCESS;
 }
 
 /**
- * Initialize debug terminal serial port.
+ * Set debug terminal serial port.
  *
- * @param uartDeviceId is the UART device ID that can be found in xparameters.h file.
+ * @param debugTerminal is a pointer to the debug terminal data structure.
+ * @param cuart is a pointer to the circular UART device.
  *
- * @return IRC_SUCCESS when debug terminal serial port successfully initialized.
- * @return IRC_FAILURE when debug terminal serial port failed to initialize.
+ * @return IRC_SUCCESS always.
  */
-IRC_Status_t DebugTerminal_InitSerial(uint16_t uartDeviceId)
+IRC_Status_t DebugTerminal_SetSerial(debugTerminal_t *debugTerminal, circularUART_t *cuart)
 {
-   debugTerminal_t *debugTerminal = &gDebugTerminal;
-   XUartNs550Format uartFormat;
-   XStatus status;
+   uint8_t byte;
 
-   /*
-    * Initialize the debug terminal UART driver.
-    */
-   status = XUartNs550_Initialize(&debugTerminal->uart, uartDeviceId);
-   if (status != XST_SUCCESS)
+   if (debugTerminal == NULL) return IRC_FAILURE;
+   if (cuart == debugTerminal->cuart) return IRC_SUCCESS;
+
+   // Disconnect previous circular UART
+   if (debugTerminal->cuart != NULL)
    {
-      return IRC_FAILURE;
+      CircularUART_SetCircularBuffers(debugTerminal->cuart, NULL, NULL);
+      CircularUART_SetHandler(debugTerminal->cuart, NULL, NULL);
    }
 
-   /*
-    * Perform a self-test to ensure that the hardware was built correctly.
-    */
-   status = XUartNs550_SelfTest(&debugTerminal->uart);
-   if (status != XST_SUCCESS)
+   debugTerminal->cuart = cuart;
+
+   if (debugTerminal->cuart != NULL)
    {
-      return IRC_FAILURE;
+      // Reset circular UART RX FIFO
+      CircularUART_ResetRxFifo(cuart);
+
+      // Connect new circular UART
+      CircularUART_SetCircularBuffers(debugTerminal->cuart, debugTerminal->rxCircBuffer, debugTerminal->txCircBuffer);
+      CircularUART_SetHandler(debugTerminal->cuart, NULL, debugTerminal);
+
+      // Transmit queued char if any
+      while(!CBB_Empty(debugTerminal->txCircBuffer))
+      {
+         CBB_Pop(debugTerminal->txCircBuffer, &byte);
+         XUartNs550_SendByte(debugTerminal->cuart->uart.BaseAddress, byte);
+      }
+
+      // Check for possible TX circular byte buffer overflow
+      if (debugTerminal->txCircBuffer->maxLength == debugTerminal->txCircBuffer->size)
+      {
+         DT_INF("Possible debug terminal TX circular byte buffer overflow.");
+      }
    }
-
-   // Set UART device data format
-   uartFormat.BaudRate = 115200;
-   uartFormat.DataBits = XUN_FORMAT_8_BITS;
-   uartFormat.Parity = XUN_FORMAT_NO_PARITY;
-   uartFormat.StopBits = XUN_FORMAT_1_STOP_BIT;
-
-   status = XUartNs550_SetDataFormat(&debugTerminal->uart, &uartFormat);
-   if (status != XST_SUCCESS)
-   {
-      return IRC_FAILURE;
-   }
-
-   // Flush Rx FIFO
-   while (XUartNs550_IsReceiveData(debugTerminal->uart.BaseAddress))
-   {
-      XUartNs550_ReadReg(debugTerminal->uart.BaseAddress, XUN_RBR_OFFSET);
-   }
-
-   // Transmit queued char if any
-   DebugTerminal_Output();
 
    return IRC_SUCCESS;
 }
@@ -129,17 +123,17 @@ IRC_Status_t DebugTerminal_InitSerial(uint16_t uartDeviceId)
 /**
  * Connect debug terminal to network interface.
  *
+ * @param debugTerminal is a pointer to the debug terminal data structure.
  * @param netIntf is the pointer to the network interface data structure.
  * @param cmdQueue is the pointer to the debug terminal command queue.
  *
  * @return IRC_SUCCESS when debug terminal successfully initialized.
  * @return IRC_FAILURE when debug terminal failed to initialize.
  */
-IRC_Status_t DebugTerminal_Connect(netIntf_t *netIntf,
+IRC_Status_t DebugTerminal_Connect(debugTerminal_t *debugTerminal,
+      netIntf_t *netIntf,
       circBuffer_t *cmdQueue)
 {
-   debugTerminal_t *debugTerminal = &gDebugTerminal;
-
    debugTerminal->port.port = NIP_DEBUG_TERMINAL;
    debugTerminal->port.cmdQueue = cmdQueue;
 
@@ -156,94 +150,66 @@ IRC_Status_t DebugTerminal_Connect(netIntf_t *netIntf,
 /**
  * Receive data from debug terminal serial port.
  * This function also manage the debug terminal unlock.
+ *
+ * @param debugTerminal is a pointer to the debug terminal data structure.
  */
-void DebugTerminal_Input()
+void DebugTerminal_Input(debugTerminal_t *debugTerminal)
 {
    static uint8_t debugTerminalUnlocked = 0;
-   static uint8_t lastByte = 0;
-   debugTerminal_t *debugTerminal = &gDebugTerminal;
    uint8_t cmdStr[DT_MAX_CMD_SIZE + 1];
    uint32_t cmdlen;
-   uint8_t byte;
 
-   if (debugTerminal->uart.IsReady == XIL_COMPONENT_IS_READY)
+   if (debugTerminal->rxCircBuffer != NULL)
    {
-      // Check for new terminal command
-      while (XUartNs550_IsReceiveData(debugTerminal->uart.BaseAddress) && !CBB_Full(&debugTerminal->rxCircDataBuffer))
+      // Check for EOC
+      if (DebugTerminal_CommandLength(debugTerminal->rxCircBuffer) < CBB_Length(debugTerminal->rxCircBuffer))
       {
-         byte = XUartNs550_ReadReg(debugTerminal->uart.BaseAddress, XUN_RBR_OFFSET);
-
-         if ((byte == DT_LF) && (lastByte == DT_CR))
+         // EOC was found
+         if (debugTerminalUnlocked == 1)
          {
-            // CR + LF
-            // LF char is ignored
-         }
-         else if ((byte == DT_CR) || (byte == DT_LF))
-         {
-            // CR or LF
-            if (debugTerminalUnlocked == 1)
-            {
-               if (DebugTerminalParser(&debugTerminal->rxCircDataBuffer) != IRC_SUCCESS)
-               {
-                  CBB_Flush(&debugTerminal->rxCircDataBuffer);
-               }
-            }
-            else
-            {
-               cmdlen = GetNextArg(&debugTerminal->rxCircDataBuffer, cmdStr, DT_MAX_CMD_SIZE);
-               cmdStr[cmdlen++] = '\0'; // Add string terminator
-
-               if ((strcasecmp((char *)cmdStr, "SPOLET") == 0) && (CBB_Empty(&debugTerminal->rxCircDataBuffer)))
-               {
-                  debugTerminalUnlocked = 1;
-                  DT_INF("Debug terminal unlocked!!!");
-               }
-               else
-               {
-                  CBB_Flush(&debugTerminal->rxCircDataBuffer);
-               }
-            }
+            DebugTerminalParser(debugTerminal, debugTerminal->rxCircBuffer);
          }
          else
          {
-            CBB_Push(&debugTerminal->rxCircDataBuffer, byte);
+            cmdlen = GetNextArg(debugTerminal->rxCircBuffer, cmdStr, DT_MAX_CMD_SIZE);
+            cmdStr[cmdlen++] = '\0'; // Add string terminator
+
+            if ((strcasecmp((char *)cmdStr, "SPOLET") == 0) &&
+                  DebugTerminal_CommandIsEmpty(debugTerminal->rxCircBuffer))
+            {
+               debugTerminalUnlocked = 1;
+               DT_INF("Debug terminal unlocked!!!");
+            }
          }
 
-         lastByte = byte;
+         // Flush remaining command characters (if any) and EOC
+         DebugTerminal_FlushCommand(debugTerminal->rxCircBuffer);
       }
    }
 }
 
 /**
- * Transmit data to debug terminal serial port or to other
- * FPGA debug terminal when there is no available serial port.
+ * Transmit data to other FPGA debug terminal when there is no available serial port.
+ *
+ * @param debugTerminal is a pointer to the debug terminal data structure.
  */
-void DebugTerminal_Output()
+void DebugTerminal_Output(debugTerminal_t *debugTerminal)
 {
-   debugTerminal_t *debugTerminal = &gDebugTerminal;
-   uint8_t byte;
-
-   if (debugTerminal->uart.IsReady == XIL_COMPONENT_IS_READY)
-   {
-      // Transmit output bytes through serial port
-      while(!CBB_Empty(&debugTerminal->txCircDataBuffer))
-      {
-         CBB_Pop(&debugTerminal->txCircDataBuffer, &byte);
-         XUartNs550_SendByte(debugTerminal->uart.BaseAddress, byte);
-      }
-   }
-   else if ((debugTerminal->port.netIntf->address != NIA_PROCESSING_FPGA) &&
-         ((CBB_Length(&debugTerminal->txCircDataBuffer) >= F1F2_MAX_DEBUG_DATA_SIZE) ||
-         ((!CBB_Empty(&debugTerminal->txCircDataBuffer)) && (elapsed_time_us(debugTerminal->txByteTime) > DT_TX_BUFFER_TIMEOUT))) &&
-         (debugTerminal->port.netIntf->currentState == NIS_READY))
+   if ((debugTerminal->cuart == NULL) &&
+      (debugTerminal->port.netIntf->address != NIA_PROCESSING_FPGA) &&
+      ((CBB_Length(debugTerminal->txCircBuffer) >= F1F2_MAX_DEBUG_DATA_SIZE) ||
+      ((!CBB_Empty(debugTerminal->txCircBuffer)) && (elapsed_time_us(debugTerminal->txByteTime) > DT_TX_BUFFER_TIMEOUT))) &&
+      (debugTerminal->port.netIntf->currentState == NIS_READY))
    {
       // Transmit output to processing FPGA debug terminal
-       DebugTerminal_SendMsgRequest(debugTerminal);
+      DebugTerminal_SendMsgRequest(debugTerminal);
    }
 }
 
 /**
  * Builds a F1F2 TEXT command from the Debug Terminal TX Buffer
+ *
+ * @param debugTerminal is a pointer to the debug terminal data structure.
  */
 void DebugTerminal_SendMsgRequest(debugTerminal_t *debugTerminal) {
 
@@ -256,8 +222,8 @@ void DebugTerminal_SendMsgRequest(debugTerminal_t *debugTerminal) {
    dtRequest.f1f2.destAddr = NIA_PROCESSING_FPGA;
    dtRequest.f1f2.destPort = NIP_DEBUG_TERMINAL;
    dtRequest.f1f2.cmd = F1F2_CMD_DEBUG_TEXT;
-   CBB_Popn(&debugTerminal->txCircDataBuffer,
-      MIN(CBB_Length(&debugTerminal->txCircDataBuffer), F1F2_MAX_DEBUG_DATA_SIZE),
+   CBB_Popn(debugTerminal->txCircBuffer,
+      MIN(CBB_Length(debugTerminal->txCircBuffer), F1F2_MAX_DEBUG_DATA_SIZE),
 	  (uint8_t *)dtRequest.f1f2.payload.debug.text);
    dtRequest.port = &debugTerminal->port;
 
@@ -269,12 +235,13 @@ void DebugTerminal_SendMsgRequest(debugTerminal_t *debugTerminal) {
 
 /**
  * Debug terminal process.
+ *
+ * @param debugTerminal is a pointer to the debug terminal data structure.
  */
-void DebugTerminal_Process()
+void DebugTerminal_Process(debugTerminal_t *debugTerminal)
 {
    static networkCommand_t dtRequest;
    static networkCommand_t dtResponse;
-   debugTerminal_t *debugTerminal = &gDebugTerminal;
    circByteBuffer_t cbufCommand;
 
    // Clear debug terminal commands
@@ -301,7 +268,7 @@ void DebugTerminal_Process()
                      (uint8_t *) dtRequest.f1f2.payload.debug.text,
                      sizeof(dtRequest.f1f2.payload.debug.text),
                      strlen(dtRequest.f1f2.payload.debug.text));
-               DebugTerminalParser(&cbufCommand);
+               DebugTerminalParser(debugTerminal, &cbufCommand);
                F1F2_BuildACKResponse(&dtRequest.f1f2, &dtResponse.f1f2);
                break;
 
@@ -340,8 +307,8 @@ void DebugTerminal_Process()
       }
    }
 
-   DebugTerminal_Input();
-   DebugTerminal_Output();
+   DebugTerminal_Input(debugTerminal);
+   DebugTerminal_Output(debugTerminal);
 }
 
 /**
@@ -349,16 +316,16 @@ void DebugTerminal_Process()
  * This general command parser is used to parse and validate command mnemonic.
  * It also calls command parsers related to command mnemonic.
  *
+ * @param debugTerminal is a pointer to the debug terminal data structure.
  * @param cbuf is the pointer to the circular buffer containing the data to be parsed.
  *
  * @return IRC_SUCCESS when debug terminal command was successfully executed.
  * @return IRC_FAILURE otherwise.
  */
-IRC_Status_t DebugTerminalParser(circByteBuffer_t *cbuf)
+IRC_Status_t DebugTerminalParser(debugTerminal_t *debugTerminal, circByteBuffer_t *cbuf)
 {
    extern debugTerminalCommand_t gDebugTerminalCommands[];
    extern uint32_t gDebugTerminalCommandsCount;
-   debugTerminal_t *debugTerminal = &gDebugTerminal;
    networkCommand_t dtRequest;
    uint8_t cmdStr[DT_MAX_CMD_SIZE + 1];
    uint32_t cmdlen;
@@ -403,7 +370,7 @@ IRC_Status_t DebugTerminalParser(circByteBuffer_t *cbuf)
          dtRequest.f1f2.destAddr = destAddr;
          dtRequest.f1f2.destPort = NIP_DEBUG_TERMINAL;
          dtRequest.f1f2.cmd = F1F2_CMD_DEBUG_CMD;
-         CBB_Popn(cbuf, MIN(CBB_Length(cbuf), F1F2_MAX_DEBUG_DATA_SIZE), (uint8_t*) dtRequest.f1f2.payload.debug.text);
+         CBB_Popn(cbuf, MIN(DebugTerminal_CommandLength(cbuf), F1F2_MAX_DEBUG_DATA_SIZE), (uint8_t*) dtRequest.f1f2.payload.debug.text);
          dtRequest.port = &debugTerminal->port;
 
          if (NetIntf_EnqueueCmd(debugTerminal->port.netIntf, &dtRequest) != IRC_SUCCESS)
@@ -419,7 +386,8 @@ IRC_Status_t DebugTerminalParser(circByteBuffer_t *cbuf)
          cmdStr[cmdlen++] = '\0'; // Add string terminator
       }
    }
-   else if ((gDebugTerminalCommands != NULL) && (gDebugTerminalCommandsCount > 0))
+
+   if ((gDebugTerminalCommands != NULL) && (gDebugTerminalCommandsCount > 0))
    {
       i = 0;
       while ((i < gDebugTerminalCommandsCount) && (strcasecmp((char *)cmdStr, gDebugTerminalCommands[i].mnemonic) != 0))
@@ -452,44 +420,46 @@ IRC_Status_t DebugTerminalParser(circByteBuffer_t *cbuf)
  */
 uint16_t GetNextArg(circByteBuffer_t *cbuf, uint8_t *buffer, uint16_t buflen)
 {
-   uint8_t byte = 0;
+   uint8_t byte;
    uint16_t length = 0;
-   IRC_Status_t result = IRC_SUCCESS;
    uint8_t argTerminated = 0;
+   uint16_t cmdlen = 0;
 
-   do
+   while ((argTerminated == 0) && (CBB_Peek(cbuf, length, &byte) == IRC_SUCCESS))
    {
-      result = CBB_Pop(cbuf, &byte);
-      if ((result == IRC_SUCCESS) && (byte != ' '))
+      if (byte == ' ')
       {
-         buffer[length++] = byte;
+         if (length > 0)
+         {
+            argTerminated = 1;
+         }
+         length++;
+      }
+      else if ((byte == DT_LF) || (byte == DT_CR))
+      {
+         argTerminated = 1;
       }
       else
       {
-         argTerminated = 1;
-      }
-   }
-   while ((argTerminated == 0) && (length < buflen));
-
-   if (length == buflen)
-   {
-      // Check if argument is terminated
-      result = CBB_Peek(cbuf, 0, &byte);
-      if ((result != IRC_SUCCESS) || (byte == ' '))
-      {
-         argTerminated = 1;
-         CBB_Flushn(cbuf, 1);
+         if (cmdlen == buflen) break;
+         buffer[cmdlen++] = byte;
+         length++;
       }
    }
 
-   if (argTerminated == 1)
+   CBB_Flushn(cbuf, length);
+
+   if (CBB_Empty(cbuf))
    {
-      return length;
+      argTerminated = 1;
    }
-   else
+
+   if (argTerminated == 0)
    {
       return 0;
    }
+
+   return cmdlen;
 }
 
 /**
@@ -752,6 +722,41 @@ IRC_Status_t ParseFloatNumDec(char *str, uint8_t length, float *value)
    return IRC_SUCCESS;
 }
 
+uint8_t DebugTerminal_CommandIsEmpty(circByteBuffer_t *cbuf)
+{
+   uint8_t byte;
+
+   return ((CBB_Empty(cbuf)) || ((CBB_Peek(cbuf, 0, &byte) == IRC_SUCCESS) && ((byte == DT_LF) || (byte == DT_CR))));
+}
+
+uint8_t DebugTerminal_CommandLength(circByteBuffer_t *cbuf)
+{
+   uint8_t byte;
+   uint16_t cmdlen = 0;
+
+   while ((CBB_Peek(cbuf, cmdlen, &byte) == IRC_SUCCESS) && (byte != DT_LF) && (byte != DT_CR))
+   {
+      cmdlen++;
+   }
+
+   return cmdlen;
+}
+
+void DebugTerminal_FlushCommand(circByteBuffer_t *cbuf)
+{
+   uint8_t byte;
+
+   while ((CBB_Peek(cbuf, 0, &byte) == IRC_SUCCESS) && (byte != DT_LF) && (byte != DT_CR))
+   {
+      CBB_Flushn(cbuf, 1);
+   }
+
+   while ((CBB_Peek(cbuf, 0, &byte) == IRC_SUCCESS) && ((byte == DT_LF) || (byte == DT_CR)))
+   {
+      CBB_Flushn(cbuf, 1);
+   }
+}
+
 /******************************************************************************
  * Common debug terminal commands
  ******************************************************************************/
@@ -841,7 +846,7 @@ IRC_Status_t DebugTerminalParseRDM(circByteBuffer_t *cbuf)
    }
 
    // There is supposed to be no remaining bytes in the buffer
-   if (!CBB_Empty(cbuf))
+   if (!DebugTerminal_CommandIsEmpty(cbuf))
    {
       DT_ERR("Unsupported command arguments");
       return IRC_FAILURE;
@@ -949,7 +954,7 @@ IRC_Status_t DebugTerminalParseWRM(circByteBuffer_t *cbuf)
    }
 
    // There is supposed to be no remaining bytes in the buffer
-   if (!CBB_Empty(cbuf))
+   if (!DebugTerminal_CommandIsEmpty(cbuf))
    {
       DT_ERR("Unsupported command arguments");
       return IRC_FAILURE;
@@ -980,7 +985,7 @@ IRC_Status_t DebugTerminalParseNET(circByteBuffer_t *cbuf)
    uint32_t showPacketsPortFilter = 0;
    uint32_t i, j;
 
-   if (!CBB_Empty(cbuf))
+   if (!DebugTerminal_CommandIsEmpty(cbuf))
    {
       // Read show packet value
       arglen = GetNextArg(cbuf, argStr, 1);
@@ -991,7 +996,7 @@ IRC_Status_t DebugTerminalParseNET(circByteBuffer_t *cbuf)
          return IRC_FAILURE;
       }
 
-      if ((showPacketsMode) && (!CBB_Empty(cbuf)))
+      if ((showPacketsMode) && (!DebugTerminal_CommandIsEmpty(cbuf)))
       {
          // Read show packet port filter
          arglen = GetNextArg(cbuf, argStr, 2);
@@ -1006,7 +1011,7 @@ IRC_Status_t DebugTerminalParseNET(circByteBuffer_t *cbuf)
       }
 
       // There is supposed to be no remaining bytes in the buffer
-      if (!CBB_Empty(cbuf))
+      if (!DebugTerminal_CommandIsEmpty(cbuf))
       {
          DT_ERR("Unsupported command arguments");
          return IRC_FAILURE;
@@ -1073,7 +1078,7 @@ IRC_Status_t DebugTerminalParseNET(circByteBuffer_t *cbuf)
 IRC_Status_t DebugTerminalParseSTACK(circByteBuffer_t *cbuf)
 {
    // There is supposed to be no remaining bytes in the buffer
-   if (!CBB_Empty(cbuf))
+   if (!DebugTerminal_CommandIsEmpty(cbuf))
    {
       DT_ERR("Unsupported command arguments");
       return IRC_FAILURE;

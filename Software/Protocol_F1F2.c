@@ -20,8 +20,10 @@
 
 IRC_Status_t F1F2_PayloadParser(uint8_t *p_payload, uint16_t pdc, F1F2Command_t *f1f2Cmd);
 IRC_Status_t F1F2_CircPayloadParser(circByteBuffer_t *circByteBuffer, uint16_t offset, uint16_t pdc, F1F2Command_t *f1f2Cmd);
-IRC_Status_t F1F2_PayloadDataCountValidator(uint8_t cmd, uint16_t pdc);
-uint32_t F1F2_FrameBuilder(uint8_t *buffer, uint16_t buflen, uint8_t cmd, F1F2PayloadData_t *payloadData, uint16_t payloadDataCount);
+IRC_Status_t F1F2_PayloadDataCountValidator(uint8_t cmd, uint16_t pdc);;
+IRC_Status_t F1F2_CommandPayloadBuilder(F1F2Command_t *f1f2Cmd, F1F2PayloadData_t payloadData[], uint16_t payloadDataSize, uint16_t *payloadDataCount);
+uint32_t F1F2_FrameBuilder(uint8_t *buffer, uint16_t buflen, uint8_t cmd, F1F2PayloadData_t payloadData[], uint16_t payloadDataCount);
+uint32_t F1F2_CircFrameBuilder(circByteBuffer_t *circByteBuffer, uint8_t cmd, F1F2PayloadData_t payloadData[], uint16_t payloadDataCount);
 
 
 /**
@@ -804,76 +806,139 @@ void F1F2_BuildNAKResponse(F1F2Command_t *p_request, F1F2Command_t *p_response)
 uint32_t F1F2_CommandBuilder(F1F2Command_t *f1f2Cmd, uint8_t *buffer, uint16_t buflen)
 {
    F1F2PayloadData_t payloadData[11];
-   uint16_t dataCount = 0;
+   uint16_t payloadDataCount;
    uint8_t cmd = f1f2Cmd->cmd;
 
    if (f1f2Cmd->isNetwork == 1)
    {
       cmd = F1F2_CMD_NETWORK;
-      payloadData[dataCount].p_data = &f1f2Cmd->srcAddr;
-      payloadData[dataCount].dataLength = F1F2_NET_SRC_ADDR_SIZE;
-      payloadData[dataCount].padLength = 0;
-      dataCount++;
+   }
 
-      payloadData[dataCount].p_data = &f1f2Cmd->srcPort;
-      payloadData[dataCount].dataLength = F1F2_NET_SRC_PORT_SIZE;
-      payloadData[dataCount].padLength = 0;
-      dataCount++;
+   if (F1F2_CommandPayloadBuilder(f1f2Cmd, payloadData, NUM_OF(payloadData), &payloadDataCount) != IRC_SUCCESS)
+   {
+      return 0;
+   }
 
-      payloadData[dataCount].p_data = &f1f2Cmd->destAddr;
-      payloadData[dataCount].dataLength = F1F2_NET_DEST_ADDR_SIZE;
-      payloadData[dataCount].padLength = 0;
-      dataCount++;
+   return F1F2_FrameBuilder(buffer, buflen, cmd, payloadData, payloadDataCount);
+}
 
-      payloadData[dataCount].p_data = &f1f2Cmd->destPort;
-      payloadData[dataCount].dataLength = F1F2_NET_DEST_PORT_SIZE;
-      payloadData[dataCount].padLength = 0;
-      dataCount++;
+/**
+ * F1F2 protocol circular command builder function.
+ *
+ * @param f1f2Cmd is the pointer to the F1F2 command structure that is going to be used to generate transmitted data.
+ * @param circByteBuffer is a pointer to the circular byte buffer that will be transmitted.
+ *
+ * @return The command length to be transmitted.
+ */
+uint32_t F1F2_CircCommandBuilder(F1F2Command_t *f1f2Cmd, circByteBuffer_t *circByteBuffer)
+{
+   F1F2PayloadData_t payloadData[11];
+   uint16_t payloadDataCount;
+   uint8_t cmd = f1f2Cmd->cmd;
 
-      payloadData[dataCount].p_data = &f1f2Cmd->cmd;
-      payloadData[dataCount].dataLength = F1F2_CMD_CODE_SIZE;
-      payloadData[dataCount].padLength = 0;
-      dataCount++;
+   if (f1f2Cmd->isNetwork == 1)
+   {
+      cmd = F1F2_CMD_NETWORK;
+   }
+
+   if (F1F2_CommandPayloadBuilder(f1f2Cmd, payloadData, NUM_OF(payloadData), &payloadDataCount) != IRC_SUCCESS)
+   {
+      return 0;
+   }
+
+   return F1F2_CircFrameBuilder(circByteBuffer, cmd, payloadData, payloadDataCount);
+}
+
+/**
+ * F1F2 protocol command payload builder function.
+ *
+ * @param f1f2Cmd is the pointer to the F1F2 command structure that is going to be used to generate transmitted data.
+ * @param payloadData is the payload data array.
+ * @param payloadDataSize is the maximum number of element that can be contained in payload data array.
+ * @param payloadDataCount is the pointer to the number of payload data.
+ *
+ * @return The command length to be transmitted.
+ */
+IRC_Status_t F1F2_CommandPayloadBuilder(F1F2Command_t *f1f2Cmd, F1F2PayloadData_t payloadData[], uint16_t payloadDataSize, uint16_t *payloadDataCount)
+{
+   *payloadDataCount = 0;
+
+   if (f1f2Cmd->isNetwork == 1)
+   {
+      if (*payloadDataCount + 5 > payloadDataSize) return IRC_FAILURE;
+
+      payloadData[*payloadDataCount].p_data = &f1f2Cmd->srcAddr;
+      payloadData[*payloadDataCount].dataLength = F1F2_NET_SRC_ADDR_SIZE;
+      payloadData[*payloadDataCount].padLength = 0;
+      (*payloadDataCount)++;
+
+      payloadData[*payloadDataCount].p_data = &f1f2Cmd->srcPort;
+      payloadData[*payloadDataCount].dataLength = F1F2_NET_SRC_PORT_SIZE;
+      payloadData[*payloadDataCount].padLength = 0;
+      (*payloadDataCount)++;
+
+      payloadData[*payloadDataCount].p_data = &f1f2Cmd->destAddr;
+      payloadData[*payloadDataCount].dataLength = F1F2_NET_DEST_ADDR_SIZE;
+      payloadData[*payloadDataCount].padLength = 0;
+      (*payloadDataCount)++;
+
+      payloadData[*payloadDataCount].p_data = &f1f2Cmd->destPort;
+      payloadData[*payloadDataCount].dataLength = F1F2_NET_DEST_PORT_SIZE;
+      payloadData[*payloadDataCount].padLength = 0;
+      (*payloadDataCount)++;
+
+      payloadData[*payloadDataCount].p_data = &f1f2Cmd->cmd;
+      payloadData[*payloadDataCount].dataLength = F1F2_CMD_CODE_SIZE;
+      payloadData[*payloadDataCount].padLength = 0;
+      (*payloadDataCount)++;
    }
 
    switch (f1f2Cmd->cmd)
    {
       case F1F2_CMD_ACK:
       case F1F2_CMD_NAK:
-         payloadData[dataCount].p_data = &f1f2Cmd->payload.ack.cmd;
-         payloadData[dataCount].dataLength = F1F2_CMD_CODE_SIZE;
-         payloadData[dataCount].padLength = 0;
-         dataCount++;
+         if (*payloadDataCount + 1 > payloadDataSize) return IRC_FAILURE;
+
+         payloadData[*payloadDataCount].p_data = &f1f2Cmd->payload.ack.cmd;
+         payloadData[*payloadDataCount].dataLength = F1F2_CMD_CODE_SIZE;
+         payloadData[*payloadDataCount].padLength = 0;
+         (*payloadDataCount)++;
          break;
 
       case F1F2_CMD_REG_READ_REQ:
-         payloadData[dataCount].p_data = &f1f2Cmd->payload.regRW.address;
-         payloadData[dataCount].dataLength = F1F2_REG_ADDR_SIZE;
-         payloadData[dataCount].padLength = 0;
-         dataCount++;
+         if (*payloadDataCount + 1 > payloadDataSize) return IRC_FAILURE;
+
+         payloadData[*payloadDataCount].p_data = &f1f2Cmd->payload.regRW.address;
+         payloadData[*payloadDataCount].dataLength = F1F2_REG_ADDR_SIZE;
+         payloadData[*payloadDataCount].padLength = 0;
+         (*payloadDataCount)++;
          break;
 
       case F1F2_CMD_REG_READ_RSP:
       case F1F2_CMD_REG_WRITE:
-         payloadData[dataCount].p_data = &f1f2Cmd->payload.regRW.address;
-         payloadData[dataCount].dataLength = F1F2_REG_ADDR_SIZE;
-         payloadData[dataCount].padLength = 0;
-         dataCount++;
+         if (*payloadDataCount + 2 > payloadDataSize) return IRC_FAILURE;
 
-         payloadData[dataCount].p_data = f1f2Cmd->payload.regRW.data;
-         payloadData[dataCount].dataLength = f1f2Cmd->payload.regRW.dataLength;
-         payloadData[dataCount].padLength = f1f2Cmd->payload.regRW.padLength;
-         dataCount++;
+         payloadData[*payloadDataCount].p_data = &f1f2Cmd->payload.regRW.address;
+         payloadData[*payloadDataCount].dataLength = F1F2_REG_ADDR_SIZE;
+         payloadData[*payloadDataCount].padLength = 0;
+         (*payloadDataCount)++;
+
+         payloadData[*payloadDataCount].p_data = f1f2Cmd->payload.regRW.data;
+         payloadData[*payloadDataCount].dataLength = f1f2Cmd->payload.regRW.dataLength;
+         payloadData[*payloadDataCount].padLength = f1f2Cmd->payload.regRW.padLength;
+         (*payloadDataCount)++;
          break;
 
       case F1F2_CMD_FILE_COUNT_REQ:
          break;
 
       case F1F2_CMD_FILE_COUNT_RSP:
-         payloadData[dataCount].p_data = &f1f2Cmd->payload.fileCount.count;
-         payloadData[dataCount].dataLength = F1F2_FILE_COUNT_SIZE;
-         payloadData[dataCount].padLength = 0;
-         dataCount++;
+         if (*payloadDataCount + 1 > payloadDataSize) return IRC_FAILURE;
+
+         payloadData[*payloadDataCount].p_data = &f1f2Cmd->payload.fileCount.count;
+         payloadData[*payloadDataCount].dataLength = F1F2_FILE_COUNT_SIZE;
+         payloadData[*payloadDataCount].padLength = 0;
+         (*payloadDataCount)++;
          break;
 
       case F1F2_CMD_FILE_INFO_REQ:
@@ -881,197 +946,219 @@ uint32_t F1F2_CommandBuilder(F1F2Command_t *f1f2Cmd, uint8_t *buffer, uint16_t b
       case F1F2_CMD_FILE_CLOSE:
       case F1F2_CMD_FILE_CHECK_REQ:
       case F1F2_CMD_FILE_DELETE:
-         payloadData[dataCount].p_data = &f1f2Cmd->payload.fileIndex.index;
-         payloadData[dataCount].dataLength = F1F2_FILE_INDEX_SIZE;
-         payloadData[dataCount].padLength = 0;
-         dataCount++;
+         if (*payloadDataCount + 1 > payloadDataSize) return IRC_FAILURE;
+
+         payloadData[*payloadDataCount].p_data = &f1f2Cmd->payload.fileIndex.index;
+         payloadData[*payloadDataCount].dataLength = F1F2_FILE_INDEX_SIZE;
+         payloadData[*payloadDataCount].padLength = 0;
+         (*payloadDataCount)++;
          break;
 
       case F1F2_CMD_FILE_INFO_RSP:
-         payloadData[dataCount].p_data = &f1f2Cmd->payload.fileInfo.index;
-         payloadData[dataCount].dataLength = F1F2_FILE_INDEX_SIZE;
-         payloadData[dataCount].padLength = 0;
-         dataCount++;
+         if (*payloadDataCount + 6 > payloadDataSize) return IRC_FAILURE;
 
-         payloadData[dataCount].p_data = f1f2Cmd->payload.fileInfo.name;
-         payloadData[dataCount].dataLength = F1F2_FILE_NAME_SIZE;
-         payloadData[dataCount].padLength = 0;
-         dataCount++;
+         payloadData[*payloadDataCount].p_data = &f1f2Cmd->payload.fileInfo.index;
+         payloadData[*payloadDataCount].dataLength = F1F2_FILE_INDEX_SIZE;
+         payloadData[*payloadDataCount].padLength = 0;
+         (*payloadDataCount)++;
 
-         payloadData[dataCount].p_data = &f1f2Cmd->payload.fileInfo.size;
-         payloadData[dataCount].dataLength = F1F2_FILE_SIZE_SIZE;
-         payloadData[dataCount].padLength = 0;
-         dataCount++;
+         payloadData[*payloadDataCount].p_data = f1f2Cmd->payload.fileInfo.name;
+         payloadData[*payloadDataCount].dataLength = F1F2_FILE_NAME_SIZE;
+         payloadData[*payloadDataCount].padLength = 0;
+         (*payloadDataCount)++;
 
-         payloadData[dataCount].p_data = &f1f2Cmd->payload.fileInfo.attributes;
-         payloadData[dataCount].dataLength = F1F2_FILE_ATTR_SIZE;
-         payloadData[dataCount].padLength = 0;
-         dataCount++;
+         payloadData[*payloadDataCount].p_data = &f1f2Cmd->payload.fileInfo.size;
+         payloadData[*payloadDataCount].dataLength = F1F2_FILE_SIZE_SIZE;
+         payloadData[*payloadDataCount].padLength = 0;
+         (*payloadDataCount)++;
 
-         payloadData[dataCount].p_data = &f1f2Cmd->payload.fileInfo.id;
-         payloadData[dataCount].dataLength = F1F2_FILE_ID_SIZE;
-         payloadData[dataCount].padLength = 0;
-         dataCount++;
+         payloadData[*payloadDataCount].p_data = &f1f2Cmd->payload.fileInfo.attributes;
+         payloadData[*payloadDataCount].dataLength = F1F2_FILE_ATTR_SIZE;
+         payloadData[*payloadDataCount].padLength = 0;
+         (*payloadDataCount)++;
 
-         payloadData[dataCount].p_data = &f1f2Cmd->payload.fileInfo.type;
-         payloadData[dataCount].dataLength = F1F2_FILE_TYPE_SIZE;
-         payloadData[dataCount].padLength = 0;
-         dataCount++;
+         payloadData[*payloadDataCount].p_data = &f1f2Cmd->payload.fileInfo.id;
+         payloadData[*payloadDataCount].dataLength = F1F2_FILE_ID_SIZE;
+         payloadData[*payloadDataCount].padLength = 0;
+         (*payloadDataCount)++;
+
+         payloadData[*payloadDataCount].p_data = &f1f2Cmd->payload.fileInfo.type;
+         payloadData[*payloadDataCount].dataLength = F1F2_FILE_TYPE_SIZE;
+         payloadData[*payloadDataCount].padLength = 0;
+         (*payloadDataCount)++;
          break;
 
       case F1F2_CMD_FILE_CREATE_REQ:
-         payloadData[dataCount].p_data = f1f2Cmd->payload.fileName.name;
-         payloadData[dataCount].dataLength = F1F2_FILE_NAME_SIZE;
-         payloadData[dataCount].padLength = 0;
-         dataCount++;
+         if (*payloadDataCount + 1 > payloadDataSize) return IRC_FAILURE;
+
+         payloadData[*payloadDataCount].p_data = f1f2Cmd->payload.fileName.name;
+         payloadData[*payloadDataCount].dataLength = F1F2_FILE_NAME_SIZE;
+         payloadData[*payloadDataCount].padLength = 0;
+         (*payloadDataCount)++;
          break;
 
       case F1F2_CMD_FILE_READ_REQ:
-         payloadData[dataCount].p_data = &f1f2Cmd->payload.fileRW.index;
-         payloadData[dataCount].dataLength = F1F2_FILE_INDEX_SIZE;
-         payloadData[dataCount].padLength = 0;
-         dataCount++;
+         if (*payloadDataCount + 3 > payloadDataSize) return IRC_FAILURE;
 
-         payloadData[dataCount].p_data = &f1f2Cmd->payload.fileRW.offset;
-         payloadData[dataCount].dataLength = F1F2_FILE_OFFSET_SIZE;
-         payloadData[dataCount].padLength = 0;
-         dataCount++;
+         payloadData[*payloadDataCount].p_data = &f1f2Cmd->payload.fileRW.index;
+         payloadData[*payloadDataCount].dataLength = F1F2_FILE_INDEX_SIZE;
+         payloadData[*payloadDataCount].padLength = 0;
+         (*payloadDataCount)++;
 
-         payloadData[dataCount].p_data = &f1f2Cmd->payload.fileRW.dataLength;
-         payloadData[dataCount].dataLength = F1F2_FILE_LENGTH_SIZE;
-         payloadData[dataCount].padLength = 0;
-         dataCount++;
+         payloadData[*payloadDataCount].p_data = &f1f2Cmd->payload.fileRW.offset;
+         payloadData[*payloadDataCount].dataLength = F1F2_FILE_OFFSET_SIZE;
+         payloadData[*payloadDataCount].padLength = 0;
+         (*payloadDataCount)++;
+
+         payloadData[*payloadDataCount].p_data = &f1f2Cmd->payload.fileRW.dataLength;
+         payloadData[*payloadDataCount].dataLength = F1F2_FILE_LENGTH_SIZE;
+         payloadData[*payloadDataCount].padLength = 0;
+         (*payloadDataCount)++;
          break;
 
       case F1F2_CMD_FILE_READ_RSP:
       case F1F2_CMD_FILE_WRITE:
-         payloadData[dataCount].p_data = &f1f2Cmd->payload.fileRW.index;
-         payloadData[dataCount].dataLength = F1F2_FILE_INDEX_SIZE;
-         payloadData[dataCount].padLength = 0;
-         dataCount++;
+         if (*payloadDataCount + 4 > payloadDataSize) return IRC_FAILURE;
 
-         payloadData[dataCount].p_data = &f1f2Cmd->payload.fileRW.offset;
-         payloadData[dataCount].dataLength = F1F2_FILE_OFFSET_SIZE;
-         payloadData[dataCount].padLength = 0;
-         dataCount++;
+         payloadData[*payloadDataCount].p_data = &f1f2Cmd->payload.fileRW.index;
+         payloadData[*payloadDataCount].dataLength = F1F2_FILE_INDEX_SIZE;
+         payloadData[*payloadDataCount].padLength = 0;
+         (*payloadDataCount)++;
 
-         payloadData[dataCount].p_data = &f1f2Cmd->payload.fileRW.dataLength;
-         payloadData[dataCount].dataLength = F1F2_FILE_LENGTH_SIZE;
-         payloadData[dataCount].padLength = 0;
-         dataCount++;
+         payloadData[*payloadDataCount].p_data = &f1f2Cmd->payload.fileRW.offset;
+         payloadData[*payloadDataCount].dataLength = F1F2_FILE_OFFSET_SIZE;
+         payloadData[*payloadDataCount].padLength = 0;
+         (*payloadDataCount)++;
 
-         payloadData[dataCount].p_data = f1f2Cmd->payload.fileRW.data;
-         payloadData[dataCount].dataLength = f1f2Cmd->payload.fileRW.dataLength;
-         payloadData[dataCount].padLength = 0;
-         dataCount++;
+         payloadData[*payloadDataCount].p_data = &f1f2Cmd->payload.fileRW.dataLength;
+         payloadData[*payloadDataCount].dataLength = F1F2_FILE_LENGTH_SIZE;
+         payloadData[*payloadDataCount].padLength = 0;
+         (*payloadDataCount)++;
+
+         payloadData[*payloadDataCount].p_data = f1f2Cmd->payload.fileRW.data;
+         payloadData[*payloadDataCount].dataLength = f1f2Cmd->payload.fileRW.dataLength;
+         payloadData[*payloadDataCount].padLength = 0;
+         (*payloadDataCount)++;
          break;
 
       case F1F2_CMD_FILE_CHECK_RSP:
-         payloadData[dataCount].p_data = &f1f2Cmd->payload.fileCheck.index;
-         payloadData[dataCount].dataLength = F1F2_FILE_INDEX_SIZE;
-         payloadData[dataCount].padLength = 0;
-         dataCount++;
+         if (*payloadDataCount + 2 > payloadDataSize) return IRC_FAILURE;
 
-         payloadData[dataCount].p_data = &f1f2Cmd->payload.fileCheck.crc16;
-         payloadData[dataCount].dataLength = F1F2_FILE_CRC16_SIZE;
-         payloadData[dataCount].padLength = 0;
-         dataCount++;
+         payloadData[*payloadDataCount].p_data = &f1f2Cmd->payload.fileCheck.index;
+         payloadData[*payloadDataCount].dataLength = F1F2_FILE_INDEX_SIZE;
+         payloadData[*payloadDataCount].padLength = 0;
+         (*payloadDataCount)++;
+
+         payloadData[*payloadDataCount].p_data = &f1f2Cmd->payload.fileCheck.crc16;
+         payloadData[*payloadDataCount].dataLength = F1F2_FILE_CRC16_SIZE;
+         payloadData[*payloadDataCount].padLength = 0;
+         (*payloadDataCount)++;
          break;
 
       case F1F2_CMD_PROM_ERASE:
-         payloadData[dataCount].p_data = &f1f2Cmd->payload.promErase.device;
-         payloadData[dataCount].dataLength = F1F2_PROM_DEVICE_SIZE;
-         payloadData[dataCount].padLength = 0;
-         dataCount++;
+         if (*payloadDataCount + 3 > payloadDataSize) return IRC_FAILURE;
 
-         payloadData[dataCount].p_data = &f1f2Cmd->payload.promErase.offset;
-         payloadData[dataCount].dataLength = F1F2_PROM_OFFSET_SIZE;
-         payloadData[dataCount].padLength = 0;
-         dataCount++;
+         payloadData[*payloadDataCount].p_data = &f1f2Cmd->payload.promErase.device;
+         payloadData[*payloadDataCount].dataLength = F1F2_PROM_DEVICE_SIZE;
+         payloadData[*payloadDataCount].padLength = 0;
+         (*payloadDataCount)++;
 
-         payloadData[dataCount].p_data = &f1f2Cmd->payload.promErase.dataLength;
-         payloadData[dataCount].dataLength = F1F2_PROM_LENGTH_SIZE;
-         payloadData[dataCount].padLength = 0;
-         dataCount++;
+         payloadData[*payloadDataCount].p_data = &f1f2Cmd->payload.promErase.offset;
+         payloadData[*payloadDataCount].dataLength = F1F2_PROM_OFFSET_SIZE;
+         payloadData[*payloadDataCount].padLength = 0;
+         (*payloadDataCount)++;
+
+         payloadData[*payloadDataCount].p_data = &f1f2Cmd->payload.promErase.dataLength;
+         payloadData[*payloadDataCount].dataLength = F1F2_PROM_LENGTH_SIZE;
+         payloadData[*payloadDataCount].padLength = 0;
+         (*payloadDataCount)++;
          break;
 
       case F1F2_CMD_PROM_READ_REQ:
-         payloadData[dataCount].p_data = &f1f2Cmd->payload.promRW.device;
-         payloadData[dataCount].dataLength = F1F2_PROM_DEVICE_SIZE;
-         payloadData[dataCount].padLength = 0;
-         dataCount++;
+         if (*payloadDataCount + 3 > payloadDataSize) return IRC_FAILURE;
 
-         payloadData[dataCount].p_data = &f1f2Cmd->payload.promRW.offset;
-         payloadData[dataCount].dataLength = F1F2_PROM_OFFSET_SIZE;
-         payloadData[dataCount].padLength = 0;
-         dataCount++;
+         payloadData[*payloadDataCount].p_data = &f1f2Cmd->payload.promRW.device;
+         payloadData[*payloadDataCount].dataLength = F1F2_PROM_DEVICE_SIZE;
+         payloadData[*payloadDataCount].padLength = 0;
+         (*payloadDataCount)++;
 
-         payloadData[dataCount].p_data = &f1f2Cmd->payload.promRW.dataLength;
-         payloadData[dataCount].dataLength = F1F2_PROM_RW_LENGTH_SIZE;
-         payloadData[dataCount].padLength = 0;
-         dataCount++;
+         payloadData[*payloadDataCount].p_data = &f1f2Cmd->payload.promRW.offset;
+         payloadData[*payloadDataCount].dataLength = F1F2_PROM_OFFSET_SIZE;
+         payloadData[*payloadDataCount].padLength = 0;
+         (*payloadDataCount)++;
+
+         payloadData[*payloadDataCount].p_data = &f1f2Cmd->payload.promRW.dataLength;
+         payloadData[*payloadDataCount].dataLength = F1F2_PROM_RW_LENGTH_SIZE;
+         payloadData[*payloadDataCount].padLength = 0;
+         (*payloadDataCount)++;
          break;
 
       case F1F2_CMD_PROM_READ_RSP:
       case F1F2_CMD_PROM_WRITE:
-         payloadData[dataCount].p_data = &f1f2Cmd->payload.promRW.device;
-         payloadData[dataCount].dataLength = F1F2_PROM_DEVICE_SIZE;
-         payloadData[dataCount].padLength = 0;
-         dataCount++;
+         if (*payloadDataCount + 4 > payloadDataSize) return IRC_FAILURE;
 
-         payloadData[dataCount].p_data = &f1f2Cmd->payload.promRW.offset;
-         payloadData[dataCount].dataLength = F1F2_PROM_OFFSET_SIZE;
-         payloadData[dataCount].padLength = 0;
-         dataCount++;
+         payloadData[*payloadDataCount].p_data = &f1f2Cmd->payload.promRW.device;
+         payloadData[*payloadDataCount].dataLength = F1F2_PROM_DEVICE_SIZE;
+         payloadData[*payloadDataCount].padLength = 0;
+         (*payloadDataCount)++;
 
-         payloadData[dataCount].p_data = &f1f2Cmd->payload.promRW.dataLength;
-         payloadData[dataCount].dataLength = F1F2_PROM_RW_LENGTH_SIZE;
-         payloadData[dataCount].padLength = 0;
-         dataCount++;
+         payloadData[*payloadDataCount].p_data = &f1f2Cmd->payload.promRW.offset;
+         payloadData[*payloadDataCount].dataLength = F1F2_PROM_OFFSET_SIZE;
+         payloadData[*payloadDataCount].padLength = 0;
+         (*payloadDataCount)++;
 
-         payloadData[dataCount].p_data = f1f2Cmd->payload.promRW.data;
-         payloadData[dataCount].dataLength = f1f2Cmd->payload.promRW.dataLength;
-         payloadData[dataCount].padLength = 0;
-         dataCount++;
+         payloadData[*payloadDataCount].p_data = &f1f2Cmd->payload.promRW.dataLength;
+         payloadData[*payloadDataCount].dataLength = F1F2_PROM_RW_LENGTH_SIZE;
+         payloadData[*payloadDataCount].padLength = 0;
+         (*payloadDataCount)++;
+
+         payloadData[*payloadDataCount].p_data = f1f2Cmd->payload.promRW.data;
+         payloadData[*payloadDataCount].dataLength = f1f2Cmd->payload.promRW.dataLength;
+         payloadData[*payloadDataCount].padLength = 0;
+         (*payloadDataCount)++;
          break;
 
       case F1F2_CMD_PROM_CHECK_REQ:
-         payloadData[dataCount].p_data = &f1f2Cmd->payload.promCheck.device;
-         payloadData[dataCount].dataLength = F1F2_PROM_DEVICE_SIZE;
-         payloadData[dataCount].padLength = 0;
-         dataCount++;
+         if (*payloadDataCount + 3 > payloadDataSize) return IRC_FAILURE;
 
-         payloadData[dataCount].p_data = &f1f2Cmd->payload.promCheck.offset;
-         payloadData[dataCount].dataLength = F1F2_PROM_OFFSET_SIZE;
-         payloadData[dataCount].padLength = 0;
-         dataCount++;
+         payloadData[*payloadDataCount].p_data = &f1f2Cmd->payload.promCheck.device;
+         payloadData[*payloadDataCount].dataLength = F1F2_PROM_DEVICE_SIZE;
+         payloadData[*payloadDataCount].padLength = 0;
+         (*payloadDataCount)++;
 
-         payloadData[dataCount].p_data = &f1f2Cmd->payload.promCheck.dataLength;
-         payloadData[dataCount].dataLength = F1F2_PROM_LENGTH_SIZE;
-         payloadData[dataCount].padLength = 0;
-         dataCount++;
+         payloadData[*payloadDataCount].p_data = &f1f2Cmd->payload.promCheck.offset;
+         payloadData[*payloadDataCount].dataLength = F1F2_PROM_OFFSET_SIZE;
+         payloadData[*payloadDataCount].padLength = 0;
+         (*payloadDataCount)++;
+
+         payloadData[*payloadDataCount].p_data = &f1f2Cmd->payload.promCheck.dataLength;
+         payloadData[*payloadDataCount].dataLength = F1F2_PROM_LENGTH_SIZE;
+         payloadData[*payloadDataCount].padLength = 0;
+         (*payloadDataCount)++;
          break;
 
       case F1F2_CMD_PROM_CHECK_RSP:
-         payloadData[dataCount].p_data = &f1f2Cmd->payload.promCheck.device;
-         payloadData[dataCount].dataLength = F1F2_PROM_DEVICE_SIZE;
-         payloadData[dataCount].padLength = 0;
-         dataCount++;
+         if (*payloadDataCount + 4 > payloadDataSize) return IRC_FAILURE;
 
-         payloadData[dataCount].p_data = &f1f2Cmd->payload.promCheck.offset;
-         payloadData[dataCount].dataLength = F1F2_PROM_OFFSET_SIZE;
-         payloadData[dataCount].padLength = 0;
-         dataCount++;
+         payloadData[*payloadDataCount].p_data = &f1f2Cmd->payload.promCheck.device;
+         payloadData[*payloadDataCount].dataLength = F1F2_PROM_DEVICE_SIZE;
+         payloadData[*payloadDataCount].padLength = 0;
+         (*payloadDataCount)++;
 
-         payloadData[dataCount].p_data = &f1f2Cmd->payload.promCheck.dataLength;
-         payloadData[dataCount].dataLength = F1F2_PROM_LENGTH_SIZE;
-         payloadData[dataCount].padLength = 0;
-         dataCount++;
+         payloadData[*payloadDataCount].p_data = &f1f2Cmd->payload.promCheck.offset;
+         payloadData[*payloadDataCount].dataLength = F1F2_PROM_OFFSET_SIZE;
+         payloadData[*payloadDataCount].padLength = 0;
+         (*payloadDataCount)++;
 
-         payloadData[dataCount].p_data = &f1f2Cmd->payload.promCheck.crc16;
-         payloadData[dataCount].dataLength = F1F2_PROM_CRC16_SIZE;
-         payloadData[dataCount].padLength = 0;
-         dataCount++;
+         payloadData[*payloadDataCount].p_data = &f1f2Cmd->payload.promCheck.dataLength;
+         payloadData[*payloadDataCount].dataLength = F1F2_PROM_LENGTH_SIZE;
+         payloadData[*payloadDataCount].padLength = 0;
+         (*payloadDataCount)++;
+
+         payloadData[*payloadDataCount].p_data = &f1f2Cmd->payload.promCheck.crc16;
+         payloadData[*payloadDataCount].dataLength = F1F2_PROM_CRC16_SIZE;
+         payloadData[*payloadDataCount].padLength = 0;
+         (*payloadDataCount)++;
          break;
 
       case F1F2_CMD_PING:
@@ -1080,10 +1167,12 @@ uint32_t F1F2_CommandBuilder(F1F2Command_t *f1f2Cmd, uint8_t *buffer, uint16_t b
 
       case F1F2_CMD_DEBUG_TEXT:
       case F1F2_CMD_DEBUG_CMD:
-         payloadData[dataCount].p_data = f1f2Cmd->payload.debug.text;
-         payloadData[dataCount].dataLength = strlen(f1f2Cmd->payload.debug.text);
-         payloadData[dataCount].padLength = 0;
-         dataCount++;
+         if (*payloadDataCount + 1 > payloadDataSize) return IRC_FAILURE;
+
+         payloadData[*payloadDataCount].p_data = f1f2Cmd->payload.debug.text;
+         payloadData[*payloadDataCount].dataLength = strlen(f1f2Cmd->payload.debug.text);
+         payloadData[*payloadDataCount].padLength = 0;
+         (*payloadDataCount)++;
          break;
 
       default:
@@ -1092,7 +1181,7 @@ uint32_t F1F2_CommandBuilder(F1F2Command_t *f1f2Cmd, uint8_t *buffer, uint16_t b
          return 0;
    }
 
-   return F1F2_FrameBuilder(buffer, buflen, cmd, payloadData, dataCount);
+   return IRC_SUCCESS;
 }
 
 /**
@@ -1101,12 +1190,12 @@ uint32_t F1F2_CommandBuilder(F1F2Command_t *f1f2Cmd, uint8_t *buffer, uint16_t b
  * @param buffer is a pointer to the command raw data buffer that will be transmitted.
  * @param buflen is the maximum length that can be written into buffer.
  * @param cmd is the F1F2 command code.
- * @param payloadData is the pointer to payload data array.
+ * @param payloadData is the payload data array.
  * @param payloadDataCount is the number of payload data.
  *
  * @return The command length to be transmitted.
  */
-uint32_t F1F2_FrameBuilder(uint8_t *buffer, uint16_t buflen, uint8_t cmd, F1F2PayloadData_t *payloadData, uint16_t payloadDataCount)
+uint32_t F1F2_FrameBuilder(uint8_t *buffer, uint16_t buflen, uint8_t cmd, F1F2PayloadData_t payloadData[], uint16_t payloadDataCount)
 {
    uint16_t pdc;     // Payload Data Count
    uint16_t crc16;   // CRC-16 value
@@ -1133,6 +1222,57 @@ uint32_t F1F2_FrameBuilder(uint8_t *buffer, uint16_t buflen, uint8_t cmd, F1F2Pa
    crc16 = CRC16(0xFFFF, buffer, F1F2_OFFSET_PAYLOAD_DATA + pdc);
    memcpy(&buffer[F1F2_OFFSET_PAYLOAD_DATA + pdc], &crc16, sizeof(crc16));
    buffer[F1F2_OFFSET_PAYLOAD_DATA + pdc + F1F2_CRC16_SIZE] = F1F2_EOP;
+
+   return (F1F2_MIN_PACKET_SIZE + pdc);
+}
+
+/**
+ * F1F2 protocol circular frame builder function.
+ *
+ * @param buffer is a pointer to the command raw data buffer that will be transmitted.
+ * @param buflen is the maximum length that can be written into buffer.
+ * @param cmd is the F1F2 command code.
+ * @param payloadData is the payload data array.
+ * @param payloadDataCount is the number of payload data.
+ *
+ * @return The command length to be transmitted.
+ */
+uint32_t F1F2_CircFrameBuilder(circByteBuffer_t *circByteBuffer, uint8_t cmd, F1F2PayloadData_t payloadData[], uint16_t payloadDataCount)
+{
+   uint16_t pdc;     // Payload Data Count
+   uint16_t crc16;   // CRC-16 value
+   uint16_t i;
+
+   if (circByteBuffer == NULL)
+   {
+      return 0;
+   }
+
+   // Compute payload data count
+   pdc = 0;
+   for (i = 0; i < payloadDataCount; i++)
+   {
+      pdc += payloadData[i].dataLength + payloadData[i].padLength;
+   }
+
+   // Payload data count validation
+   if ((CBB_Length(circByteBuffer) + F1F2_MIN_PACKET_SIZE + pdc) > circByteBuffer->size)
+   {
+      return 0;
+   }
+
+   // Write frame data into byte buffer
+   CBB_Push(circByteBuffer, F1F2_SOP);
+   CBB_Push(circByteBuffer, cmd);
+   CBB_Pushn(circByteBuffer, sizeof(pdc), (uint8_t *)&pdc);
+   for (i = 0; i < payloadDataCount; i++)
+   {
+      CBB_Pushn(circByteBuffer, payloadData[i].dataLength, (uint8_t*)payloadData[i].p_data);
+      CBB_Pushvaln(circByteBuffer, payloadData[i].padLength, 0);
+   }
+   crc16 = CBB_CRC16n(0xFFFF, circByteBuffer, CBB_Length(circByteBuffer) - (F1F2_OFFSET_PAYLOAD_DATA + pdc), F1F2_OFFSET_PAYLOAD_DATA + pdc);
+   CBB_Pushn(circByteBuffer, sizeof(crc16), (uint8_t*)&crc16);
+   CBB_Push(circByteBuffer, F1F2_EOP);
 
    return (F1F2_MIN_PACKET_SIZE + pdc);
 }

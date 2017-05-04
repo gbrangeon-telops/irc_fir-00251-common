@@ -45,6 +45,7 @@ IRC_Status_t CBB_Init(circByteBuffer_t *circByteBuffer, uint8_t *buffer, uint16_
 IRC_Status_t CBB_InitFromBuffer(circByteBuffer_t *circByteBuffer, uint8_t *buffer, uint16_t size, uint16_t length);
 IRC_Status_t CBB_Push(circByteBuffer_t *circByteBuffer, uint8_t data);
 IRC_Status_t CBB_Pushn(circByteBuffer_t *circByteBuffer, uint16_t length, uint8_t* data);
+IRC_Status_t CBB_Pushvaln(circByteBuffer_t *circByteBuffer, uint16_t length, uint8_t data);
 IRC_Status_t CBB_Pop(circByteBuffer_t *circByteBuffer, uint8_t *data);
 IRC_Status_t CBB_Popn(circByteBuffer_t *circByteBuffer, uint16_t length, uint8_t *data);
 IRC_Status_t CBB_Peek(circByteBuffer_t *circByteBuffer, uint16_t index, uint8_t *data);
@@ -57,5 +58,6 @@ uint8_t CBB_Full(circByteBuffer_t *circByteBuffer);
 uint16_t CBB_CRC16(uint16_t crc, circByteBuffer_t *circByteBuffer);
 uint16_t CBB_CRC16n(uint16_t crc, circByteBuffer_t *circByteBuffer, uint16_t index, uint16_t length);
 IRC_Status_t CBB_Dump(circByteBuffer_t *circByteBuffer, uint32_t lineSize);
+IRC_Status_t CBB_Dumpn(circByteBuffer_t *circByteBuffer, uint16_t index, uint16_t length, uint32_t lineSize);
 
 #endif // CIRCULARBYTEBUFFER_H

@@ -13,8 +13,8 @@
  * (c) Copyright 2014 Telops Inc.
  */
 
-#ifndef __USART_H__
-#define __USART_H__
+#ifndef USART_H
+#define USART_H
 
 #include "IRC_status.h"
 #include "xintc.h"
@@ -51,8 +51,13 @@ typedef void (*Usart_Handler)(void *callbackRef, uint32_t event, unsigned int ev
  */
 struct UsartStruct {
    uint32_t BaseAddress;
-   Usart_Handler Handler;
-   void *CallBackRef;
+   XIntc *intc;
+   uint16_t usartIntrId;
+   circByteBuffer_t *rxCircBuffer;
+   circByteBuffer_t *txCircBuffer;
+   Usart_Handler handler;
+   void *callBackRef;
+   uint8_t loopback;
 };
 
 /**
@@ -63,13 +68,11 @@ typedef struct UsartStruct usart_t;
 IRC_Status_t Usart_Init(usart_t *usart,
       uint32_t baseAddress,
       XIntc *intc,
-      uint16_t usartIntrId,
-      Usart_Handler handler,
-      void *callbackRef,
-      uint32_t timeoutLength);
-IRC_Status_t Usart_SendData(usart_t *usart, uint8_t *buffer, uint32_t byteCount);
-IRC_Status_t Usart_ReceiveData(usart_t *usart, uint8_t *buffer, uint32_t buflen, uint32_t *byteCount);
-IRC_Status_t Usart_ReceiveCircularData(usart_t *usart, circByteBuffer_t *circByteBuffer, uint32_t *byteCount);
-IRC_Status_t Usart_Loopback(usart_t *usart);
+      uint16_t usartIntrId);
+IRC_Status_t Usart_SetHandler(usart_t *usart, Usart_Handler handler, void *callbackRef);
+IRC_Status_t Usart_SetCircularBuffers(usart_t *usart, circByteBuffer_t *rxCircBuffer, circByteBuffer_t *txCircBuffer);
+IRC_Status_t Usart_Enable(usart_t *usart);
+IRC_Status_t Usart_Disable(usart_t *usart);
+uint32_t Usart_SendData(usart_t *usart);
 
-#endif // __USART_H__
+#endif // USART_H

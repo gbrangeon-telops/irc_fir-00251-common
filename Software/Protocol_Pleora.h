@@ -73,6 +73,7 @@ void Pleora_CommandClear(PleoraCommand_t *pleoraCmd);
 IRC_Status_t Pleora_CommandParser(uint8_t *buffer, uint16_t buflen, PleoraCommand_t *pleoraCmd);
 IRC_Status_t Pleora_CircCommandParser(circByteBuffer_t *circByteBuffer, PleoraCommand_t *pleoraCmd, uint16_t *byteParsed);
 uint32_t Pleora_CommandBuilder(PleoraCommand_t *pleoraCmd, uint8_t *buffer, uint16_t buflen);
+uint32_t Pleora_CircCommandBuilder(PleoraCommand_t *pleoraCmd, circByteBuffer_t *circByteBuffer);
 IRC_Status_t Pleora_ConvertToF1F2(PleoraCommand_t *pleoraCmd, F1F2Command_t *f1f2Cmd);
 IRC_Status_t Pleora_ConvertFromF1F2(F1F2Command_t *f1f2Cmd, PleoraCommand_t *pleoraCmd);
 

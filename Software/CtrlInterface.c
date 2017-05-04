@@ -20,160 +20,42 @@
 #include <stdio.h> // For NULL
 #include <string.h> // For memcpy
 
-uint32_t CtrlIntf_ReceiveCircularBuffer(ctrlIntf_t *ctrlIntf);
 IRC_Status_t CtrlIntf_CommandParser(ctrlIntf_t *ctrlIntf, F1F2Command_t *f1f2Cmd);
 uint32_t CtrlIntf_CommandBuilder(ctrlIntf_t *ctrlIntf, F1F2Command_t *f1f2Cmd);
-IRC_Status_t CtrlIntf_Recv(ctrlIntf_t *ctrlIntf);
 IRC_Status_t CtrlIntf_Send(ctrlIntf_t *ctrlIntf, F1F2Command_t *f1f2Cmd);
 void CtrlIntf_IntrHandler(void *CallBackRef, u32 Event, unsigned int EventData);
-void CtrlIntf_UARTIntrHandler(void *CallBackRef, u32 Event, unsigned int EventData);
-void CtrlIntf_CUARTIntrHandler(void *CallBackRef, u32 Event, unsigned int EventData);
-void CtrlIntf_USARTIntrHandler(void *CallBackRef, u32 Event, unsigned int EventData);
-
-/**
- * Initializes generic UART control interface.
- *
- * @param ctrlIntf is the pointer to the control interface data structure.
- * @param protocol is the control protocol used.
- * @param uartDeviceId is the UART device ID that can be found in xparameters.h file.
- * @param intc is the pointer to the Interrupt controller instance.
- * @param uartIntrId is the UART interrupt ID that can be found in xparameters.h file.
- * @param rxBuffer is a pointer to the received data buffer.
- * @param rxBufferSize is the size of received data buffer.
- * @param rxCircBuffer is a pointer to the buffer used to initialize received data circular buffer.
- * @param rxCircBufferSize is the size of the buffer used to initialize received data circular buffer.
- * @param txBuffer is a pointer to the sent data buffer.
- * @param txBufferSize is the size of sent data buffer.
- * @param netIntf is the network interface pointer.
- * @param cmdQueue is the command queue pointer.
- * @param niPort is the network port of the control interface.
- *
- * @return IRC_SUCCESS if successfully initialized
- * @return IRC_FAILURE if failed to initialize.
- */
-IRC_Status_t CtrlIntf_InitUART(ctrlIntf_t *ctrlIntf,
-      ciProtocol_t protocol,
-      uint16_t uartDeviceId,
-      XIntc *intc,
-      uint16_t uartIntrId,
-      uint8_t *rxBuffer,
-      uint16_t rxBufferSize,
-      uint8_t *rxCircBuffer,
-      uint16_t rxCircBufferSize,
-      uint8_t *txBuffer,
-      uint16_t txBufferSize,
-      netIntf_t *netIntf,
-      circBuffer_t *cmdQueue,
-      niPort_t niPort)
-{
-   IRC_Status_t status;
-
-   memset(ctrlIntf, 0, sizeof(ctrlIntf_t));
-
-   status = UART_Init(&ctrlIntf->link.uart,
-         uartDeviceId,
-         intc,
-         uartIntrId,
-         CtrlIntf_IntrHandler,
-         ctrlIntf);
-   if (status != IRC_SUCCESS)
-   {
-      CI_ERR("Failed to initialize UART port.");
-      return IRC_FAILURE;
-   }
-
-   ctrlIntf->protocol = protocol;
-   ctrlIntf->linkType = CILT_UART;
-   ctrlIntf->intc = intc;
-   ctrlIntf->linkIntrId = uartIntrId;
-   ctrlIntf->rxDataBuffer = rxBuffer;
-   ctrlIntf->rxDataBufferSize = rxBufferSize;
-   ctrlIntf->txDataBuffer = txBuffer;
-   ctrlIntf->txDataBufferSize = txBufferSize;
-   ctrlIntf->port.port = niPort;
-   ctrlIntf->port.cmdQueue = cmdQueue;
-   GETTIME(&ctrlIntf->tic_errorCount);
-
-   if (CBB_Init(&ctrlIntf->rxCircDataBuffer, rxCircBuffer, rxCircBufferSize) != IRC_SUCCESS)
-   {
-      CI_ERR("Failed to initialize RX circular buffer.");
-      return IRC_FAILURE;
-   }
-
-   // Connect control interface to network interface
-   if (NetIntf_Connect(netIntf, &ctrlIntf->port) != IRC_SUCCESS)
-   {
-      CI_ERR("Failed to connect to network interface.");
-      return IRC_FAILURE;
-   }
-
-   return CtrlIntf_Recv(ctrlIntf);
-}
 
 /**
  * Initializes circular buffer UART control interface.
  *
  * @param ctrlIntf is the pointer to the control interface data structure.
  * @param protocol is the control protocol used.
- * @param uartDeviceId is the UART device ID that can be found in xparameters.h file.
- * @param intc is the pointer to the Interrupt controller instance.
- * @param uartIntrId is the UART interrupt ID that can be found in xparameters.h file.
- * @param rxCircBuffer is a pointer to the buffer used to initialize received data circular buffer.
- * @param rxCircBufferSize is the size of the buffer used to initialize received data circular buffer.
- * @param txBuffer is a pointer to the sent data buffer.
- * @param txBufferSize is the size of sent data buffer.
+ * @param rxCircBuffer is a pointer to the circular buffer used to receive data.
+ * @param txCircBuffer is a pointer to the circular buffer used to transmit data.
  * @param netIntf is the network interface pointer.
  * @param cmdQueue is the command queue pointer.
  * @param niPort is the network port of the control interface.
  *
- * @return IRC_SUCCESS if successfully initialized
+ * @return IRC_SUCCESS if successfully initialized.
  * @return IRC_FAILURE if failed to initialize.
  */
-IRC_Status_t CtrlIntf_InitCircularUART(ctrlIntf_t *ctrlIntf,
+IRC_Status_t CtrlIntf_Init(ctrlIntf_t *ctrlIntf,
       ciProtocol_t protocol,
-      uint16_t uartDeviceId,
-      XIntc *intc,
-      uint16_t uartIntrId,
-      uint8_t *rxCircBuffer,
-      uint16_t rxCircBufferSize,
-      uint8_t *txBuffer,
-      uint16_t txBufferSize,
+      circByteBuffer_t *rxCircBuffer,
+      circByteBuffer_t *txCircBuffer,
       netIntf_t *netIntf,
       circBuffer_t *cmdQueue,
       niPort_t niPort)
 {
-   IRC_Status_t status;
-
    memset(ctrlIntf, 0, sizeof(ctrlIntf_t));
 
-   if (CBB_Init(&ctrlIntf->rxCircDataBuffer, rxCircBuffer, rxCircBufferSize) != IRC_SUCCESS)
-   {
-      CI_ERR("Failed to initialize RX circular buffer.");
-      return IRC_FAILURE;
-   }
-
-   status = CircularUART_Init(&ctrlIntf->link.cuart,
-         uartDeviceId,
-         intc,
-         uartIntrId,
-         CtrlIntf_IntrHandler,
-         ctrlIntf,
-         &ctrlIntf->rxCircDataBuffer);
-   if (status != IRC_SUCCESS)
-   {
-      CI_ERR("Failed to initialize UART port.");
-      return IRC_FAILURE;
-   }
-
+   ctrlIntf->linkType = CILT_UNDEFINED;
+   ctrlIntf->p_link = NULL;
    ctrlIntf->protocol = protocol;
-   ctrlIntf->linkType = CILT_CUART;
-   ctrlIntf->intc = intc;
-   ctrlIntf->linkIntrId = uartIntrId;
-   ctrlIntf->txDataBuffer = txBuffer;
-   ctrlIntf->txDataBufferSize = txBufferSize;
+   ctrlIntf->rxCircBuffer = rxCircBuffer;
+   ctrlIntf->txCircBuffer = txCircBuffer;
    ctrlIntf->port.port = niPort;
    ctrlIntf->port.cmdQueue = cmdQueue;
-   GETTIME(&ctrlIntf->tic_errorCount);
 
    // Connect control interface to network interface
    if (NetIntf_Connect(netIntf, &ctrlIntf->port) != IRC_SUCCESS)
@@ -182,157 +64,72 @@ IRC_Status_t CtrlIntf_InitCircularUART(ctrlIntf_t *ctrlIntf,
       return IRC_FAILURE;
    }
 
-   return CtrlIntf_Recv(ctrlIntf);
+   return IRC_SUCCESS;
 }
 
 /**
- * Initializes generic USART control interface.
+ * Sets control interface hardware link.
  *
  * @param ctrlIntf is the pointer to the control interface data structure.
- * @param protocol is the control protocol used.
- * @param usartBaseAddress is the USART device base address ID that can be found in tel2000_param.h file.
- * @param intc is the pointer to the Interrupt controller instance.
- * @param usartIntrId is the USART interrupt ID that can be found in xparameters.h file.
- * @param rxCircBuffer is a pointer to the buffer used to initialize received data circular buffer.
- * @param rxCircBufferSize is the size of the buffer used to initialize received data circular buffer.
- * @param txBuffer is a pointer to the sent data buffer.
- * @param txBufferSize is the size of sent data buffer.
- * @param netIntf is the network interface pointer.
- * @param cmdQueue is the command queue pointer.
- * @param niPort is the network port of the control interface.
+ * @param linkType is the type of link that will be used by the control interface.
+ * @param p_link is a pointer to the hardware link data structure.
  *
- * @return IRC_SUCCESS if successfully initialized
- * @return IRC_FAILURE if failed to initialize.
+ * @return IRC_SUCCESS if hardware link successfully set.
+ * @return IRC_FAILURE if failed to set hardware link.
  */
-IRC_Status_t CtrlIntf_InitUSART(ctrlIntf_t *ctrlIntf,
-      ciProtocol_t protocol,
-      uint32_t usartBaseAddress,
-      XIntc *intc,
-      uint16_t usartIntrId,
-      uint8_t *rxCircBuffer,
-      uint16_t rxCircBufferSize,
-      uint8_t *txBuffer,
-      uint16_t txBufferSize,
-      netIntf_t *netIntf,
-      circBuffer_t *cmdQueue,
-      niPort_t niPort)
+IRC_Status_t CtrlIntf_SetLink(ctrlIntf_t *ctrlIntf, ciLinkType_t linkType, void *p_link)
 {
-   IRC_Status_t status;
+   if (ctrlIntf == NULL) return IRC_FAILURE;
+   if ((linkType == ctrlIntf->linkType) && (p_link == ctrlIntf->p_link)) return IRC_SUCCESS;
 
-   memset(ctrlIntf, 0, sizeof(ctrlIntf_t));
-
-   status = Usart_Init(&ctrlIntf->link.usart,
-         usartBaseAddress,
-         intc,
-         usartIntrId,
-         CtrlIntf_IntrHandler,
-         ctrlIntf,
-         7);
-   if (status != IRC_SUCCESS)
+   // Disconnect previous link
+   switch (ctrlIntf->linkType)
    {
-      CI_ERR("Failed to initialize USART port.");
-      return IRC_FAILURE;
+      case CILT_CUART:
+         CircularUART_SetCircularBuffers((circularUART_t *)ctrlIntf->p_link, NULL, NULL);
+         CircularUART_SetHandler((circularUART_t *)ctrlIntf->p_link, NULL, NULL);
+         break;
+
+      case CILT_USART:
+         Usart_SetCircularBuffers((usart_t *)ctrlIntf->p_link, NULL, NULL);
+         Usart_SetHandler((usart_t *)ctrlIntf->p_link, NULL, NULL);
+         break;
+
+      case CILT_UNDEFINED:
+      default:
+         break;
    }
 
+   ctrlIntf->linkType = linkType;
+   ctrlIntf->p_link = p_link;
 
-   ctrlIntf->protocol = protocol;
-   ctrlIntf->linkType = CILT_USART;
-   ctrlIntf->intc = intc;
-   ctrlIntf->linkIntrId = usartIntrId;
-   ctrlIntf->rxDataBuffer = NULL;
-   ctrlIntf->rxDataBufferSize = 0;
-   ctrlIntf->txDataBuffer = txBuffer;
-   ctrlIntf->txDataBufferSize = txBufferSize;
-   ctrlIntf->port.port = niPort;
-   ctrlIntf->port.cmdQueue = cmdQueue;
-   GETTIME(&ctrlIntf->tic_errorCount);
-
-   if (CBB_Init(&ctrlIntf->rxCircDataBuffer, rxCircBuffer, rxCircBufferSize) != IRC_SUCCESS)
+   if (ctrlIntf->p_link == NULL)
    {
-      CI_ERR("Failed to initialize RX circular buffer.");
-      return IRC_FAILURE;
+      ctrlIntf->linkType = CILT_UNDEFINED;
    }
 
-   // Connect control interface to network interface
-   if (NetIntf_Connect(netIntf, &ctrlIntf->port) != IRC_SUCCESS)
+   // Connect new circular UART
+   switch (ctrlIntf->linkType)
    {
-      CI_ERR("Failed to connect to network interface.");
-      return IRC_FAILURE;
+      case CILT_CUART:
+         CircularUART_ResetRxFifo((circularUART_t *)ctrlIntf->p_link);
+         CircularUART_SetCircularBuffers((circularUART_t *)ctrlIntf->p_link, ctrlIntf->rxCircBuffer, ctrlIntf->txCircBuffer);
+         CircularUART_SetHandler((circularUART_t *)ctrlIntf->p_link, CtrlIntf_IntrHandler, ctrlIntf);
+         break;
+
+      case CILT_USART:
+         Usart_SetCircularBuffers((usart_t *)ctrlIntf->p_link, ctrlIntf->rxCircBuffer, ctrlIntf->txCircBuffer);
+         Usart_SetHandler((usart_t *)ctrlIntf->p_link, CtrlIntf_IntrHandler, ctrlIntf);
+         break;
+
+      case CILT_UNDEFINED:
+      default:
+         ctrlIntf->linkType = CILT_UNDEFINED;
+         ctrlIntf->p_link = NULL;
+         break;
    }
 
-   return CtrlIntf_Recv(ctrlIntf);
-}
-
-/**
- * Move data from RX buffer to RX circular buffer.
- *
- * @param ctrlIntf is the pointer to the control interface data structure.
- *
- * @return the number of bytes that have been moved to RX circular buffer.
- */
-uint32_t CtrlIntf_ReceiveCircularBuffer(ctrlIntf_t *ctrlIntf)
-{
-   uint32_t receivedCount = 0;
-   uint32_t byteCount;
-   uint32_t ierRegister;
-
-   if (ctrlIntf->rxDataReady)
-   {
-      switch (ctrlIntf->linkType)
-      {
-         case CILT_UART:
-            // Temporarily disable UART interrupt
-            ierRegister = XUartNs550_ReadReg(ctrlIntf->link.uart.BaseAddress, XUN_IER_OFFSET);
-            XUartNs550_WriteReg(ctrlIntf->link.uart.BaseAddress, XUN_IER_OFFSET, 0);
-
-            byteCount = ctrlIntf->link.uart.ReceiveBuffer.RequestedBytes - ctrlIntf->link.uart.ReceiveBuffer.RemainingBytes;
-            while (byteCount > 0)
-            {
-               if (CBB_Pushn(&ctrlIntf->rxCircDataBuffer, byteCount, ctrlIntf->rxDataBuffer) == IRC_SUCCESS)
-               {
-                  receivedCount += byteCount;
-               }
-               else
-               {
-                  CI_ERR("Unable to push received data into circular buffer (UART @ 0x%08X)", ctrlIntf->link.uart.BaseAddress);
-               }
-
-               byteCount = XUartNs550_Recv(&ctrlIntf->link.uart,
-                     ctrlIntf->rxDataBuffer,
-                     ctrlIntf->rxDataBufferSize);
-            }
-
-            ctrlIntf->rxDataReady = 0;
-
-            // Reactivate UART interrupt
-            XUartNs550_WriteReg(ctrlIntf->link.uart.BaseAddress, XUN_IER_OFFSET, ierRegister);
-            break;
-
-         case CILT_CUART:
-            ctrlIntf->rxDataReady = 0;
-            break;
-
-         case CILT_USART:
-            if (Usart_ReceiveCircularData(&ctrlIntf->link.usart, &ctrlIntf->rxCircDataBuffer, &byteCount) == IRC_SUCCESS)
-            {
-               receivedCount += byteCount;
-            }
-            else
-            {
-               CI_ERR("Unable to push received data into circular buffer (USART @ 0x%08X)", ctrlIntf->link.usart.BaseAddress);
-            }
-
-            ctrlIntf->rxDataReady = 0;
-            break;
-      }
-
-      if (receivedCount > 0)
-      {
-         GETTIME(&ctrlIntf->rxByteTime);
-      }
-   }
-
-   return receivedCount;
+   return IRC_SUCCESS;
 }
 
 /**
@@ -355,7 +152,7 @@ IRC_Status_t CtrlIntf_CommandParser(ctrlIntf_t *ctrlIntf, F1F2Command_t *f1f2Cmd
    {
       case CIP_F1F2:
       case CIP_F1F2_NETWORK:
-         status = F1F2_CircCommandParser(&ctrlIntf->rxCircDataBuffer, f1f2Cmd, &byteParsed);
+         status = F1F2_CircCommandParser(ctrlIntf->rxCircBuffer, f1f2Cmd, &byteParsed);
          if (status == IRC_FAILURE)
          {
             // Skip SOP
@@ -364,7 +161,7 @@ IRC_Status_t CtrlIntf_CommandParser(ctrlIntf_t *ctrlIntf, F1F2Command_t *f1f2Cmd
          break;
 
       case CIP_PLEORA:
-         status = Pleora_CircCommandParser(&ctrlIntf->rxCircDataBuffer, &pleoraCmd, &byteParsed);
+         status = Pleora_CircCommandParser(ctrlIntf->rxCircBuffer, &pleoraCmd, &byteParsed);
          if (status != IRC_NOT_DONE)
          {
             if (Pleora_ConvertToF1F2(&pleoraCmd, f1f2Cmd) == IRC_FAILURE)
@@ -381,8 +178,8 @@ IRC_Status_t CtrlIntf_CommandParser(ctrlIntf_t *ctrlIntf, F1F2Command_t *f1f2Cmd
 
       if (ctrlIntf->showBytes == 0)
       {
-         CI_INF("%d byte(s) in circular buffer", CBB_Length(&ctrlIntf->rxCircDataBuffer));
-         CBB_Dump(&ctrlIntf->rxCircDataBuffer, 16);
+         CI_INF("%d byte(s) in circular buffer", CBB_Length(ctrlIntf->rxCircBuffer));
+         CBB_Dump(ctrlIntf->rxCircBuffer, 16);
       }
 
       ctrlIntf->errorCount++;
@@ -390,12 +187,12 @@ IRC_Status_t CtrlIntf_CommandParser(ctrlIntf_t *ctrlIntf, F1F2Command_t *f1f2Cmd
       {
          // Disable control interface interrupt
          CI_ERR("Control interface has been disabled (%d errors in %ds).", ctrlIntf->errorCount, CI_ERROR_COUNTER_RESET_US / TIME_ONE_SECOND_US);
-         XIntc_Disable(ctrlIntf->intc, ctrlIntf->linkIntrId);
+         CtrlIntf_Disable(ctrlIntf);
       }
    }
 
    // Flush parsed bytes from circular buffer
-   CBB_Flushn(&ctrlIntf->rxCircDataBuffer, byteParsed);
+   CBB_Flushn(ctrlIntf->rxCircBuffer, byteParsed);
 
    return status;
 }
@@ -419,18 +216,14 @@ uint32_t CtrlIntf_CommandBuilder(ctrlIntf_t *ctrlIntf, F1F2Command_t *f1f2Cmd)
    {
       case CIP_F1F2:
       case CIP_F1F2_NETWORK:
-         cmdlen = F1F2_CommandBuilder(f1f2Cmd,
-               ctrlIntf->txDataBuffer,
-               ctrlIntf->txDataBufferSize);
+         cmdlen = F1F2_CircCommandBuilder(f1f2Cmd, ctrlIntf->txCircBuffer);
          break;
 
       case CIP_PLEORA:
          status = Pleora_ConvertFromF1F2(f1f2Cmd, &pleoraCmd);
          if (status == IRC_SUCCESS)
          {
-            cmdlen = Pleora_CommandBuilder(&pleoraCmd,
-                  ctrlIntf->txDataBuffer,
-                  ctrlIntf->txDataBufferSize);
+            cmdlen = Pleora_CircCommandBuilder(&pleoraCmd, ctrlIntf->txCircBuffer);
          }
          else
          {
@@ -445,51 +238,10 @@ uint32_t CtrlIntf_CommandBuilder(ctrlIntf_t *ctrlIntf, F1F2Command_t *f1f2Cmd)
    if (ctrlIntf->showBytes == 1)
    {
       CI_INF("TX:");
-      memdump(ctrlIntf->txDataBuffer, cmdlen, 0, 16);
+      CBB_Dump(ctrlIntf->txCircBuffer, 16);
    }
 
    return cmdlen;
-}
-
-/**
- * Listen for command from specified control interface.
- *
- * @param ctrlIntf is the control interface to listen from.
- *
- * @return IRC_SUCCESS if the receive operation has been completed.
- * @return IRC_FAILURE if the receive operation has not been completed.
- */
-IRC_Status_t CtrlIntf_Recv(ctrlIntf_t *ctrlIntf)
-{
-   if (ctrlIntf == NULL)
-   {
-      return IRC_FAILURE;
-   }
-
-   switch (ctrlIntf->linkType)
-   {
-      case CILT_UART:
-         // Reset RX FIFO
-         UART_ResetRxFifo(&ctrlIntf->link.uart);
-
-         // Listen for command on UART
-         XUartNs550_Recv(&ctrlIntf->link.uart,
-               ctrlIntf->rxDataBuffer,
-               ctrlIntf->rxDataBufferSize);
-         break;
-
-      case CILT_CUART:
-         // Nothing to do
-         break;
-
-      case CILT_USART:
-         // Nothing to do
-         break;
-   }
-
-   ctrlIntf->rxByteTime = 0;
-
-   return IRC_SUCCESS;
 }
 
 /**
@@ -521,22 +273,17 @@ IRC_Status_t CtrlIntf_Send(ctrlIntf_t *ctrlIntf, F1F2Command_t *f1f2Cmd)
 
       switch (ctrlIntf->linkType)
       {
-         case CILT_UART:
-            XUartNs550_Send(&ctrlIntf->link.uart,
-                  ctrlIntf->txDataBuffer,
-                  buflen);
-            break;
-
          case CILT_CUART:
-            XUartNs550_Send(&ctrlIntf->link.cuart.uart,
-                  ctrlIntf->txDataBuffer,
-                  buflen);
+            CircularUART_SendData((circularUART_t *)ctrlIntf->p_link);
             break;
 
          case CILT_USART:
-            Usart_SendData(&ctrlIntf->link.usart,
-                  ctrlIntf->txDataBuffer,
-                  buflen);
+            Usart_SendData((usart_t *)ctrlIntf->p_link);
+            break;
+
+         case CILT_UNDEFINED:
+         default:
+            return IRC_FAILURE;
             break;
       }
    }
@@ -566,15 +313,12 @@ void CtrlIntf_Process(ctrlIntf_t *ctrlIntf)
       GETTIME(&ctrlIntf->tic_errorCount);
    }
 
-   // Receive data
-   CtrlIntf_ReceiveCircularBuffer(ctrlIntf);
-
-   if (CBB_Length(&ctrlIntf->rxCircDataBuffer) > 0)
+   if (!CBB_Empty(ctrlIntf->rxCircBuffer))
    {
       if (ctrlIntf->showBytes == 1)
       {
-         CI_INF("Circular buffer length is %d byte(s)", CBB_Length(&ctrlIntf->rxCircDataBuffer));
-         CBB_Dump(&ctrlIntf->rxCircDataBuffer, 16);
+         CI_INF("RX circular buffer length is %d byte(s)", CBB_Length(ctrlIntf->rxCircBuffer));
+         CBB_Dump(ctrlIntf->rxCircBuffer, 16);
       }
 
       // Parse received data
@@ -707,28 +451,26 @@ void CtrlIntf_Process(ctrlIntf_t *ctrlIntf)
       }
       else if (status == IRC_NOT_DONE)
       {
-         if (!CBB_Empty(&ctrlIntf->rxCircDataBuffer) && ((elapsed_time_us(ctrlIntf->rxByteTime) > CI_RX_TIMEOUT_US) || (ctrlIntf->linkType == CILT_USART)))
+         if (!CBB_Empty(ctrlIntf->rxCircBuffer) && ((elapsed_time_us(ctrlIntf->rxByteTime) > CI_RX_TIMEOUT_US) || (ctrlIntf->linkType == CILT_USART)))
          {
             CI_LINKERR(ctrlIntf, "RX timeout.");
             if (ctrlIntf->showBytes == 0)
             {
-               CI_INF("%d byte(s) in circular buffer", CBB_Length(&ctrlIntf->rxCircDataBuffer));
-               CBB_Dump(&ctrlIntf->rxCircDataBuffer, 16);
+               CI_INF("%d byte(s) in circular buffer", CBB_Length(ctrlIntf->rxCircBuffer));
+               CBB_Dump(ctrlIntf->rxCircBuffer, 16);
             }
-            CBB_Flush(&ctrlIntf->rxCircDataBuffer);
-            CtrlIntf_Recv(ctrlIntf);
+            CBB_Flush(ctrlIntf->rxCircBuffer);
          }
 
-         if (CBB_Full(&ctrlIntf->rxCircDataBuffer))
+         if (CBB_Full(ctrlIntf->rxCircBuffer))
          {
             CI_LINKERR(ctrlIntf, "Circular buffer is full and no complete command has been received.");
             if (ctrlIntf->showBytes == 0)
             {
-               CI_INF("%d byte(s) in circular buffer", CBB_Length(&ctrlIntf->rxCircDataBuffer));
-               CBB_Dump(&ctrlIntf->rxCircDataBuffer, 16);
+               CI_INF("%d byte(s) in circular buffer", CBB_Length(ctrlIntf->rxCircBuffer));
+               CBB_Dump(ctrlIntf->rxCircBuffer, 16);
             }
-            CBB_Flush(&ctrlIntf->rxCircDataBuffer);
-            CtrlIntf_Recv(ctrlIntf);
+            CBB_Flush(ctrlIntf->rxCircBuffer);
          }
       }
    }
@@ -773,213 +515,96 @@ void CtrlIntf_IntrHandler(void *CallBackRef,
 {
    ctrlIntf_t *ctrlIntf = (ctrlIntf_t *)CallBackRef;
 
+   if ( ((ctrlIntf->linkType == CILT_CUART) && ((Event == XUN_EVENT_RECV_DATA) || (Event == XUN_EVENT_RECV_TIMEOUT))) ||
+        ((ctrlIntf->linkType == CILT_USART) && ((Event == USART_EVENT_RX_FULL) || (Event == USART_EVENT_RX_TIMEOUT))) )
+   {
+      // Bytes received
+      GETTIME(&ctrlIntf->rxByteTime);
+   }
+   else if ( ((ctrlIntf->linkType == CILT_CUART) && (Event == XUN_EVENT_SENT_DATA)) ||
+             ((ctrlIntf->linkType == CILT_USART) && (Event == USART_EVENT_TX_DONE)) )
+   {
+      // Bytes transmit
+      ctrlIntf->txStatus = CITS_READY;
+   }
+   else if ((ctrlIntf->linkType == CILT_CUART) && (Event == XUN_EVENT_RECV_ERROR))
+   {
+      // Error
+      // Nothing to do
+   }
+}
+
+/**
+ * Enables control interface.
+ *
+ * @param ctrlIntf_t is the pointer to the control interface data structure.
+ */
+IRC_Status_t CtrlIntf_Enable(ctrlIntf_t *ctrlIntf)
+{
    switch (ctrlIntf->linkType)
    {
-      case CILT_UART:
-         CtrlIntf_UARTIntrHandler(CallBackRef, Event, EventData);
-         break;
-
       case CILT_CUART:
-         CtrlIntf_CUARTIntrHandler(CallBackRef, Event, EventData);
+         CircularUART_Enable((circularUART_t *)ctrlIntf->p_link);
          break;
 
       case CILT_USART:
-         CtrlIntf_USARTIntrHandler(CallBackRef, Event, EventData);
+         Usart_Enable((usart_t *)ctrlIntf->p_link);
+         break;
+
+      case CILT_UNDEFINED:
+      default:
+         return IRC_FAILURE;
          break;
    }
+
+   return IRC_SUCCESS;
 }
 
 /**
- * Control interface UART interrupt handler function.
+ * Disables control interface.
  *
- * @param CallBackRef is a pointer to the control interface data structure.
- * @param Event is used to identify the cause of the interrupt.
- * @param EventData is the number of received or sent bytes.
+ * @param ctrlIntf_t is the pointer to the control interface data structure.
  */
-void CtrlIntf_UARTIntrHandler(void *CallBackRef,
-      u32 Event,
-      unsigned int EventData)
+IRC_Status_t CtrlIntf_Disable(ctrlIntf_t *ctrlIntf)
 {
-   ctrlIntf_t *ctrlIntf = (ctrlIntf_t *)CallBackRef;
-
-   if (ctrlIntf->showBytes == 1)
+   switch (ctrlIntf->linkType)
    {
-      switch (Event)
-      {
-         case XUN_EVENT_RECV_TIMEOUT:
-            PRINTF("URXTO %d\n", EventData);
-            break;
+      case CILT_CUART:
+         CircularUART_Disable((circularUART_t *)ctrlIntf->p_link);
+         break;
 
-         case XUN_EVENT_RECV_DATA:
-            PRINTF("URXD %d\n", EventData);
-            break;
+      case CILT_USART:
+         Usart_Disable((usart_t *)ctrlIntf->p_link);
+         break;
 
-         case XUN_EVENT_SENT_DATA:
-            PRINTF("UTXD %d\n", EventData);
-            break;
-
-         case XUN_EVENT_RECV_ERROR:
-            PRINTF("URXE %d\n", EventData);
-            break;
-
-         default:
-            PRINTF("UUE %d %d", Event, EventData);
-            break;
-      }
+      case CILT_UNDEFINED:
+      default:
+         return IRC_FAILURE;
+         break;
    }
 
-   switch (Event)
-   {
-      case XUN_EVENT_RECV_TIMEOUT:
-      case XUN_EVENT_RECV_DATA:
-         ctrlIntf->rxDataReady = 1;
-         break;
-
-      case XUN_EVENT_SENT_DATA:
-         ctrlIntf->txStatus = CITS_READY;
-
-   #ifdef CI_REQUEST_PROCESSING_DURATION_TEST
-         if ((ctrlIntf->protocol == CIP_F1F2) || (ctrlIntf->protocol == CIP_PLEORA))
-         {
-            CI_INF("Command processed in %dus (port %d).", (uint32_t) elapsed_time_us(ctrlIntf->rxCmdTime), ctrlIntf->port.port);
-         }
-   #endif
-         break;
-
-      case XUN_EVENT_RECV_ERROR:
-         ctrlIntf->linkErrorCount++;
-
-         // Drop received data and listen for the next command.
-         CtrlIntf_Recv(ctrlIntf);
-         break;
-   }
+   return IRC_SUCCESS;
 }
 
-/**
- * Control interface CUART interrupt handler function.
- *
- * @param CallBackRef is a pointer to the control interface data structure.
- * @param Event is used to identify the cause of the interrupt.
- * @param EventData is the number of received or sent bytes.
- */
-void CtrlIntf_CUARTIntrHandler(void *CallBackRef,
-      u32 Event,
-      unsigned int EventData)
-{
-   ctrlIntf_t *ctrlIntf = (ctrlIntf_t *)CallBackRef;
-
-   if (ctrlIntf->showBytes == 1)
-   {
-      switch (Event)
-      {
-         case XUN_EVENT_RECV_TIMEOUT:
-            PRINTF("CURXTO %d\n", EventData);
-            break;
-
-         case XUN_EVENT_RECV_DATA:
-            PRINTF("CURXD %d\n", EventData);
-            break;
-
-         case XUN_EVENT_SENT_DATA:
-            PRINTF("CUTXD %d\n", EventData);
-            break;
-
-         case XUN_EVENT_RECV_ERROR:
-            PRINTF("CURXE %d\n", EventData);
-            break;
-
-         default:
-            PRINTF("CUUE %d %d", Event, EventData);
-            break;
-      }
-   }
-
-   switch (Event)
-   {
-      case XUN_EVENT_RECV_TIMEOUT:
-      case XUN_EVENT_RECV_DATA:
-         ctrlIntf->rxDataReady = 1;
-         GETTIME(&ctrlIntf->rxByteTime);
-         break;
-
-      case XUN_EVENT_SENT_DATA:
-         ctrlIntf->txStatus = CITS_READY;
-
-   #ifdef CI_REQUEST_PROCESSING_DURATION_TEST
-         if ((ctrlIntf->protocol == CIP_F1F2) || (ctrlIntf->protocol == CIP_PLEORA))
-         {
-            CI_INF("Command processed in %dus (port %d).", (uint32_t) elapsed_time_us(ctrlIntf->rxCmdTime), ctrlIntf->port.port);
-         }
-   #endif
-         break;
-
-      case XUN_EVENT_RECV_ERROR:
-         ctrlIntf->linkErrorCount++;
-         break;
-   }
-}
 
 /**
- * Control interface USART interrupt handler function.
+ * Resets control interface.
  *
- * @param CallBackRef is a pointer to the control interface data structure.
- * @param Event is used to identify the cause of the interrupt.
- * @param EventData is the number of received or sent bytes.
+ * @param ctrlIntf_t is the pointer to the control interface data structure.
  */
-void CtrlIntf_USARTIntrHandler(void *CallBackRef,
-      u32 Event,
-      unsigned int EventData)
+IRC_Status_t CtrlIntf_Reset(ctrlIntf_t *ctrlIntf)
 {
-   ctrlIntf_t *ctrlIntf = (ctrlIntf_t *)CallBackRef;
+   // Reset error counter
+   ctrlIntf->errorCount = 0;
+   GETTIME(&ctrlIntf->tic_errorCount);
 
-   if (ctrlIntf->showBytes == 1)
-   {
-      switch (Event)
-      {
-         case USART_EVENT_RX_FULL:
-            PRINTF("USRXF %d\n", EventData);
-            break;
+   // Reset Rx circular buffer
+   CBB_Flush(ctrlIntf->rxCircBuffer);
+   ctrlIntf->rxByteTime = 0;
 
-         case USART_EVENT_TX_DONE:
-            PRINTF("USTXD %d\n", EventData);
-            break;
+   // Reset Tx circular buffer
+   CBB_Flush(ctrlIntf->txCircBuffer);
+   ctrlIntf->txStatus = CITS_READY;
 
-         case USART_EVENT_RX_TIMEOUT:
-            PRINTF("USRXT %d\n", EventData);
-            break;
-
-         default:
-            PRINTF("USUE %d %d", Event, EventData);
-            break;
-      }
-   }
-
-   // Loopback
-   if (ctrlIntf->loopback == 1)
-   {
-      if ((Event == USART_EVENT_RX_TIMEOUT) || (Event == USART_EVENT_RX_FULL))
-      {
-         Usart_Loopback(&ctrlIntf->link.usart);
-      }
-      return;
-   }
-
-   switch (Event)
-   {
-      case USART_EVENT_RX_TIMEOUT:
-      case USART_EVENT_RX_FULL:
-         ctrlIntf->rxDataReady = 1;
-         break;
-
-      case USART_EVENT_TX_DONE:
-         ctrlIntf->txStatus = CITS_READY;
-
-   #ifdef CI_REQUEST_PROCESSING_DURATION_TEST
-         if ((ctrlIntf->protocol == CIP_F1F2) || (ctrlIntf->protocol == CIP_PLEORA))
-         {
-            CI_INF("Command processed in %dus (port %d).", (uint32_t) elapsed_time_us(ctrlIntf->rxCmdTime), ctrlIntf->port.port);
-         }
-   #endif
-         break;
-   }
+   return IRC_SUCCESS;
 }

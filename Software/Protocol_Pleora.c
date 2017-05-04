@@ -197,6 +197,51 @@ uint32_t Pleora_CommandBuilder(PleoraCommand_t *pleoraCmd, uint8_t *buffer, uint
 }
 
 /**
+ * Pleora protocol circular command builder function.
+ *
+ * @param pleoraCmd is the pointer to the Pleora command structure that is going to be used to generate transmitted data.
+ * @param circByteBuffer is a pointer to the circular byte buffer that will be transmitted.
+ *
+ * @return The command length to be transmitted.
+ */
+uint32_t Pleora_CircCommandBuilder(PleoraCommand_t *pleoraCmd, circByteBuffer_t *circByteBuffer)
+{
+   uint32_t cmdlen = 0;
+
+   // Validate Pleora command code (response only)
+   if (pleoraCmd->cmd != PLEORA_CMD_ACK)
+   {
+      return 0;
+   }
+
+   // Write data into byte buffer
+   if (pleoraCmd->dataLength != 0)
+   {
+      // Read response
+      if ((CBB_Length(circByteBuffer) + PLEORA_CMD_CODE_SIZE + pleoraCmd->dataLength + pleoraCmd->padLength) > circByteBuffer->size)
+      {
+         return 0;
+      }
+      CBB_Push(circByteBuffer, pleoraCmd->cmd);
+      CBB_Pushn(circByteBuffer, pleoraCmd->dataLength, pleoraCmd->data);
+      CBB_Pushvaln(circByteBuffer, pleoraCmd->padLength, 0);
+      cmdlen = PLEORA_CMD_CODE_SIZE + pleoraCmd->dataLength + pleoraCmd->padLength;
+   }
+   else
+   {
+      // Write response
+      if ((CBB_Length(circByteBuffer) + PLEORA_CMD_CODE_SIZE) > circByteBuffer->size)
+      {
+         return 0;
+      }
+      CBB_Push(circByteBuffer, pleoraCmd->cmd);
+      cmdlen = PLEORA_CMD_CODE_SIZE;
+   }
+
+   return cmdlen;
+}
+
+/**
  * Convert Pleora command structure to F1F2 command structure.
  *
  * @param pleoraCmd is the pointer to the Pleora command structure (source).

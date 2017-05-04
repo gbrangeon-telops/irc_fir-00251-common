@@ -16,6 +16,7 @@
 #ifndef DEBUGTERMINAL_H
 #define DEBUGTERMINAL_H
 
+#include "CircularUART.h"
 #include "CircularByteBuffer.h"
 #include "CircularBuffer.h"
 #include "NetworkInterface.h"
@@ -47,6 +48,9 @@
 #define DT_LF                    0x0A
 #define DT_CR                    0x0D
 
+#define DT_CMD_IS_EMPTY(p_cbuf, byte)  ((CBB_Empty(p_cbuf)) || (CBB_Peek(p_cbuf, 0, &byte) == IRC_SUCCESS) && ((byte == DT_LF) || (byte == DT_CR)))
+
+
 /**
  * Debug terminal command parser function pointer data type.
  */
@@ -69,11 +73,11 @@ typedef struct DebugTerminalCommandStruct debugTerminalCommand_t;
  * Debug terminal structure
  */
 struct debugTerminalStruct {
-   XUartNs550 uart;           /**< The UART link of the debug terminal */
-   circByteBuffer_t rxCircDataBuffer; /**< Circular buffer to receive data */
-   circByteBuffer_t txCircDataBuffer; /**< Circular buffer to transmit data */
-   uint64_t txByteTime;       /**< Indicates when the last byte was pushed into txCircDataBuffer */
-   netIntfPort_t port;        /**< Debug terminal network port. */
+   circularUART_t *cuart;           /**< Pointer to the UART link of the debug terminal */
+   circByteBuffer_t *rxCircBuffer;  /**< Circular buffer to receive data */
+   circByteBuffer_t *txCircBuffer;  /**< Circular buffer to transmit data */
+   uint64_t txByteTime;             /**< Indicates when the last byte was pushed into txCircDataBuffer */
+   netIntfPort_t port;              /**< Debug terminal network port. */
 };
 
 /**
@@ -82,17 +86,17 @@ struct debugTerminalStruct {
 typedef struct debugTerminalStruct debugTerminal_t;
 
 
-IRC_Status_t DebugTerminal_Init(uint8_t *rxCircBuffer,
-      uint16_t rxCircBufferSize,
-      uint8_t *txCircBuffer,
-      uint16_t txCircBufferSize);
-IRC_Status_t DebugTerminal_InitSerial(uint16_t uartDeviceId);
-IRC_Status_t DebugTerminal_Connect(netIntf_t *netIntf,
+IRC_Status_t DebugTerminal_Init(debugTerminal_t *debugTerminal,
+      circByteBuffer_t *rxCircBuffer,
+      circByteBuffer_t *txCircBuffer);
+IRC_Status_t DebugTerminal_SetSerial(debugTerminal_t *debugTerminal, circularUART_t *uart);
+IRC_Status_t DebugTerminal_Connect(debugTerminal_t *debugTerminal,
+      netIntf_t *netIntf,
       circBuffer_t *cmdQueue);
-void DebugTerminal_Input();
-void DebugTerminal_Output();
+void DebugTerminal_Process(debugTerminal_t *debugTerminal);
 void DebugTerminal_SendMsgRequest(debugTerminal_t *debugTerminal);
-void DebugTerminal_Process();
+uint8_t DebugTerminal_CommandIsEmpty(circByteBuffer_t *cbuf);
+
 uint16_t GetNextArg(circByteBuffer_t *cbuf, uint8_t *buffer, uint16_t buflen);
 IRC_Status_t ParseNumArg(char *str, uint8_t length, uint32_t *value);
 IRC_Status_t ParseNumHex(char *str, uint8_t length, uint32_t *value);

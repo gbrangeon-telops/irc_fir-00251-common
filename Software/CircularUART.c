@@ -18,6 +18,8 @@
 #include "UART_Utils.h"
 
 static void CircularUART_InterruptHandler(circularUART_t *cuart);
+static uint32_t CircularUART_SendCircBuffer(circularUART_t *cuart);
+static uint32_t CircularUART_ReceiveCircBuffer(circularUART_t *cuart);
 
 static void NoInterruptHandler(circularUART_t *cuart);
 static void ReceiveStatusHandler(circularUART_t *cuart);
@@ -42,9 +44,6 @@ static void ModemHandler(circularUART_t *cuart);
 	   cuart->uart.Stats.ReceiveBreakDetected++;   \
    }                    \
 }
-
-static unsigned int XUartNs550_SendBuffer(XUartNs550 *InstancePtr);
-static unsigned int CircularUART_ReceiveCircBuffer(circularUART_t *cuart);
 
 typedef void (*Handler)(circularUART_t *cuart);
 
@@ -74,11 +73,6 @@ static Handler HandlerTable[13] = {
  * @param uartDeviceId is the UART device ID that can be found in xparameters.h file.
  * @param intc is the pointer to the Interrupt controller instance.
  * @param uartIntrId is the UART interrupt ID that can be found in xparameters.h file.
- * @param handler is the pointer to the UART interrupt handling function
- *        (Must complies to XUartNs550_Handler function prototype).
- * @param callbackRef is the pointer to the data that is passed to the handler function as reference.
- * @param txCircBuffer is the pointer to the circular buffer used to transmit data.
- * @param rxCircBuffer is the pointer to the circular buffer used to receive data.
  *
  * @return IRC_SUCCESS if successfully initialized
  * @return IRC_FAILURE if failed to initialize.
@@ -86,42 +80,150 @@ static Handler HandlerTable[13] = {
 IRC_Status_t CircularUART_Init(circularUART_t *cuart,
       uint16_t uartDeviceId,
       XIntc *intc,
-      uint16_t uartIntrId,
-      XUartNs550_Handler handler,
-      void *callbackRef,
-      circByteBuffer_t *rxCricBuffer)
+      uint16_t uartIntrId)
 {
-   IRC_Status_t status;
-   XStatus xstatus;
+   XStatus status;
    
-   status = UART_Init(&cuart->uart,
-         uartDeviceId,
-         intc,
-         uartIntrId,
-         handler,
-         callbackRef);
-   if (status != IRC_SUCCESS)
+   if (cuart == NULL) return IRC_FAILURE;
+   if (intc == NULL) return IRC_FAILURE;
+
+   // Initialize CUART data structure
+   cuart->intc = intc;
+   cuart->uartIntrId = uartIntrId;
+
+   /*
+    * Initialize the UART driver so that it's ready to use.
+    */
+   status = XUartNs550_Initialize(&cuart->uart, uartDeviceId);
+   if (status != XST_SUCCESS)
    {
       return IRC_FAILURE;
    }
 
    /*
-    * Reconnect circular UART device driver handler using circular buffer
-    * interrupt handler and circular UART as callback reference.
+    * Perform a self-test to ensure that the hardware was built correctly.
     */
-   xstatus = XIntc_Connect(intc, uartIntrId,
-                        (XInterruptHandler)CircularUART_InterruptHandler,
-                        cuart);
-   if (xstatus != XST_SUCCESS)
+   status = XUartNs550_SelfTest(&cuart->uart);
+   if (status != XST_SUCCESS)
    {
       return IRC_FAILURE;
    }
 
-   cuart->rxCricBuffer = rxCricBuffer;
+   /*
+    * Connect a device driver handler that will be called when an interrupt
+    * for the device occurs, the device driver handler performs the specific
+    * interrupt processing for the device.
+    */
+   status = XIntc_Connect(cuart->intc, cuart->uartIntrId,
+                        (XInterruptHandler)CircularUART_InterruptHandler,
+                        cuart);
+   if (status != XST_SUCCESS)
+   {
+      return IRC_FAILURE;
+   }
+
+   /*
+    * Enable the interrupt of the UART so interrupts will occur and keep the
+    * FIFOs enabled.
+    */
+   uint16_t uartOptions = XUN_OPTION_DATA_INTR | XUN_OPTION_FIFOS_ENABLE;
+   XUartNs550_SetOptions(&cuart->uart, uartOptions);
+
+   CircularUART_SetCircularBuffers(cuart, NULL, NULL);
+   CircularUART_SetHandler(cuart, NULL, NULL);
 
    return IRC_SUCCESS;
 }
 
+/**
+ * Set circular UART interrupt handler and callback reference.
+ *
+ * @param cuart is the pointer to the circular buffer UART data structure.
+ * @param handler is a callback function pointer (see CircularUART_Handler definition).
+ * @param callbackRef is a pointer to the callback reference.
+ *
+ * @return IRC_SUCCESS
+ */
+IRC_Status_t CircularUART_SetHandler(circularUART_t *cuart, CircularUART_Handler handler, void *callbackRef)
+{
+   if (cuart == NULL) return IRC_FAILURE;
+
+   cuart->uart.Handler = handler;
+   cuart->uart.CallBackRef = callbackRef;
+
+   return IRC_SUCCESS;
+}
+
+/**
+ * Set circular UART buffers.
+ *
+ * @param cuart is the pointer to the circular buffer UART data structure.
+ * @param rxCircBuffer is the RX circular byte buffer.
+ * @param txCircBuffer is the TX circular byte buffer.
+ *
+ * @return IRC_SUCCESS
+ */
+IRC_Status_t CircularUART_SetCircularBuffers(circularUART_t *cuart, circByteBuffer_t *rxCircBuffer, circByteBuffer_t *txCircBuffer)
+{
+   if (cuart == NULL) return IRC_FAILURE;
+
+   cuart->rxCircBuffer = rxCircBuffer;
+   cuart->txCircBuffer = txCircBuffer;
+
+   return IRC_SUCCESS;
+}
+
+/**
+ * Enable circular UART interrupt.
+ *
+ * @param cuart is the pointer to the circular buffer UART data structure.
+ *
+ * @return IRC_SUCCESS
+ */
+IRC_Status_t CircularUART_Enable(circularUART_t *cuart)
+{
+   if (cuart == NULL) return IRC_FAILURE;
+
+   XIntc_Enable(cuart->intc, cuart->uartIntrId);
+
+   return IRC_SUCCESS;
+}
+
+/**
+ * Disable circular UART interrupt.
+ *
+ * @param cuart is the pointer to the circular buffer UART data structure.
+ *
+ * @return IRC_SUCCESS
+ */
+IRC_Status_t CircularUART_Disable(circularUART_t *cuart)
+{
+   if (cuart == NULL) return IRC_FAILURE;
+
+   XIntc_Disable(cuart->intc, cuart->uartIntrId);
+
+   return IRC_SUCCESS;
+}
+
+/**
+ * Send data contained in circular UART TX buffer.
+ *
+ * @param cuart is the pointer to the circular buffer UART data structure.
+ *
+ * @return the number of characters that have been transmit.
+ */
+uint32_t CircularUART_SendData(circularUART_t *cuart)
+{
+   if (cuart == NULL) return IRC_FAILURE;
+
+   return CircularUART_SendCircBuffer(cuart);
+}
+
+/**
+ * Circular UART interrupt handler
+ *
+ * @param cuart is the pointer to the circular buffer UART data structure.
+ */
 void CircularUART_InterruptHandler(circularUART_t *cuart)
 {
    uint8_t isrStatus;
@@ -198,15 +300,16 @@ static void NoInterruptHandler(circularUART_t *cuart)
 static void ReceiveStatusHandler(circularUART_t *cuart)
 {
    u32 LsrRegister;
-   unsigned int ReceivedCount = 0;
+   uint32_t ReceivedCount = 0;
 
    /*
     * If there are bytes still to be received in the specified buffer
     * go ahead and receive them
     */
-   if (!CBB_Full(cuart->rxCricBuffer)) {
-      ReceivedCount = CircularUART_ReceiveCircBuffer(cuart);
-   } else {
+   ReceivedCount = CircularUART_ReceiveCircBuffer(cuart);
+
+   if (ReceivedCount == 0)
+   {
       /*
        * Reading the ID register clears the currently asserted
        * interrupts and this must be done since there was no data
@@ -216,12 +319,15 @@ static void ReceiveStatusHandler(circularUART_t *cuart)
       CircularUART_UpdateStats(cuart, (u8)LsrRegister);
    }
 
+   cuart->errorCount++;
+
    /*
     * Call the application handler to indicate that there is a receive
     * error or a break interrupt, if the application cares about the
     * error it call a function to get the last errors
     */
-   cuart->uart.Handler(cuart->uart.CallBackRef, XUN_EVENT_RECV_ERROR, ReceivedCount);
+   if (cuart->uart.Handler != NULL)
+      cuart->uart.Handler(cuart->uart.CallBackRef, XUN_EVENT_RECV_ERROR, ReceivedCount);
 
    /*
     * Update the receive stats to reflect the receive interrupt
@@ -251,36 +357,18 @@ static void ReceiveDataHandler(circularUART_t *cuart)
     * If there are bytes still to be received in the specified buffer
     * go ahead and receive them
     */
-   if (!CBB_Full(cuart->rxCricBuffer)) {
-      ReceivedCount = CircularUART_ReceiveCircBuffer(cuart);
-   }
+   ReceivedCount = CircularUART_ReceiveCircBuffer(cuart);
 
+   Event = XUN_EVENT_RECV_DATA;
 
-   if (!CBB_Full(cuart->rxCricBuffer)) {
-
-      /*
-       * If there are more bytes to receive then indicate that this is
-       * a Receive Timeout.
-       * This happens in the case the number of bytes received equal
-       * to the FIFO threshold as the Timeout Interrupt is masked
-       */
-      Event = XUN_EVENT_RECV_TIMEOUT;
-
-   } else {
-
-      /*
-       * If the last byte of a message was received then call the
-       * application handler
-       */
-      Event = XUN_EVENT_RECV_DATA;
-   }
+   // XUN_EVENT_RECV_TIMEOUT not used for circular buffer
 
    /*
     * Call the application handler to indicate that there is a receive
     * timeout or data event
     */
-   cuart->uart.Handler(cuart->uart.CallBackRef, Event, ReceivedCount);
-
+   if (cuart->uart.Handler != NULL)
+      cuart->uart.Handler(cuart->uart.CallBackRef, Event, ReceivedCount);
 
    /*
     * Update the receive stats to reflect the receive interrupt
@@ -310,7 +398,7 @@ static void SendDataHandler(circularUART_t *cuart)
     * disable the transmit interrupt so it will stop interrupting as it
     * interrupts any time the FIFO is empty
     */
-   if (cuart->uart.SendBuffer.RemainingBytes == 0) {
+   if ((cuart->txCircBuffer == NULL) || (CBB_Empty(cuart->txCircBuffer))) {
       IerRegister = XUartNs550_ReadReg(cuart->uart.BaseAddress,
                      XUN_IER_OFFSET);
       XUartNs550_WriteReg(cuart->uart.BaseAddress, XUN_IER_OFFSET,
@@ -320,10 +408,10 @@ static void SendDataHandler(circularUART_t *cuart)
        * Call the application handler to indicate the data
        * has been sent
        */
-      cuart->uart.Handler(cuart->uart.CallBackRef,
-            XUN_EVENT_SENT_DATA,
-            cuart->uart.SendBuffer.RequestedBytes -
-            cuart->uart.SendBuffer.RemainingBytes);
+      if (cuart->uart.Handler != NULL)
+      {
+         cuart->uart.Handler(cuart->uart.CallBackRef, XUN_EVENT_SENT_DATA, 0);
+      }
    }
 
    /*
@@ -331,7 +419,7 @@ static void SendDataHandler(circularUART_t *cuart)
     * so go ahead and send it
     */
    else {
-      XUartNs550_SendBuffer(&cuart->uart);
+      CircularUART_SendCircBuffer(cuart);
    }
 
    /*
@@ -368,8 +456,8 @@ static void ModemHandler(circularUART_t *cuart)
     * Call the application handler to indicate the modem status changed,
     * passing the modem status and the event data in the call
     */
-   cuart->uart.Handler(cuart->uart.CallBackRef, XUN_EVENT_MODEM,
-                   (u8) MsrRegister);
+   if (cuart->uart.Handler != NULL)
+      cuart->uart.Handler(cuart->uart.CallBackRef, XUN_EVENT_MODEM, (u8) MsrRegister);
 
    /*
     * Update the modem stats to reflect the modem interrupt
@@ -377,49 +465,31 @@ static void ModemHandler(circularUART_t *cuart)
    cuart->uart.Stats.ModemInterrupts++;
 }
 
-/****************************************************************************/
 /**
-*
-* This function sends a buffer that has been previously specified by setting
-* up the instance variables of the instance. This function is designed to be
-* an internal function for the XUartNs550 component such that it may be called
-* from a shell function that sets up the buffer or from an interrupt handler.
-*
-* This function sends the specified buffer of data to the UART in either
-* polled or interrupt driven modes. This function is non-blocking such that
-* it will return before the data has been sent by the UART.
-*
-* In a polled mode, this function will only send as much data as the UART can
-* buffer, either in the transmitter or in the FIFO if present and enabled.
-* The application may need to call it repeatedly to send a buffer.
-*
-* In interrupt mode, this function will start sending the specified buffer and
-* then the interrupt handler of the driver will continue until the buffer
-* has been sent. A callback function, as specified by the application, will
-* be called to indicate the completion of sending the buffer.
-*
-* @param InstancePtr is a pointer to the XUartNs550 instance.
-*
-* @return   NumBytes is the number of bytes actually sent (put into the
-*     UART tranmitter and/or FIFO).
-*
-* @note     None.
-*
-*****************************************************************************/
-unsigned int XUartNs550_SendBuffer(XUartNs550 *InstancePtr)
+ * Copy data contained in the TX circular byte buffer into UART TX FIFO.
+ *
+ * @param cuart is the pointer to the circular buffer UART data structure.
+ *
+ * @return the number of characters that have been transmit.
+ */
+uint32_t CircularUART_SendCircBuffer(circularUART_t *cuart)
 {
    unsigned int SentCount = 0;
    unsigned int BytesToSend = 0;   /* default to not send anything */
    unsigned int FifoSize;
+   unsigned char byte;
    u32 LsrRegister;
    u32 IirRegister;
    u32 IerRegister;
+
+   if (cuart == NULL) return 0;
+   if (cuart->txCircBuffer == NULL) return 0;
 
    /*
     * Read the line status register to determine if the transmitter is
     * empty
     */
-   LsrRegister = XUartNs550_GetLineStatusReg(InstancePtr->BaseAddress);
+   LsrRegister = XUartNs550_GetLineStatusReg(cuart->uart.BaseAddress);
 
    /*
     * If the transmitter is not empty then don't send any data, the empty
@@ -430,7 +500,7 @@ unsigned int XUartNs550_SendBuffer(XUartNs550 *InstancePtr)
        * Read the interrupt ID register to determine if FIFOs
        * are enabled
        */
-      IirRegister = XUartNs550_ReadReg(InstancePtr->BaseAddress,
+      IirRegister = XUartNs550_ReadReg(cuart->uart.BaseAddress,
                      XUN_IIR_OFFSET);
 
       /*
@@ -454,13 +524,12 @@ unsigned int XUartNs550_SendBuffer(XUartNs550 *InstancePtr)
           * is less than the size of the FIFO, then send all
           * bytes, otherwise fill the FIFO
           */
-         if (InstancePtr->SendBuffer.RemainingBytes < FifoSize) {
-            BytesToSend =
-               InstancePtr->SendBuffer.RemainingBytes;
+         if (CBB_Length(cuart->txCircBuffer) < FifoSize) {
+            BytesToSend = CBB_Length(cuart->txCircBuffer);
          } else {
             BytesToSend = FifoSize;
          }
-      } else if (InstancePtr->SendBuffer.RemainingBytes > 0) {
+      } else if (!CBB_Empty(cuart->txCircBuffer)) {
          /*
           * Without FIFOs, we can only send 1 byte. We needed to
           * check for non-zero remaining bytes in case this
@@ -475,31 +544,23 @@ unsigned int XUartNs550_SendBuffer(XUartNs550 *InstancePtr)
        * the the buffer that was specified
        */
       for (SentCount = 0; SentCount < BytesToSend; SentCount++) {
-         XUartNs550_WriteReg(InstancePtr->BaseAddress,
-                  XUN_THR_OFFSET,
-            InstancePtr->SendBuffer.NextBytePtr[SentCount]);
+         CBB_Pop(cuart->txCircBuffer, &byte);
+         XUartNs550_WriteReg(cuart->uart.BaseAddress, XUN_THR_OFFSET, byte);
       }
    }
    /*
-    * Update the buffer to reflect the bytes that were sent from it
-    */
-   InstancePtr->SendBuffer.NextBytePtr += SentCount;
-   InstancePtr->SendBuffer.RemainingBytes -= SentCount;
-
-   /*
     * Increment associated counters
     */
-    InstancePtr->Stats.CharactersTransmitted += SentCount;
+   cuart->uart.Stats.CharactersTransmitted += SentCount;
 
    /*
     * If interrupts are enabled as indicated by the receive interrupt, then
     * enable the transmit interrupt, it is not enabled continuously because
     * it causes an interrupt whenever the FIFO is empty
     */
-   IerRegister = XUartNs550_ReadReg(InstancePtr->BaseAddress,
-                  XUN_IER_OFFSET);
+   IerRegister = XUartNs550_ReadReg(cuart->uart.BaseAddress, XUN_IER_OFFSET);
    if (IerRegister & XUN_IER_RX_DATA) {
-      XUartNs550_WriteReg(InstancePtr->BaseAddress, XUN_IER_OFFSET,
+      XUartNs550_WriteReg(cuart->uart.BaseAddress, XUN_IER_OFFSET,
              IerRegister | XUN_IER_TX_EMPTY);
    }
    /*
@@ -509,16 +570,26 @@ unsigned int XUartNs550_SendBuffer(XUartNs550 *InstancePtr)
    return SentCount;
 }
 
-unsigned int CircularUART_ReceiveCircBuffer(circularUART_t *cuart)
+/**
+ * Copy data contained in the UART RX FIFO into the RX circular byte buffer.
+ *
+ * @param cuart is the pointer to the circular buffer UART data structure.
+ *
+ * @return the number of characters that have been received.
+ */
+uint32_t CircularUART_ReceiveCircBuffer(circularUART_t *cuart)
 {
    u32 LsrRegister;
    unsigned int ReceivedCount = 0;
+
+   if (cuart == NULL) return 0;
+   if (cuart->rxCircBuffer == NULL) return 0;
 
    /*
     * Loop until there is not more data buffered by the UART or the
     * specified number of bytes is received
     */
-   while (!CBB_Full(cuart->rxCricBuffer)) {
+   while (!CBB_Full(cuart->rxCircBuffer)) {
 
       /*
        * Read the Line Status Register to determine if there is any
@@ -543,7 +614,7 @@ unsigned int CircularUART_ReceiveCircBuffer(circularUART_t *cuart)
        * reflect any receive errors for the byte
        */
       else if (LsrRegister & XUN_LSR_DATA_READY) {
-         CBB_Push(cuart->rxCricBuffer, (u8)XUartNs550_ReadReg(cuart->uart.BaseAddress, XUN_RBR_OFFSET));
+         CBB_Push(cuart->rxCircBuffer, (u8)XUartNs550_ReadReg(cuart->uart.BaseAddress, XUN_RBR_OFFSET));
 
          ReceivedCount++;
          CircularUART_UpdateStats(cuart, (u8)LsrRegister);
