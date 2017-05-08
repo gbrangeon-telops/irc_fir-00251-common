@@ -25,6 +25,7 @@ package fpa_serdes_define is
    type delay_array is array (natural range 0 to 3) of std_logic_vector(4 downto 0);
    type edges_array is array (natural range 0 to 3) of std_logic_vector(31 downto 0);
    type bitslip_cnt_array is array (natural range 0 to 3) of std_logic_vector(3 downto 0);
+   type adc_data_array is array (natural range 0 to 3) of std_logic_vector(13 downto 0);
    
    type fpa_serdes_stat_type is 
    record
