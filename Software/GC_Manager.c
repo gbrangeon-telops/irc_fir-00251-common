@@ -466,6 +466,11 @@ IRC_Status_t GC_BroadcastRegisterWrite(gcRegister_t *p_register)
 {
    networkCommand_t gcmBroadcast;
 
+   if (gcmPort.netIntf->currentState != NIS_READY)
+   {
+      return IRC_SUCCESS;  // nothing to do for now
+   }
+
    if (p_register->callback != NULL)
    {
       (*p_register->callback)(GCCP_BEFORE, GCCA_READ);
