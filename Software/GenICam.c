@@ -248,7 +248,7 @@ gcRegister_t gcRegsDef[GC_REG_COUNT] = {
    /* DeviceBuiltInTestsResults8 */                {0x0000EB24, NULL, NULL, 4, 4, GCRO_Storage_FPGA, REG_UNLOCKED|REG_INT|REG_RO|REG_NOTSHARED|REG_BIGENDIAN},
    /* OffsetXMin */                                {0x0000EB28, NULL, NULL, 4, 4, GCRO_Processing_FPGA, REG_UNLOCKED|REG_INT|REG_RO|REG_NOTSHARED|REG_BIGENDIAN},
    /* MemoryBufferMOISource */                     {0x0000EB2C, NULL, NULL, 4, 4, GCRO_Processing_FPGA, REG_UNLOCKED|REG_INT|REG_RW|REG_SHARED|REG_BIGENDIAN},
-   /* MemoryBufferMOIActivation */                 {0x0000EB30, NULL, NULL, 4, 4, GCRO_Processing_FPGA, REG_UNLOCKED|REG_INT|REG_RW|REG_NOTSHARED|REG_BIGENDIAN},
+   /* MemoryBufferMOIActivation */                 {0x0000EB30, NULL, NULL, 4, 4, GCRO_Processing_FPGA, REG_UNLOCKED|REG_INT|REG_RW|REG_SHARED|REG_BIGENDIAN},
    /* MemoryBufferMOISoftware */                   {0x0000EB34, NULL, NULL, 4, 4, GCRO_Processing_FPGA, REG_UNLOCKED|REG_INT|REG_WO|REG_NOTSHARED|REG_BIGENDIAN},
    /* OffsetXMax */                                {0x0000EB38, NULL, NULL, 4, 4, GCRO_Processing_FPGA, REG_UNLOCKED|REG_INT|REG_RO|REG_NOTSHARED|REG_BIGENDIAN},
    /* OffsetYMin */                                {0x0000EB3C, NULL, NULL, 4, 4, GCRO_Processing_FPGA, REG_UNLOCKED|REG_INT|REG_RO|REG_NOTSHARED|REG_BIGENDIAN},
