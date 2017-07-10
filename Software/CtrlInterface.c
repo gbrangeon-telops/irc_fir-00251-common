@@ -175,13 +175,6 @@ IRC_Status_t CtrlIntf_CommandParser(ctrlIntf_t *ctrlIntf, F1F2Command_t *f1f2Cmd
    if (status == IRC_FAILURE)
    {
       CI_LINKERR(ctrlIntf, "Invalid command received.");
-
-      if (ctrlIntf->showBytes == 0)
-      {
-         CI_INF("%d byte(s) in circular buffer", CBB_Length(ctrlIntf->rxCircBuffer));
-         CBB_Dump(ctrlIntf->rxCircBuffer, 16);
-      }
-
       ctrlIntf->errorCount++;
       if (ctrlIntf->errorCount > CI_ERROR_COUNTER_THRESHOLD)
       {
@@ -454,22 +447,12 @@ void CtrlIntf_Process(ctrlIntf_t *ctrlIntf)
          if (!CBB_Empty(ctrlIntf->rxCircBuffer) && ((elapsed_time_us(ctrlIntf->rxByteTime) > CI_RX_TIMEOUT_US) || (ctrlIntf->linkType == CILT_USART)))
          {
             CI_LINKERR(ctrlIntf, "RX timeout.");
-            if (ctrlIntf->showBytes == 0)
-            {
-               CI_INF("%d byte(s) in circular buffer", CBB_Length(ctrlIntf->rxCircBuffer));
-               CBB_Dump(ctrlIntf->rxCircBuffer, 16);
-            }
             CBB_Flush(ctrlIntf->rxCircBuffer);
          }
 
          if (CBB_Full(ctrlIntf->rxCircBuffer))
          {
             CI_LINKERR(ctrlIntf, "Circular buffer is full and no complete command has been received.");
-            if (ctrlIntf->showBytes == 0)
-            {
-               CI_INF("%d byte(s) in circular buffer", CBB_Length(ctrlIntf->rxCircBuffer));
-               CBB_Dump(ctrlIntf->rxCircBuffer, 16);
-            }
             CBB_Flush(ctrlIntf->rxCircBuffer);
          }
       }
@@ -526,7 +509,7 @@ void CtrlIntf_IntrHandler(void *CallBackRef,
    {
       // Bytes transmit
       ctrlIntf->txStatus = CITS_READY;
-   }
+}
    else if ((ctrlIntf->linkType == CILT_CUART) && (Event == XUN_EVENT_RECV_ERROR))
    {
       // Error
@@ -545,20 +528,20 @@ IRC_Status_t CtrlIntf_Enable(ctrlIntf_t *ctrlIntf)
    {
       case CILT_CUART:
          CircularUART_Enable((circularUART_t *)ctrlIntf->p_link);
-         break;
+            break;
 
       case CILT_USART:
          Usart_Enable((usart_t *)ctrlIntf->p_link);
-         break;
+            break;
 
       case CILT_UNDEFINED:
-      default:
+         default:
          return IRC_FAILURE;
-         break;
-   }
+            break;
+      }
 
    return IRC_SUCCESS;
-}
+         }
 
 /**
  * Disables control interface.
@@ -571,20 +554,20 @@ IRC_Status_t CtrlIntf_Disable(ctrlIntf_t *ctrlIntf)
    {
       case CILT_CUART:
          CircularUART_Disable((circularUART_t *)ctrlIntf->p_link);
-         break;
+            break;
 
       case CILT_USART:
          Usart_Disable((usart_t *)ctrlIntf->p_link);
-         break;
+            break;
 
       case CILT_UNDEFINED:
-      default:
+         default:
          return IRC_FAILURE;
-         break;
-   }
+            break;
+      }
 
    return IRC_SUCCESS;
-}
+         }
 
 
 /**
@@ -604,7 +587,7 @@ IRC_Status_t CtrlIntf_Reset(ctrlIntf_t *ctrlIntf)
 
    // Reset Tx circular buffer
    CBB_Flush(ctrlIntf->txCircBuffer);
-   ctrlIntf->txStatus = CITS_READY;
+         ctrlIntf->txStatus = CITS_READY;
 
    return IRC_SUCCESS;
-}
+         }

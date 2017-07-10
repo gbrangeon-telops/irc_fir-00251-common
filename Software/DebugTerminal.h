@@ -20,6 +20,7 @@
 #include "CircularByteBuffer.h"
 #include "CircularBuffer.h"
 #include "NetworkInterface.h"
+#include "CtrlInterface.h"
 #include "xuartns550.h"
 #include "xintc.h"
 #include "IRC_Status.h"
@@ -70,6 +71,19 @@ struct DebugTerminalCommandStruct {
 typedef struct DebugTerminalCommandStruct debugTerminalCommand_t;
 
 /**
+ * Debug terminal ctrl intf data structure declaration.
+ */
+struct DebugTerminalCtrlIntfStruct {
+   char *mnemonic;            /**< Debug terminal ctrl intf mnemonic */
+   ctrlIntf_t *pCtrlIntf;     /**< Debug terminal ctrl intf pointer */
+};
+
+/**
+ * Debug terminal ctrl intf data type.
+ */
+typedef struct DebugTerminalCtrlIntfStruct debugTerminalCtrlIntf_t;
+
+/**
  * Debug terminal structure
  */
 struct debugTerminalStruct {
@@ -109,5 +123,6 @@ IRC_Status_t DebugTerminalParseRDM(circByteBuffer_t *cbuf);
 IRC_Status_t DebugTerminalParseWRM(circByteBuffer_t *cbuf);
 IRC_Status_t DebugTerminalParseNET(circByteBuffer_t *cbuf);
 IRC_Status_t DebugTerminalParseSTACK(circByteBuffer_t *cbuf);
+IRC_Status_t DebugTerminalParseCI(circByteBuffer_t *cbuf);
 
 #endif // DEBUGTERMINAL_H

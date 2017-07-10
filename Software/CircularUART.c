@@ -184,6 +184,9 @@ IRC_Status_t CircularUART_Enable(circularUART_t *cuart)
 {
    if (cuart == NULL) return IRC_FAILURE;
 
+   // Reset circular UART RX FIFO
+   CircularUART_ResetRxFifo(cuart);
+
    XIntc_Enable(cuart->intc, cuart->uartIntrId);
 
    return IRC_SUCCESS;

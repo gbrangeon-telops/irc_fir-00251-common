@@ -30,6 +30,7 @@ IRC_Status_t CB_Push(circBuffer_t *circBuffer, const void *p_item)
 {
    if (CB_Full(circBuffer))
    {
+      circBuffer->ovfl = 1;
       return IRC_FAILURE;
    }
 

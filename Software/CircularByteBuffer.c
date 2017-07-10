@@ -39,6 +39,7 @@ IRC_Status_t CBB_Init(circByteBuffer_t *circByteBuffer, uint8_t *buffer, uint16_
    circByteBuffer->maxLength = 0;
    circByteBuffer->idxHead = 0;
    circByteBuffer->idxTail = 0;
+   circByteBuffer->ovfl = 0;
 
    return IRC_SUCCESS;
 }
@@ -65,6 +66,7 @@ IRC_Status_t CBB_InitFromBuffer(circByteBuffer_t *circByteBuffer, uint8_t *buffe
    circByteBuffer->maxLength = length;
    circByteBuffer->idxHead = length % size;
    circByteBuffer->idxTail = 0;
+   circByteBuffer->ovfl = 0;
 
    return IRC_SUCCESS;
 }
@@ -81,8 +83,14 @@ IRC_Status_t CBB_InitFromBuffer(circByteBuffer_t *circByteBuffer, uint8_t *buffe
  */
 IRC_Status_t CBB_Push(circByteBuffer_t *circByteBuffer, uint8_t data)
 {
-   if ((circByteBuffer == NULL) || CBB_Full(circByteBuffer))
+   if (circByteBuffer == NULL)
    {
+      return IRC_FAILURE;
+   }
+
+   if (CBB_Full(circByteBuffer))
+   {
+      circByteBuffer->ovfl = 1;
       return IRC_FAILURE;
    }
 
@@ -113,9 +121,14 @@ IRC_Status_t CBB_Pushn(circByteBuffer_t *circByteBuffer, uint16_t length, uint8_
 {
    uint16_t i;
 
-   if ((circByteBuffer == NULL) ||
-         ((length + CBB_Length(circByteBuffer)) > circByteBuffer->size))
+   if (circByteBuffer == NULL)
    {
+      return IRC_FAILURE;
+   }
+
+   if ((length + CBB_Length(circByteBuffer)) > circByteBuffer->size)
+   {
+      circByteBuffer->ovfl = 1;
       return IRC_FAILURE;
    }
 

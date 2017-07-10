@@ -30,6 +30,7 @@ struct circBufferStruct {
    uint16_t maxLength;
    uint16_t idxHead;
    uint16_t idxTail;
+   uint8_t ovfl;
 };
 
 /**
@@ -40,7 +41,7 @@ typedef struct circBufferStruct circBuffer_t;
 /**
  * Circular buffer initializer (constructor).
  */
-#define CB_Ctor(buffer, size, itemSize) {buffer, size, itemSize, 0, 0, 0, 0}
+#define CB_Ctor(buffer, size, itemSize) {buffer, size, itemSize, 0, 0, 0, 0, 0}
 
 IRC_Status_t CB_Push(circBuffer_t *circBuffer, const void *p_item);
 IRC_Status_t CB_Pop(circBuffer_t *circBuffer, void *p_item);

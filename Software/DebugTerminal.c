@@ -165,22 +165,22 @@ void DebugTerminal_Input(debugTerminal_t *debugTerminal)
       if (DebugTerminal_CommandLength(debugTerminal->rxCircBuffer) < CBB_Length(debugTerminal->rxCircBuffer))
       {
          // EOC was found
-         if (debugTerminalUnlocked == 1)
-         {
+            if (debugTerminalUnlocked == 1)
+            {
             DebugTerminalParser(debugTerminal, debugTerminal->rxCircBuffer);
-         }
-         else
-         {
+               }
+            else
+            {
             cmdlen = GetNextArg(debugTerminal->rxCircBuffer, cmdStr, DT_MAX_CMD_SIZE);
-            cmdStr[cmdlen++] = '\0'; // Add string terminator
+               cmdStr[cmdlen++] = '\0'; // Add string terminator
 
             if ((strcasecmp((char *)cmdStr, "SPOLET") == 0) &&
                   DebugTerminal_CommandIsEmpty(debugTerminal->rxCircBuffer))
-            {
-               debugTerminalUnlocked = 1;
-               DT_INF("Debug terminal unlocked!!!");
-            }
-         }
+               {
+                  debugTerminalUnlocked = 1;
+                  DT_INF("Debug terminal unlocked!!!");
+               }
+               }
 
          // Flush remaining command characters (if any) and EOC
          DebugTerminal_FlushCommand(debugTerminal->rxCircBuffer);
@@ -199,10 +199,10 @@ void DebugTerminal_Output(debugTerminal_t *debugTerminal)
       (debugTerminal->port.netIntf->address != NIA_PROCESSING_FPGA) &&
       ((CBB_Length(debugTerminal->txCircBuffer) >= F1F2_MAX_DEBUG_DATA_SIZE) ||
       ((!CBB_Empty(debugTerminal->txCircBuffer)) && (elapsed_time_us(debugTerminal->txByteTime) > DT_TX_BUFFER_TIMEOUT))) &&
-      (debugTerminal->port.netIntf->currentState == NIS_READY))
+         (debugTerminal->port.netIntf->currentState == NIS_READY))
    {
       // Transmit output to processing FPGA debug terminal
-      DebugTerminal_SendMsgRequest(debugTerminal);
+       DebugTerminal_SendMsgRequest(debugTerminal);
    }
 }
 
@@ -1045,21 +1045,19 @@ IRC_Status_t DebugTerminalParseNET(circByteBuffer_t *cbuf)
    }
 
    DT_PRINTF("Command queues:");
-   DT_PRINTF("   Network: %d / %d (%d)%c", gNetworkIntf.cmdQueue->length, gNetworkIntf.cmdQueue->size, gNetworkIntf.cmdQueue->maxLength,
-         (gNetworkIntf.cmdQueue->maxLength == gNetworkIntf.cmdQueue->size)?'*':' ');
+   DT_PRINTF("   Network: %d / %d (max=%d, ovfl=%d)", gNetworkIntf.cmdQueue->length, gNetworkIntf.cmdQueue->size,
+         gNetworkIntf.cmdQueue->maxLength, gNetworkIntf.cmdQueue->ovfl);
 
    for (i = 0; i < gNetworkIntf.numberOfPorts; i++)
    {
-      DT_PRINTF("   Port %d:  %d / %d (%d)%c", gNetworkIntf.ports[i]->port, gNetworkIntf.ports[i]->cmdQueue->length,
-            gNetworkIntf.ports[i]->cmdQueue->size, gNetworkIntf.ports[i]->cmdQueue->maxLength,
-            (gNetworkIntf.ports[i]->cmdQueue->maxLength == gNetworkIntf.ports[i]->cmdQueue->size)?'*':' ');
+      DT_PRINTF("   Port %d:  %d / %d (max=%d, ovfl=%d)", gNetworkIntf.ports[i]->port, gNetworkIntf.ports[i]->cmdQueue->length,
+            gNetworkIntf.ports[i]->cmdQueue->size, gNetworkIntf.ports[i]->cmdQueue->maxLength, gNetworkIntf.ports[i]->cmdQueue->ovfl);
    }
 
    for (i = 0; i < gNetworkIntf.numberOfConnections; i++)
    {
-      DT_PRINTF("   Conn %d:  %d / %d (%d)%c", i, gNetworkIntf.connections[i]->cmdQueue->length,
-            gNetworkIntf.connections[i]->cmdQueue->size, gNetworkIntf.connections[i]->cmdQueue->maxLength,
-            (gNetworkIntf.connections[i]->cmdQueue->maxLength == gNetworkIntf.connections[i]->cmdQueue->size)?'*':' ');
+      DT_PRINTF("   Conn %d:  %d / %d (max=%d, ovfl=%d)", i, gNetworkIntf.connections[i]->cmdQueue->length,
+            gNetworkIntf.connections[i]->cmdQueue->size, gNetworkIntf.connections[i]->cmdQueue->maxLength, gNetworkIntf.connections[i]->cmdQueue->ovfl);
    }
 
    return IRC_SUCCESS;
@@ -1086,6 +1084,128 @@ IRC_Status_t DebugTerminalParseSTACK(circByteBuffer_t *cbuf)
 
    DT_PRINTF("Stack level: %d/%d (%d)",
          Stack_GetActualLevel(), Stack_GetSize(), Stack_GetMaximumLevel());
+
+   return IRC_SUCCESS;
+}
+
+/**
+ * Debug terminal control interfaces status command parser.
+ * This parser is used to parse and validate control interfaces
+ * status command arguments and to execute the command.
+ *
+ * @param cbuf is the pointer to the circular buffer containing the data to be parsed.
+ *
+ * @return IRC_SUCCESS when control interfaces status command was successfully executed.
+ * @return IRC_FAILURE otherwise.
+ */
+IRC_Status_t DebugTerminalParseCI(circByteBuffer_t *cbuf)
+{
+   extern debugTerminalCtrlIntf_t gDebugTerminalCtrlIntfs[];
+   extern uint32_t gDebugTerminalCtrlIntfsCount;
+   extern debugTerminal_t gDebugTerminal;
+   ctrlIntf_t *pCtrlIntf = NULL;
+   uint8_t cmdStr[3], argStr[8];
+   uint32_t arglen;
+   uint32_t enable;
+   uint32_t i;
+
+   if (!DebugTerminal_CommandIsEmpty(cbuf))
+   {
+      // Read command value
+      arglen = GetNextArg(cbuf, cmdStr, sizeof(cmdStr) - 1);
+      if (arglen == 0)
+      {
+         DT_ERR("Invalid command.");
+         return IRC_FAILURE;
+      }
+      cmdStr[arglen++] = '\0'; // Add string terminator
+
+      // Read interface value
+      arglen = GetNextArg(cbuf, argStr, sizeof(argStr) - 1);
+      if (arglen == 0)
+      {
+         DT_ERR("Invalid interface value.");
+         return IRC_FAILURE;
+      }
+      argStr[arglen++] = '\0'; // Add string terminator
+
+      // Process interface value
+      for (i = 0; i < gDebugTerminalCtrlIntfsCount; i++)
+      {
+         if (strcasecmp((char *)argStr, gDebugTerminalCtrlIntfs[i].mnemonic) == 0)
+         {
+            pCtrlIntf = gDebugTerminalCtrlIntfs[i].pCtrlIntf;
+            break;
+         }
+      }
+      if (pCtrlIntf == NULL)
+      {
+         DT_ERR("Unknown interface value.");
+         return IRC_FAILURE;
+      }
+
+      // Read enable value
+      arglen = GetNextArg(cbuf, argStr, sizeof(argStr) - 1);
+      if ((ParseNumArg((char *)argStr, arglen, &enable) != IRC_SUCCESS) ||
+            ((enable != 0) && (enable != 1)))
+      {
+         DT_ERR("Invalid logical value.");
+         return IRC_FAILURE;
+      }
+
+      // There is supposed to be no remaining bytes in the buffer
+      if (!DebugTerminal_CommandIsEmpty(cbuf))
+      {
+         DT_ERR("Unsupported command arguments");
+         return IRC_FAILURE;
+      }
+
+      // Process command
+      if (strcasecmp((char *)cmdStr, "SB") == 0)
+      {
+         pCtrlIntf->showBytes = enable;
+      }
+      else if (strcasecmp((char *)cmdStr, "LB") == 0)
+      {
+         if (pCtrlIntf->linkType != CILT_USART)
+         {
+            DT_ERR("Loopback feature is only supported for USART link.");
+            return IRC_FAILURE;
+         }
+
+         ((usart_t*)pCtrlIntf->p_link)->loopback = enable;
+      }
+      else
+      {
+         DT_ERR("Unknown command.");
+         return IRC_FAILURE;
+      }
+   }
+
+   // Print control interfaces status
+   for (i = 0; i < gDebugTerminalCtrlIntfsCount; i++)
+   {
+      pCtrlIntf = gDebugTerminalCtrlIntfs[i].pCtrlIntf;
+      DT_PRINTF("%s Interface", gDebugTerminalCtrlIntfs[i].mnemonic);
+      DT_PRINTF("  Network port: %d", pCtrlIntf->port.port);
+      DT_PRINTF("  Link: %s @ 0x%08X", CtrlIntf_GetLinkTypeStr(pCtrlIntf), CtrlIntf_GetLinkBaseAddress(pCtrlIntf));
+      DT_PRINTF("  RX buffer: %d / %d (max=%d, ovfl=%d)", pCtrlIntf->rxCircBuffer->length, pCtrlIntf->rxCircBuffer->size,
+            pCtrlIntf->rxCircBuffer->maxLength, pCtrlIntf->rxCircBuffer->ovfl);
+      DT_PRINTF("  TX buffer: %d / %d (max=%d, ovfl=%d)", pCtrlIntf->txCircBuffer->length, pCtrlIntf->txCircBuffer->size,
+            pCtrlIntf->txCircBuffer->maxLength, pCtrlIntf->txCircBuffer->ovfl);
+   }
+
+   DT_PRINTF("Debug Terminal Interface");
+   DT_PRINTF("  Network port: %d", gDebugTerminal.port.port);
+   if (gDebugTerminal.cuart != NULL) {
+      DT_PRINTF("  Link: CUART @ 0x%08X", gDebugTerminal.cuart->uart.BaseAddress);
+   }
+   if (gDebugTerminal.rxCircBuffer != NULL) {
+      DT_PRINTF("  RX buffer: %d / %d (max=%d, ovfl=%d)", gDebugTerminal.rxCircBuffer->length,
+         gDebugTerminal.rxCircBuffer->size, gDebugTerminal.rxCircBuffer->maxLength, gDebugTerminal.rxCircBuffer->ovfl);
+   }
+   DT_PRINTF("  TX buffer: %d / %d (max=%d, ovfl=%d)", gDebugTerminal.txCircBuffer->length, gDebugTerminal.txCircBuffer->size,
+         gDebugTerminal.txCircBuffer->maxLength, gDebugTerminal.txCircBuffer->ovfl);
 
    return IRC_SUCCESS;
 }
