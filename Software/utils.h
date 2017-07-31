@@ -115,6 +115,21 @@ char *dec2bin(const int decimal, uint8_t nbBit);
 int32_t medianOf3(const int32_t a[3]);
 
 /**
+ * Context struct and functions.
+ * Used to divide a large process in multiple blocks.
+ */
+typedef struct {
+   uint32_t startIndex;          // index of first element to process
+   uint32_t blockIdx;            // current block being processed
+   uint32_t blockLength;         // number of elements to process in the next pass
+   uint32_t totalLength;         // total number of elements to process
+} context_t;
+
+void ctxtInit(context_t* ctxt, uint32_t i0, uint32_t totalLength, uint32_t blockLength);
+uint32_t ctxtIterate(context_t* ctxt);
+bool ctxtIsDone(const context_t* ctxt);
+
+/**
  * Inverse of the CDF of the normal distribution (a.k.a. quantile function)
  * (Abramowitz & Stegun, Handbook of Mathematical Functions with Formulas, Graphs, and Mathematical Tables, 1964)
  * approximation coefficients from Paul M. Voutier, A New Approximation to the Normal Distribution Quantile Function, 2010

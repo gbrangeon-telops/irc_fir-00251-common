@@ -1093,3 +1093,51 @@ int32_t medianOf3(const int32_t a[3])
 
    return m;
 }
+
+/**
+ * Initialize the process context.
+ *
+ * @param ctxt Pointer to the context instance.
+ * @param i0 First index used by the context block.
+ * @param totalLength Total context length.
+ * @param blockLength Context block length.
+ *
+ * @return void.
+ */
+void ctxtInit(context_t* ctxt, uint32_t i0, uint32_t totalLength, uint32_t blockLength)
+{
+   ctxt->startIndex = i0;
+   ctxt->totalLength = totalLength;
+   ctxt->blockIdx = 0;
+   ctxt->blockLength = blockLength;
+}
+
+/**
+ * Execute an iteration (block) of the process context.
+ *
+ * @param ctxt Pointer to the context instance.
+ *
+ * @return Context block length.
+ */
+uint32_t ctxtIterate(context_t* ctxt)
+{
+   ctxt->startIndex = MIN(ctxt->startIndex + ctxt->blockLength, ctxt->totalLength);
+
+   ctxt->blockLength = MIN(ctxt->totalLength - ctxt->startIndex, ctxt->blockLength);
+   ++ctxt->blockIdx;
+
+   return ctxt->blockLength;
+}
+
+/**
+ * Indicates whether the process context is done.
+ *
+ * @param ctxt Pointer to the context instance.
+ *
+ * @return True if context is done.
+ * @return False if context is not done.
+ */
+bool ctxtIsDone(const context_t* ctxt)
+{
+   return ctxt->blockLength == 0;
+}
