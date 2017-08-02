@@ -81,7 +81,7 @@ begin
          );      
    end generate; 
    
-   ADC_CLK_18M_Gen : if DEFINE_ADC_QUAD_CLK_RATE_KHZ = 18_000 generate   
+   serdes_18_0_Gen : if DEFINE_ADC_QUAD_CLK_RATE_KHZ = 18_000 generate   
       begin                                             
       U10M :  serdes_clkin_18_0_MHz_mmcm
       port map (   

@@ -30,8 +30,8 @@ package fpa_serdes_define is
    record
       edges    : edges_array;
       delay    : delay_array;
-      success  : std_logic_vector(3 downto 0);
-      done     : std_logic_vector(3 downto 0);
+      success  : std_logic_vector(0 downto 3);
+      done     : std_logic_vector(0 downto 3);
    end record;
    
 end fpa_serdes_define;
