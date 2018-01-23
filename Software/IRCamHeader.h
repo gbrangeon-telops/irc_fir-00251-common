@@ -16,7 +16,7 @@
 
 /* AUTO-CODE BEGIN */
 // Auto-generated IRCam header library.
-// Generated from the IRCam header definition XLS file version 12.1
+// Generated from the IRCam header definition XLS file version 12.2
 // using generateIRCamHeaderCLib.m Matlab script.
 
 #define SignatureHdrAddr                              0x00  /**< Signature header field address */
@@ -86,6 +86,11 @@
 #define ManualFilterSerialNumberHdrAddr               0xDC  /**< ManualFilterSerialNumber header field address */
 #define SensorIDHdrAddr                               0xE0  /**< SensorID header field address */
 #define PixelDataResolutionHdrAddr                    0xE1  /**< PixelDataResolution header field address */
+#define HFOVHdrAddr                                   0xE2  /**< HFOV header field address */
+#define VFOVHdrAddr                                   0xE4  /**< VFOV header field address */
+#define FocusPositionRawHdrAddr                       0xE6  /**< FocusPositionRaw header field address */
+#define FOVPositionRawHdrAddr                         0xE8  /**< FOVPositionRaw header field address */
+#define FOVPositionHdrAddr                            0xEA  /**< FOVPosition header field address */
 #define DeviceCalibrationFilesMajorVersionHdrAddr     0xEB  /**< DeviceCalibrationFilesMajorVersion header field address */
 #define DeviceCalibrationFilesMinorVersionHdrAddr     0xEC  /**< DeviceCalibrationFilesMinorVersion header field address */
 #define DeviceCalibrationFilesSubMinorVersionHdrAddr  0xED  /**< DeviceCalibrationFilesSubMinorVersion header field address */

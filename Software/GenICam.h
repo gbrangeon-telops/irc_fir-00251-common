@@ -148,11 +148,11 @@ typedef struct gcRegister gcRegister_t;
 
 /* AUTO-CODE BEGIN */
 // Auto-generated GeniCam library.
-// Generated from XML camera definition file version 12.1.0
+// Generated from XML camera definition file version 12.2.0
 // using generateGenICamCommonCLib.m Matlab script.
 
 #define GC_XMLMAJORVERSION    12
-#define GC_XMLMINORVERSION    1
+#define GC_XMLMINORVERSION    2
 #define GC_XMLSUBMINORVERSION 0
 
 // Enumerations values and data types
@@ -273,7 +273,9 @@ enum CalibrationCollectionTypeEnum {
    CCT_MultipointFixed = 3,
    CCT_MultipointEHDRI = 4,
    CCT_MultipointFW = 5,
-   CCT_MultipointNDF = 6
+   CCT_MultipointNDF = 6,
+   CCT_TelopsFOV = 7,
+   CCT_MultipointFOV = 8
 };
 
 /**
@@ -291,7 +293,9 @@ enum CalibrationCollectionActiveTypeEnum {
    CCAT_MultipointFixed = 3,
    CCAT_MultipointEHDRI = 4,
    CCAT_MultipointFW = 5,
-   CCAT_MultipointNDF = 6
+   CCAT_MultipointNDF = 6,
+   CCAT_TelopsFOV = 7,
+   CCAT_MultipointFOV = 8
 };
 
 /**
@@ -311,6 +315,32 @@ enum ImageCorrectionModeEnum {
  * ImageCorrectionMode enumeration values data type
  */
 typedef enum ImageCorrectionModeEnum ImageCorrectionMode_t;
+
+/**
+ * ImageCorrectionBlockSelector enumeration values
+ */
+enum ImageCorrectionBlockSelectorEnum {
+   ICBS_AllBlocks = 0,
+   ICBS_ActiveBlock = 1
+};
+
+/**
+ * ImageCorrectionBlockSelector enumeration values data type
+ */
+typedef enum ImageCorrectionBlockSelectorEnum ImageCorrectionBlockSelector_t;
+
+/**
+ * ImageCorrectionFWMode enumeration values
+ */
+enum ImageCorrectionFWModeEnum {
+   ICFWM_Fixed = 0,
+   ICFWM_SynchronouslyRotating = 2
+};
+
+/**
+ * ImageCorrectionFWMode enumeration values data type
+ */
+typedef enum ImageCorrectionFWModeEnum ImageCorrectionFWMode_t;
 
 /**
  * NDFilterPositionSetpoint enumeration values
@@ -395,6 +425,51 @@ enum FWPositionEnum {
  * FWPosition enumeration values data type
  */
 typedef enum FWPositionEnum FWPosition_t;
+
+/**
+ * FOVPositionSetpoint enumeration values
+ */
+enum FOVPositionSetpointEnum {
+   FOVPS_FOV1 = 0,
+   FOVPS_FOV2 = 1,
+   FOVPS_FOV3 = 2,
+   FOVPS_FOV4 = 3
+};
+
+/**
+ * FOVPositionSetpoint enumeration values data type
+ */
+typedef enum FOVPositionSetpointEnum FOVPositionSetpoint_t;
+
+/**
+ * FOVPosition enumeration values
+ */
+enum FOVPositionEnum {
+   FOVP_FOV1 = 0,
+   FOVP_FOV2 = 1,
+   FOVP_FOV3 = 2,
+   FOVP_FOV4 = 3,
+   FOVP_FOVInTransition = 254,
+   FOVP_FOVNotImplemented = 255
+};
+
+/**
+ * FOVPosition enumeration values data type
+ */
+typedef enum FOVPositionEnum FOVPosition_t;
+
+/**
+ * AutofocusMode enumeration values
+ */
+enum AutofocusModeEnum {
+   AM_Off = 0,
+   AM_Once = 1
+};
+
+/**
+ * AutofocusMode enumeration values data type
+ */
+typedef enum AutofocusModeEnum AutofocusMode_t;
 
 /**
  * ICUPositionSetpoint enumeration values
@@ -911,7 +986,12 @@ enum EventErrorCodeDescEnum {
    EECD_MemoryBufferInitialisationError = 33,
    EECD_MemoryBufferDownloadFrameSizeMissmatch = 34,
    EECD_MemoryBufferDownloadClearedSequence = 35,
-   EECD_MemoryBufferDefragError = 36
+   EECD_MemoryBufferDefragError = 36,
+   EECD_MemoryBufferDDRError = 37,
+   EECD_MemoryBufferHardwareCompletionTimeout = 38,
+   EECD_MotorizedLensError = 39,
+   EECD_AutofocusModuleError = 40,
+   EECD_AutofocusTimeout = 41
 };
 
 /**
@@ -1418,6 +1498,35 @@ typedef enum DeviceLedIndicatorStateEnum DeviceLedIndicatorState_t;
 // #define MemoryBufferStatusAddr                        0x0000EBB0  /**< MemoryBufferStatus register address */
 // #define MemoryBufferLegacyModeAddr                    0x0000EBB4  /**< MemoryBufferLegacyMode register address */
 // #define DeviceSerialPortFunctionAddr                  0x0000EBB8  /**< DeviceSerialPortFunction register address */
+// #define ImageCorrectionFWAcquisitionFrameRateMinAddr  0x0000EBBC  /**< ImageCorrectionFWAcquisitionFrameRateMin register address */
+// #define ImageCorrectionFWAcquisitionFrameRateMaxAddr  0x0000EBC0  /**< ImageCorrectionFWAcquisitionFrameRateMax register address */
+// #define ImageCorrectionBlockSelectorAddr              0x0000EBC4  /**< ImageCorrectionBlockSelector register address */
+// #define ImageCorrectionFWModeAddr                     0x0000EBC8  /**< ImageCorrectionFWMode register address */
+// #define ImageCorrectionFWAcquisitionFrameRateAddr     0x0000EBCC  /**< ImageCorrectionFWAcquisitionFrameRate register address */
+// #define FOVPositionRawMinAddr                         0x0000EBD0  /**< FOVPositionRawMin register address */
+// #define FOVPositionRawMaxAddr                         0x0000EBD4  /**< FOVPositionRawMax register address */
+// #define FocusPositionRawMinAddr                       0x0000EBD8  /**< FocusPositionRawMin register address */
+// #define FocusPositionRawMaxAddr                       0x0000EBDC  /**< FocusPositionRawMax register address */
+// #define FOVPositionSetpointAddr                       0x0000EBE0  /**< FOVPositionSetpoint register address */
+// #define FOVPositionAddr                               0x0000EBE4  /**< FOVPosition register address */
+// #define FOVPositionNumberAddr                         0x0000EBE8  /**< FOVPositionNumber register address */
+// #define ZoomInFastAddr                                0x0000EBEC  /**< ZoomInFast register address */
+// #define ZoomInSlowAddr                                0x0000EBF0  /**< ZoomInSlow register address */
+// #define ZoomOutSlowAddr                               0x0000EBF4  /**< ZoomOutSlow register address */
+// #define ZoomOutFastAddr                               0x0000EBF8  /**< ZoomOutFast register address */
+// #define HFOVAddr                                      0x0000EBFC  /**< HFOV register address */
+// #define VFOVAddr                                      0x0000EC00  /**< VFOV register address */
+// #define FOVPositionRawSetpointAddr                    0x0000EC04  /**< FOVPositionRawSetpoint register address */
+// #define FOVPositionRawAddr                            0x0000EC08  /**< FOVPositionRaw register address */
+// #define AutofocusModeAddr                             0x0000EC0C  /**< AutofocusMode register address */
+// #define AutofocusROIAddr                              0x0000EC10  /**< AutofocusROI register address */
+// #define AutofocusAddr                                 0x0000EC14  /**< Autofocus register address */
+// #define FocusNearFastAddr                             0x0000EC18  /**< FocusNearFast register address */
+// #define FocusNearSlowAddr                             0x0000EC1C  /**< FocusNearSlow register address */
+// #define FocusFarSlowAddr                              0x0000EC20  /**< FocusFarSlow register address */
+// #define FocusFarFastAddr                              0x0000EC24  /**< FocusFarFast register address */
+// #define FocusPositionRawSetpointAddr                  0x0000EC28  /**< FocusPositionRawSetpoint register address */
+// #define FocusPositionRawAddr                          0x0000EC2C  /**< FocusPositionRaw register address */
 
 // Registers definition array indices
 ////////////////////////////////////////////////////////////////////////////////
@@ -1679,11 +1788,40 @@ typedef enum DeviceLedIndicatorStateEnum DeviceLedIndicatorState_t;
 #define MemoryBufferStatusIdx                         254
 #define MemoryBufferLegacyModeIdx                     255
 #define DeviceSerialPortFunctionIdx                   256
+#define ImageCorrectionFWAcquisitionFrameRateMinIdx   257
+#define ImageCorrectionFWAcquisitionFrameRateMaxIdx   258
+#define ImageCorrectionBlockSelectorIdx               259
+#define ImageCorrectionFWModeIdx                      260
+#define ImageCorrectionFWAcquisitionFrameRateIdx      261
+#define FOVPositionRawMinIdx                          262
+#define FOVPositionRawMaxIdx                          263
+#define FocusPositionRawMinIdx                        264
+#define FocusPositionRawMaxIdx                        265
+#define FOVPositionSetpointIdx                        266
+#define FOVPositionIdx                                267
+#define FOVPositionNumberIdx                          268
+#define ZoomInFastIdx                                 269
+#define ZoomInSlowIdx                                 270
+#define ZoomOutSlowIdx                                271
+#define ZoomOutFastIdx                                272
+#define HFOVIdx                                       273
+#define VFOVIdx                                       274
+#define FOVPositionRawSetpointIdx                     275
+#define FOVPositionRawIdx                             276
+#define AutofocusModeIdx                              277
+#define AutofocusROIIdx                               278
+#define AutofocusIdx                                  279
+#define FocusNearFastIdx                              280
+#define FocusNearSlowIdx                              281
+#define FocusFarSlowIdx                               282
+#define FocusFarFastIdx                               283
+#define FocusPositionRawSetpointIdx                   284
+#define FocusPositionRawIdx                           285
 
 // Registers general macros
 ////////////////////////////////////////////////////////////////////////////////
 
-#define GC_REG_COUNT 257 /**< Number of GenICam registers */
+#define GC_REG_COUNT 286 /**< Number of GenICam registers */
 #define GC_REG_MAX_LENGTH 512 /**< GenICam registers maximum length (in bytes) */
 #define GC_REG_MAX_READ_LENGTH 512 /**< GenICam readable registers maximum length (in bytes) */
 #define GC_REG_MAX_WRITE_LENGTH 4 /**< GenICam writable registers maximum length (in bytes) */

@@ -22,7 +22,7 @@ use ieee.numeric_std.all;
 
 -- AUTO-CODE BEGIN
 -- Auto-generated IRCam image header definition package.
--- Generated from the IRCam header definition XLS file version 12.1
+-- Generated from the IRCam header definition XLS file version 12.2
 -- using generateIRCamHeaderVHDLLib.m Matlab script.
 
 package img_header_define is
@@ -358,6 +358,31 @@ package img_header_define is
    constant PixelDataResolutionAdd32                     : std_logic_vector(5 downto 0) := std_logic_vector(to_unsigned(56,6));  --! PixelDataResolution field's 32-bit address
    constant PixelDataResolutionBWE                       : std_logic_vector(3 downto 0) := "0100";                               --! PixelDataResolution field's word mask
    constant PixelDataResolutionShift                     : natural := 16;                                                        --! PixelDataResolution field's shift value
+
+   constant HFOVAdd8                                     : std_logic_vector(7 downto 0) := x"E2";                                --! HFOV field's 8-bit address
+   constant HFOVAdd32                                    : std_logic_vector(5 downto 0) := std_logic_vector(to_unsigned(56,6));  --! HFOV field's 32-bit address
+   constant HFOVBWE                                      : std_logic_vector(3 downto 0) := "0011";                               --! HFOV field's word mask
+   constant HFOVShift                                    : natural := 0;                                                         --! HFOV field's shift value
+
+   constant VFOVAdd8                                     : std_logic_vector(7 downto 0) := x"E4";                                --! VFOV field's 8-bit address
+   constant VFOVAdd32                                    : std_logic_vector(5 downto 0) := std_logic_vector(to_unsigned(57,6));  --! VFOV field's 32-bit address
+   constant VFOVBWE                                      : std_logic_vector(3 downto 0) := "1100";                               --! VFOV field's word mask
+   constant VFOVShift                                    : natural := 16;                                                        --! VFOV field's shift value
+
+   constant FocusPositionRawAdd8                         : std_logic_vector(7 downto 0) := x"E6";                                --! FocusPositionRaw field's 8-bit address
+   constant FocusPositionRawAdd32                        : std_logic_vector(5 downto 0) := std_logic_vector(to_unsigned(57,6));  --! FocusPositionRaw field's 32-bit address
+   constant FocusPositionRawBWE                          : std_logic_vector(3 downto 0) := "0011";                               --! FocusPositionRaw field's word mask
+   constant FocusPositionRawShift                        : natural := 0;                                                         --! FocusPositionRaw field's shift value
+
+   constant FOVPositionRawAdd8                           : std_logic_vector(7 downto 0) := x"E8";                                --! FOVPositionRaw field's 8-bit address
+   constant FOVPositionRawAdd32                          : std_logic_vector(5 downto 0) := std_logic_vector(to_unsigned(58,6));  --! FOVPositionRaw field's 32-bit address
+   constant FOVPositionRawBWE                            : std_logic_vector(3 downto 0) := "1100";                               --! FOVPositionRaw field's word mask
+   constant FOVPositionRawShift                          : natural := 16;                                                        --! FOVPositionRaw field's shift value
+
+   constant FOVPositionAdd8                              : std_logic_vector(7 downto 0) := x"EA";                                --! FOVPosition field's 8-bit address
+   constant FOVPositionAdd32                             : std_logic_vector(5 downto 0) := std_logic_vector(to_unsigned(58,6));  --! FOVPosition field's 32-bit address
+   constant FOVPositionBWE                               : std_logic_vector(3 downto 0) := "0010";                               --! FOVPosition field's word mask
+   constant FOVPositionShift                             : natural := 8;                                                         --! FOVPosition field's shift value
 
    constant DeviceCalibrationFilesMajorVersionAdd8       : std_logic_vector(7 downto 0) := x"EB";                                --! DeviceCalibrationFilesMajorVersion field's 8-bit address
    constant DeviceCalibrationFilesMajorVersionAdd32      : std_logic_vector(5 downto 0) := std_logic_vector(to_unsigned(58,6));  --! DeviceCalibrationFilesMajorVersion field's 32-bit address

@@ -16,7 +16,7 @@
 
 /* AUTO-CODE BEGIN */
 // Auto-generated GeniCam library.
-// Generated from XML camera definition file version 12.1.0
+// Generated from XML camera definition file version 12.2.0
 // using generateGenICamCommonCLib.m Matlab script.
 
 // GenICam global variables definition
@@ -143,19 +143,19 @@ gcRegister_t gcRegsDef[GC_REG_COUNT] = {
    /* TimeSource */                                {0x0000E97C, NULL, NULL, 4, 4, GCRO_Processing_FPGA, REG_UNLOCKED|REG_INT|REG_RO|REG_NOTSHARED|REG_BIGENDIAN},
    /* POSIXTime */                                 {0x0000E980, NULL, NULL, 4, 4, GCRO_Processing_FPGA, REG_UNLOCKED|REG_INT|REG_RW|REG_NOTSHARED|REG_BIGENDIAN},
    /* SubSecondTime */                             {0x0000E984, NULL, NULL, 4, 4, GCRO_Processing_FPGA, REG_UNLOCKED|REG_INT|REG_RO|REG_NOTSHARED|REG_BIGENDIAN},
-   /* VideoAGC */                                  {0x0000E988, NULL, NULL, 4, 4, GCRO_Output_FPGA, REG_UNLOCKED|REG_INT|REG_RW|REG_SHARED|REG_BIGENDIAN},
-   /* VideoColorMap */                             {0x0000E98C, NULL, NULL, 4, 4, GCRO_Output_FPGA, REG_UNLOCKED|REG_INT|REG_RW|REG_NOTSHARED|REG_BIGENDIAN},
-   /* VideoColorMapMin */                          {0x0000E990, NULL, NULL, 4, 4, GCRO_Output_FPGA, REG_UNLOCKED|REG_INT|REG_RW|REG_NOTSHARED|REG_BIGENDIAN},
-   /* VideoColorMapMax */                          {0x0000E994, NULL, NULL, 4, 4, GCRO_Output_FPGA, REG_UNLOCKED|REG_INT|REG_RW|REG_NOTSHARED|REG_BIGENDIAN},
+   /* VideoAGC */                                  {0x0000E988, NULL, NULL, 4, 4, GCRO_Processing_FPGA, REG_UNLOCKED|REG_INT|REG_RW|REG_SHARED|REG_BIGENDIAN},
+   /* VideoColorMap */                             {0x0000E98C, NULL, NULL, 4, 4, GCRO_Processing_FPGA, REG_UNLOCKED|REG_INT|REG_RW|REG_SHARED|REG_BIGENDIAN},
+   /* VideoColorMapMin */                          {0x0000E990, NULL, NULL, 4, 4, GCRO_Processing_FPGA, REG_UNLOCKED|REG_INT|REG_RW|REG_SHARED|REG_BIGENDIAN},
+   /* VideoColorMapMax */                          {0x0000E994, NULL, NULL, 4, 4, GCRO_Processing_FPGA, REG_UNLOCKED|REG_INT|REG_RW|REG_SHARED|REG_BIGENDIAN},
    /* VideoDigitalZoomFactor */                    {0x0000E998, NULL, NULL, 4, 4, GCRO_Output_FPGA, REG_UNLOCKED|REG_INT|REG_RW|REG_NOTSHARED|REG_BIGENDIAN},
    /* VideoEHDRIExposureIndex */                   {0x0000E99C, NULL, NULL, 4, 4, GCRO_Processing_FPGA, REG_UNLOCKED|REG_INT|REG_RW|REG_NOTSHARED|REG_BIGENDIAN},
    /* VideoFWPosition */                           {0x0000E9A0, NULL, NULL, 4, 4, GCRO_Processing_FPGA, REG_UNLOCKED|REG_INT|REG_RW|REG_NOTSHARED|REG_BIGENDIAN},
    /* VideoBadPixelReplacement */                  {0x0000E9A4, NULL, NULL, 4, 4, GCRO_Processing_FPGA, REG_UNLOCKED|REG_INT|REG_RW|REG_NOTSHARED|REG_BIGENDIAN},
-   /* VideoAGCFractionMin */                       {0x0000E9A8, NULL, NULL, 4, 4, GCRO_Output_FPGA, REG_UNLOCKED|REG_FLOAT|REG_RW|REG_NOTSHARED|REG_BIGENDIAN},
-   /* VideoAGCFractionMinMax */                    {0x0000E9AC, NULL, NULL, 4, 4, GCRO_Output_FPGA, REG_UNLOCKED|REG_FLOAT|REG_RO|REG_NOTSHARED|REG_BIGENDIAN},
-   /* VideoAGCFractionMax */                       {0x0000E9B0, NULL, NULL, 4, 4, GCRO_Output_FPGA, REG_UNLOCKED|REG_FLOAT|REG_RW|REG_NOTSHARED|REG_BIGENDIAN},
-   /* VideoAGCFractionMaxMin */                    {0x0000E9B4, NULL, NULL, 4, 4, GCRO_Output_FPGA, REG_UNLOCKED|REG_FLOAT|REG_RO|REG_NOTSHARED|REG_BIGENDIAN},
-   /* VideoAGCResponseTime */                      {0x0000E9B8, NULL, NULL, 4, 4, GCRO_Output_FPGA, REG_UNLOCKED|REG_FLOAT|REG_RW|REG_NOTSHARED|REG_BIGENDIAN},
+   /* VideoAGCFractionMin */                       {0x0000E9A8, NULL, NULL, 4, 4, GCRO_Processing_FPGA, REG_UNLOCKED|REG_FLOAT|REG_RW|REG_SHARED|REG_BIGENDIAN},
+   /* VideoAGCFractionMinMax */                    {0x0000E9AC, NULL, NULL, 4, 4, GCRO_Processing_FPGA, REG_UNLOCKED|REG_FLOAT|REG_RO|REG_NOTSHARED|REG_BIGENDIAN},
+   /* VideoAGCFractionMax */                       {0x0000E9B0, NULL, NULL, 4, 4, GCRO_Processing_FPGA, REG_UNLOCKED|REG_FLOAT|REG_RW|REG_SHARED|REG_BIGENDIAN},
+   /* VideoAGCFractionMaxMin */                    {0x0000E9B4, NULL, NULL, 4, 4, GCRO_Processing_FPGA, REG_UNLOCKED|REG_FLOAT|REG_RO|REG_NOTSHARED|REG_BIGENDIAN},
+   /* VideoAGCResponseTime */                      {0x0000E9B8, NULL, NULL, 4, 4, GCRO_Processing_FPGA, REG_UNLOCKED|REG_FLOAT|REG_RW|REG_SHARED|REG_BIGENDIAN},
    /* VideoDigitalZoomMode */                      {0x0000E9BC, NULL, NULL, 4, 4, GCRO_Output_FPGA, REG_UNLOCKED|REG_INT|REG_RW|REG_NOTSHARED|REG_BIGENDIAN},
    /* VideoDigitalZoomWidth */                     {0x0000E9C0, NULL, NULL, 4, 4, GCRO_Output_FPGA, REG_UNLOCKED|REG_INT|REG_RW|REG_NOTSHARED|REG_BIGENDIAN},
    /* VideoDigitalZoomHeight */                    {0x0000E9C4, NULL, NULL, 4, 4, GCRO_Output_FPGA, REG_UNLOCKED|REG_INT|REG_RW|REG_NOTSHARED|REG_BIGENDIAN},
@@ -256,7 +256,7 @@ gcRegister_t gcRegsDef[GC_REG_COUNT] = {
    /* OffsetX */                                   {0x0000EB44, NULL, NULL, 4, 4, GCRO_Processing_FPGA, REG_UNLOCKED|REG_INT|REG_RW|REG_SHARED|REG_BIGENDIAN},
    /* OffsetY */                                   {0x0000EB48, NULL, NULL, 4, 4, GCRO_Processing_FPGA, REG_UNLOCKED|REG_INT|REG_RW|REG_SHARED|REG_BIGENDIAN},
    /* AECPlusExtrapolationWeight */                {0x0000EB4C, NULL, NULL, 4, 4, GCRO_Processing_FPGA, REG_UNLOCKED|REG_FLOAT|REG_RW|REG_NOTSHARED|REG_BIGENDIAN},
-   /* IsActiveFlags */                             {0x0000EB50, NULL, NULL, 4, 4, GCRO_Processing_FPGA, REG_UNLOCKED|REG_INT|REG_RO|REG_NOTSHARED|REG_BIGENDIAN},
+   /* IsActiveFlags */                             {0x0000EB50, NULL, NULL, 4, 4, GCRO_Processing_FPGA, REG_UNLOCKED|REG_INT|REG_RO|REG_SHARED|REG_BIGENDIAN},
    /* DeviceKeyValidationLow */                    {0x0000EB54, NULL, NULL, 4, 4, GCRO_Processing_FPGA, REG_UNLOCKED|REG_INT|REG_RO|REG_NOTSHARED|REG_BIGENDIAN},
    /* DeviceKeyValidationHigh */                   {0x0000EB58, NULL, NULL, 4, 4, GCRO_Processing_FPGA, REG_UNLOCKED|REG_INT|REG_RO|REG_NOTSHARED|REG_BIGENDIAN},
    /* NDFilterArmedPositionSetpoint */             {0x0000EB5C, NULL, NULL, 4, 4, GCRO_Processing_FPGA, REG_UNLOCKED|REG_INT|REG_RW|REG_NOTSHARED|REG_BIGENDIAN},
@@ -282,7 +282,36 @@ gcRegister_t gcRegsDef[GC_REG_COUNT] = {
    /* MemoryBufferSequenceDownloadFrameCount */    {0x0000EBAC, NULL, NULL, 4, 4, GCRO_Storage_FPGA, REG_UNLOCKED|REG_INT|REG_RW|REG_NOTSHARED|REG_BIGENDIAN},
    /* MemoryBufferStatus */                        {0x0000EBB0, NULL, NULL, 4, 4, GCRO_Storage_FPGA, REG_UNLOCKED|REG_INT|REG_RO|REG_SHARED|REG_BIGENDIAN},
    /* MemoryBufferLegacyMode */                    {0x0000EBB4, NULL, NULL, 4, 4, GCRO_Storage_FPGA, REG_UNLOCKED|REG_INT|REG_RW|REG_SHARED|REG_BIGENDIAN},
-   /* DeviceSerialPortFunction */                  {0x0000EBB8, NULL, NULL, 4, 4, GCRO_Processing_FPGA, REG_UNLOCKED|REG_INT|REG_RW|REG_NOTSHARED|REG_BIGENDIAN}
+   /* DeviceSerialPortFunction */                  {0x0000EBB8, NULL, NULL, 4, 4, GCRO_Processing_FPGA, REG_UNLOCKED|REG_INT|REG_RW|REG_NOTSHARED|REG_BIGENDIAN},
+   /* ImageCorrectionFWAcquisitionFrameRateMin */  {0x0000EBBC, NULL, NULL, 4, 4, GCRO_Processing_FPGA, REG_UNLOCKED|REG_FLOAT|REG_RO|REG_NOTSHARED|REG_BIGENDIAN},
+   /* ImageCorrectionFWAcquisitionFrameRateMax */  {0x0000EBC0, NULL, NULL, 4, 4, GCRO_Processing_FPGA, REG_UNLOCKED|REG_FLOAT|REG_RO|REG_NOTSHARED|REG_BIGENDIAN},
+   /* ImageCorrectionBlockSelector */              {0x0000EBC4, NULL, NULL, 4, 4, GCRO_Processing_FPGA, REG_UNLOCKED|REG_INT|REG_RW|REG_NOTSHARED|REG_BIGENDIAN},
+   /* ImageCorrectionFWMode */                     {0x0000EBC8, NULL, NULL, 4, 4, GCRO_Processing_FPGA, REG_UNLOCKED|REG_INT|REG_RW|REG_NOTSHARED|REG_BIGENDIAN},
+   /* ImageCorrectionFWAcquisitionFrameRate */     {0x0000EBCC, NULL, NULL, 4, 4, GCRO_Processing_FPGA, REG_UNLOCKED|REG_FLOAT|REG_RW|REG_NOTSHARED|REG_BIGENDIAN},
+   /* FOVPositionRawMin */                         {0x0000EBD0, NULL, NULL, 4, 4, GCRO_Processing_FPGA, REG_UNLOCKED|REG_INT|REG_RO|REG_NOTSHARED|REG_BIGENDIAN},
+   /* FOVPositionRawMax */                         {0x0000EBD4, NULL, NULL, 4, 4, GCRO_Processing_FPGA, REG_UNLOCKED|REG_INT|REG_RO|REG_NOTSHARED|REG_BIGENDIAN},
+   /* FocusPositionRawMin */                       {0x0000EBD8, NULL, NULL, 4, 4, GCRO_Processing_FPGA, REG_UNLOCKED|REG_INT|REG_RO|REG_NOTSHARED|REG_BIGENDIAN},
+   /* FocusPositionRawMax */                       {0x0000EBDC, NULL, NULL, 4, 4, GCRO_Processing_FPGA, REG_UNLOCKED|REG_INT|REG_RO|REG_NOTSHARED|REG_BIGENDIAN},
+   /* FOVPositionSetpoint */                       {0x0000EBE0, NULL, NULL, 4, 4, GCRO_Processing_FPGA, REG_UNLOCKED|REG_INT|REG_RW|REG_NOTSHARED|REG_BIGENDIAN},
+   /* FOVPosition */                               {0x0000EBE4, NULL, NULL, 4, 4, GCRO_Processing_FPGA, REG_UNLOCKED|REG_INT|REG_RO|REG_NOTSHARED|REG_BIGENDIAN},
+   /* FOVPositionNumber */                         {0x0000EBE8, NULL, NULL, 4, 4, GCRO_Processing_FPGA, REG_UNLOCKED|REG_INT|REG_RO|REG_NOTSHARED|REG_BIGENDIAN},
+   /* ZoomInFast */                                {0x0000EBEC, NULL, NULL, 4, 4, GCRO_Processing_FPGA, REG_UNLOCKED|REG_INT|REG_WO|REG_NOTSHARED|REG_BIGENDIAN},
+   /* ZoomInSlow */                                {0x0000EBF0, NULL, NULL, 4, 4, GCRO_Processing_FPGA, REG_UNLOCKED|REG_INT|REG_WO|REG_NOTSHARED|REG_BIGENDIAN},
+   /* ZoomOutSlow */                               {0x0000EBF4, NULL, NULL, 4, 4, GCRO_Processing_FPGA, REG_UNLOCKED|REG_INT|REG_WO|REG_NOTSHARED|REG_BIGENDIAN},
+   /* ZoomOutFast */                               {0x0000EBF8, NULL, NULL, 4, 4, GCRO_Processing_FPGA, REG_UNLOCKED|REG_INT|REG_WO|REG_NOTSHARED|REG_BIGENDIAN},
+   /* HFOV */                                      {0x0000EBFC, NULL, NULL, 4, 4, GCRO_Processing_FPGA, REG_UNLOCKED|REG_FLOAT|REG_RO|REG_NOTSHARED|REG_BIGENDIAN},
+   /* VFOV */                                      {0x0000EC00, NULL, NULL, 4, 4, GCRO_Processing_FPGA, REG_UNLOCKED|REG_FLOAT|REG_RO|REG_NOTSHARED|REG_BIGENDIAN},
+   /* FOVPositionRawSetpoint */                    {0x0000EC04, NULL, NULL, 4, 4, GCRO_Processing_FPGA, REG_UNLOCKED|REG_INT|REG_RW|REG_NOTSHARED|REG_BIGENDIAN},
+   /* FOVPositionRaw */                            {0x0000EC08, NULL, NULL, 4, 4, GCRO_Processing_FPGA, REG_UNLOCKED|REG_INT|REG_RO|REG_NOTSHARED|REG_BIGENDIAN},
+   /* AutofocusMode */                             {0x0000EC0C, NULL, NULL, 4, 4, GCRO_Processing_FPGA, REG_UNLOCKED|REG_INT|REG_RW|REG_NOTSHARED|REG_BIGENDIAN},
+   /* AutofocusROI */                              {0x0000EC10, NULL, NULL, 4, 4, GCRO_Processing_FPGA, REG_UNLOCKED|REG_FLOAT|REG_RW|REG_NOTSHARED|REG_BIGENDIAN},
+   /* Autofocus */                                 {0x0000EC14, NULL, NULL, 4, 4, GCRO_Processing_FPGA, REG_UNLOCKED|REG_INT|REG_WO|REG_NOTSHARED|REG_BIGENDIAN},
+   /* FocusNearFast */                             {0x0000EC18, NULL, NULL, 4, 4, GCRO_Processing_FPGA, REG_UNLOCKED|REG_INT|REG_WO|REG_NOTSHARED|REG_BIGENDIAN},
+   /* FocusNearSlow */                             {0x0000EC1C, NULL, NULL, 4, 4, GCRO_Processing_FPGA, REG_UNLOCKED|REG_INT|REG_WO|REG_NOTSHARED|REG_BIGENDIAN},
+   /* FocusFarSlow */                              {0x0000EC20, NULL, NULL, 4, 4, GCRO_Processing_FPGA, REG_UNLOCKED|REG_INT|REG_WO|REG_NOTSHARED|REG_BIGENDIAN},
+   /* FocusFarFast */                              {0x0000EC24, NULL, NULL, 4, 4, GCRO_Processing_FPGA, REG_UNLOCKED|REG_INT|REG_WO|REG_NOTSHARED|REG_BIGENDIAN},
+   /* FocusPositionRawSetpoint */                  {0x0000EC28, NULL, NULL, 4, 4, GCRO_Processing_FPGA, REG_UNLOCKED|REG_INT|REG_RW|REG_NOTSHARED|REG_BIGENDIAN},
+   /* FocusPositionRaw */                          {0x0000EC2C, NULL, NULL, 4, 4, GCRO_Processing_FPGA, REG_UNLOCKED|REG_INT|REG_RO|REG_NOTSHARED|REG_BIGENDIAN}
 };
 
 /* AUTO-CODE END */
