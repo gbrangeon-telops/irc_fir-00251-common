@@ -151,32 +151,32 @@ void ProcessAdcChannel(xadcChannel_t *xadcCh)
    if (xadcCh->phyConverter != NULL)
    {
       (*xadcCh->phyConverter)(xadcCh);
-   }
 
-   xadcCh->isValid = 1;
+      xadcCh->isValid = 1;
 
-   if (xadcCh->callback != NULL)
-   {
-      (*xadcCh->callback)(xadcCh);
-   }
+      if (xadcCh->callback != NULL)
+      {
+         (*xadcCh->callback)(xadcCh);
+      }
 
-   switch (xadcCh->unit)
-   {
-      case XCU_NONE:
-         XADC_DBG("ADC @ 0x%02X: %04X, %d mV, %d", xadcCh->muxAddr, xadcCh->raw.unipolar, (int32_t)(xadcCh->voltage * 1000.0f), (int32_t)(*(xadcCh->p_physical)));
-         break;
+      switch (xadcCh->unit)
+      {
+         case XCU_NONE:
+            XADC_DBG("ADC @ 0x%02X: %04X, %d mV, %d", xadcCh->muxAddr, xadcCh->raw.unipolar, (int32_t)(xadcCh->voltage * 1000.0f), (int32_t)(*(xadcCh->p_physical)));
+            break;
 
-      case XCU_VOLT:
-         XADC_DBG("ADC @ 0x%02X: %04X, %d mV, %d mV", xadcCh->muxAddr, xadcCh->raw.unipolar, (int32_t)(xadcCh->voltage * 1000.0f), (int32_t)(*(xadcCh->p_physical) * 1000.0f));
-         break;
+         case XCU_VOLT:
+            XADC_DBG("ADC @ 0x%02X: %04X, %d mV, %d mV", xadcCh->muxAddr, xadcCh->raw.unipolar, (int32_t)(xadcCh->voltage * 1000.0f), (int32_t)(*(xadcCh->p_physical) * 1000.0f));
+            break;
 
-      case XCU_CELCIUS:
-         XADC_DBG("ADC @ 0x%02X: %04X, %d mV, %d mC", xadcCh->muxAddr, xadcCh->raw.unipolar, (int32_t)(xadcCh->voltage * 1000.0f), (int32_t)(*(xadcCh->p_physical) * 1000.0f));
-         break;
+         case XCU_CELCIUS:
+            XADC_DBG("ADC @ 0x%02X: %04X, %d mV, %d mC", xadcCh->muxAddr, xadcCh->raw.unipolar, (int32_t)(xadcCh->voltage * 1000.0f), (int32_t)(*(xadcCh->p_physical) * 1000.0f));
+            break;
 
-      case XCU_AMPERE:
-         XADC_DBG("ADC @ 0x%02X: %04X, %d mV, %d mA", xadcCh->muxAddr, xadcCh->raw.unipolar, (int32_t)(xadcCh->voltage * 1000.0f), (int32_t)(*(xadcCh->p_physical) * 1000.0f));
-         break;
+         case XCU_AMPERE:
+            XADC_DBG("ADC @ 0x%02X: %04X, %d mV, %d mA", xadcCh->muxAddr, xadcCh->raw.unipolar, (int32_t)(xadcCh->voltage * 1000.0f), (int32_t)(*(xadcCh->p_physical) * 1000.0f));
+            break;
+      }
    }
 }
 
