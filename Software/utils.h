@@ -90,6 +90,7 @@ void reportStats(statistics_t* s, char* label);
 uint64_t elapsed_time_us(uint64_t tic);
 uint32_t bitget(uint32_t value, uint8_t bitposition);
 void WriteStruct(const void* pStruct);
+float roundMultiple( float value, float quantity );
 float floorMultiple( float value, float quantity );
 float ceilMultiple( float value, float quantity );
 void *memcpy_swap(void *dst, const void *src, size_t length, uint8_t dataSize, uint8_t swap);

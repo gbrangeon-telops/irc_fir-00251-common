@@ -413,19 +413,35 @@ void PrintArray32(const uint32_t pAry[], uint32_t Length)
 //}
 
 //---------------------------------------------------------------------------
+// Returns the value rounded to the given multiple (quantity).
+//
+// Parameters
+// -----------
+// value    Value to round.
+// quantity Quantity to multiply by an integer to obtain the multiple.
+//
+// Return
+// -----------
+// The value rounded to the given multiple (quantity).
+//---------------------------------------------------------------------------
+float roundMultiple( float value, float quantity )
+{
+   return ( roundf( value / quantity ) * quantity );
+}
+
+//---------------------------------------------------------------------------
 // Returns the largest multiple of a given quantity that is not greater than
 // the given value.
 //
 // Parameters
 // -----------
 // value    Value to round.
-// quantity Quamtity to multiply by an integer to obtain the multiple.
+// quantity Quantity to multiply by an integer to obtain the multiple.
 //
 // Return
 // -----------
 // The largest multiple that is not greater than the given value.
 //---------------------------------------------------------------------------
-
 float floorMultiple( float value, float quantity )
 {
    return ( floorf( value / quantity ) * quantity );
@@ -438,13 +454,12 @@ float floorMultiple( float value, float quantity )
 // Parameters
 // -----------
 // value    Value to round.
-// quantity Quamtity to multiply by an integer to obtain the multiple.
+// quantity Quantity to multiply by an integer to obtain the multiple.
 //
 // Return
 // -----------
 // The smallest multiple that is not less than the given value.
 //---------------------------------------------------------------------------
-
 float ceilMultiple( float value, float quantity )
 {
    return ( ceilf( value / quantity ) * quantity );
