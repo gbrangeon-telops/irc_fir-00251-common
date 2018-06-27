@@ -19,7 +19,8 @@
 #include <stdio.h> // For NULL
 #include <stdint.h>
 
-#define GC_ERR(fmt, ...)   PRINTF("GC: Error: " fmt "\n", ##__VA_ARGS__)
+#define GC_ERR(fmt, ...)   FPGA_PRINTF("GC: Error: " fmt "\n", ##__VA_ARGS__)
+#define GC_INF(fmt, ...)   FPGA_PRINTF("GC: Info: " fmt "\n", ##__VA_ARGS__)
 
 // Bits 2:0 of attributes byte
 #define RegDataTypeMask       0x07  /**< GenICam register data type mask */
@@ -145,6 +146,9 @@ typedef struct gcRegister gcRegister_t;
 #define GC_MemoryBufferIsDefragging    MemoryBufferStatusTst(MemoryBufferDefraggingMask)
 #define GC_MemoryBufferIsUpdating      MemoryBufferStatusTst(MemoryBufferUpdatingMask)
 #define GC_MemoryBufferIsBusy          MemoryBufferStatusTstAny(MemoryBufferRecordingMask | MemoryBufferTransmittingMask | MemoryBufferDefraggingMask | MemoryBufferUpdatingMask)
+
+#define CLINK_OUT_CLK_SLOW    50E+6F   /**< Hz */
+#define CLINK_OUT_CLK_FAST    85E+6F   /**< Hz */
 
 /* AUTO-CODE BEGIN */
 // Auto-generated GeniCam library.
