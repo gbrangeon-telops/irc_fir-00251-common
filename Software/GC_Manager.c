@@ -33,6 +33,10 @@
  */
 netIntfPort_t gcmPort;
 
+
+/** Private functions */
+static gcSelectedReg_t* findSelectedRegister(uint32_t registerIdx);
+
 /**
  * Initializes the GenICam Manager.
  *
@@ -78,7 +82,9 @@ GCMS_WAITING_REQUEST_FROM_MASTER -> GCMS_WAITING_RESPONSE_FROM_SLAVE -> GCMS_WAI
 void GC_Manager_SM()
 {
    static gcmState_t gcCurrentState = GCMS_INIT;
-   static uint32_t regInitIdx;
+   static uint32_t regInitIdx = 0;
+   static uint32_t regInitSelectorIdx = 0;
+   static gcSelectedReg_t* pSelectedReg = NULL;
    static uint64_t tic_sharedRegInit;
    
    networkCommand_t gcmRequest;
@@ -150,8 +156,31 @@ void GC_Manager_SM()
 
             if (regInitIdx < GC_REG_COUNT)
             {
-               GC_BroadcastRegisterWrite(&gcRegsDef[regInitIdx]);
-               regInitIdx++;
+               // Find if this register is a selected register
+               pSelectedReg = findSelectedRegister(regInitIdx);
+
+               // Normal registers
+               if (pSelectedReg == NULL)
+               {
+                  GC_BroadcastRegisterWrite(&gcRegsDef[regInitIdx]);
+                  regInitIdx++;
+               }
+               // Selected registers
+               else
+               {
+                  // Broadcast value corresponding to this selector
+                  GC_RegisterWrite32(pSelectedReg->selectorRegIdx, regInitSelectorIdx);
+                  GC_BroadcastRegisterWrite(&gcRegsDef[regInitIdx]);
+                  regInitSelectorIdx++;
+
+                  // All selector values have been shared
+                  if (regInitSelectorIdx >= pSelectedReg->selectorRegNbVal)
+                  {
+                     regInitIdx++;     // Go to next register
+                     regInitSelectorIdx = 0;    // Reset for next selectable
+                  }
+               }
+
                GETTIME(&tic_sharedRegInit);
             }
             else
@@ -499,4 +528,29 @@ IRC_Status_t GC_BroadcastRegisterWrite(gcRegister_t *p_register)
    GCM_DBG("Register write request @ 0x%08X is broadcasted.", p_register->address);
 
    return IRC_SUCCESS;
+}
+
+/**
+ * Find the selected register corresponding to this register.
+ *
+ * @param registerIdx is the index of the register to find.
+ *
+ * @return selected register pointer if found.
+ * @return NULL if not found.
+ */
+static gcSelectedReg_t* findSelectedRegister(uint32_t registerIdx)
+{
+   gcSelectedReg_t* pReg = NULL;
+   uint32_t idx;
+
+   for (idx = 0; idx < gcSelectedRegListLen; idx++)
+   {
+      if (gcSelectedRegList[idx].registerIdx == registerIdx)
+      {
+         pReg = &gcSelectedRegList[idx];
+         break;
+      }
+   }
+
+   return pReg;
 }

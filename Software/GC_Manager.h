@@ -37,7 +37,7 @@
 
 #define GC_SHARED_REG_INIT_PERIOD_US   (uint64_t)500000
 
-#define GC_RegisterWrite32(regIndex, data) GC_RegisterWrite(&gcRegsDef[regIndex], (uint32_t) &data, sizeof(uint32_t))
+#define GC_RegisterWrite32(regIndex, data) GC_RegisterWrite(&gcRegsDef[regIndex], &data, sizeof(uint32_t))
 
 
 
@@ -55,6 +55,21 @@ enum gcmState {
  * GenICam manager state data type.
  */
 typedef enum gcmState gcmState_t;
+
+
+/**
+ * GenICam selected register data structure.
+ */
+struct gcSelectedRegStruct {
+   uint32_t registerIdx;         /**< GenICam selected register index */
+   uint32_t selectorRegIdx;      /**< GenICam selected register selector register index */
+   uint32_t selectorRegNbVal;    /**< GenICam selected register selector register number of values */
+};
+
+/**
+ * GenICam selected register data type.
+ */
+typedef struct gcSelectedRegStruct gcSelectedReg_t;
 
 
 IRC_Status_t GC_Manager_Init(netIntf_t *netIntf, circBuffer_t *cmdQueue);
