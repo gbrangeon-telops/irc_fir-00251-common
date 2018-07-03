@@ -84,6 +84,7 @@ void GC_Manager_SM()
    static gcmState_t gcCurrentState = GCMS_INIT;
    static uint32_t regInitIdx = 0;
    static uint32_t regInitSelectorIdx = 0;
+   static uint32_t regInitSelectorBackup = 0;
    static gcSelectedReg_t* pSelectedReg = NULL;
    static uint64_t tic_sharedRegInit;
    
@@ -168,6 +169,10 @@ void GC_Manager_SM()
                // Selected registers
                else
                {
+                  // Backup current selector value
+                  if (regInitSelectorIdx == 0)
+                     regInitSelectorBackup = *((uint32_t *)gcRegsDef[pSelectedReg->selectorRegIdx].p_data);
+
                   // Broadcast value corresponding to this selector
                   GC_RegisterWrite32(pSelectedReg->selectorRegIdx, regInitSelectorIdx);
                   GC_BroadcastRegisterWrite(&gcRegsDef[regInitIdx]);
@@ -176,6 +181,9 @@ void GC_Manager_SM()
                   // All selector values have been shared
                   if (regInitSelectorIdx >= pSelectedReg->selectorRegNbVal)
                   {
+                     // Restore selector value
+                     GC_RegisterWrite32(pSelectedReg->selectorRegIdx, regInitSelectorBackup);
+
                      regInitIdx++;     // Go to next register
                      regInitSelectorIdx = 0;    // Reset for next selectable
                   }
