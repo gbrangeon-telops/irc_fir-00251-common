@@ -149,8 +149,9 @@ void GC_Manager_SM()
          {
             // Looking for the next register to initialize
             while ((regInitIdx < GC_REG_COUNT) &&
-                  !((gcRegsDef[regInitIdx].owner == (gcRegistersOwner_t) gcmPort.netIntf->address)
-                        && RegIsShared(&gcRegsDef[regInitIdx])))
+                  ((gcRegsDef[regInitIdx].owner != (gcRegistersOwner_t)gcmPort.netIntf->address) ||
+                        RegIsNotShared(&gcRegsDef[regInitIdx]) ||
+                        (regInitIdx == DeviceFirmwareModuleRevisionIdx)))  // Do not share DeviceFirmwareModuleRevision, it would overwrite other FPGA values
             {
                regInitIdx++;
             }
