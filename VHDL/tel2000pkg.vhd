@@ -473,6 +473,7 @@ package TEL2000 is
       exp_feedbk   : std_logic; --! feedback du signal d'intégration. C'est aussi le signal de validation de frame_id
       frame_id     : unsigned(31 downto 0);  --! numero de l'image associée à exp_feedbk
       exp_info     : exp_info_type; --! données du temps d'intégration de l'image dont le numero est frame_id
+      ref_feedbk   : std_logic_vector(1 downto 0); --! feedback pour elcorr. Utilisé uniquement dans module fpa
    end record;
    
    
