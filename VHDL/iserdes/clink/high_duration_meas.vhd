@@ -79,15 +79,13 @@ begin
          
          fsm_reset <= sreset or not RUN;
          
+         signal_i <= SIGNAL_IN;     -- always sample signal: if RUN is set when SIGNAL_IN is already at '1', the counter will not start
+         signal_last <= signal_i;
+         
          if fsm_reset = '1' then 
-            meas_fsm <= idle; 
-            signal_last <= '1';
-            signal_i <= '0';
+            meas_fsm <= idle;
             dval_i <= '0';
-         else 
-            
-            signal_i <= SIGNAL_IN;
-            signal_last <= signal_i;            
+         else            
             
             case meas_fsm is 
                

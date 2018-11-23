@@ -56,8 +56,6 @@ architecture rtl of clink_delay_validator_core is
    signal dly_fdb_rdy_i       : std_logic;
    signal done_latch          : std_logic_vector(DONE'LENGTH-1 downto 0);
    signal success_latch       : std_logic_vector(SUCCESS'LENGTH-1 downto 0);
-   signal output_fsm_en       : std_logic;
-   signal output_done         : std_logic;
    signal start_i             : std_logic;
    signal rst_i               : std_logic;
    signal rst_cnt             : unsigned(1 downto 0);

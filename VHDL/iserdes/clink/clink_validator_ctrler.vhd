@@ -61,7 +61,7 @@ architecture rtl of clink_validator_ctrler is
          );
    end component;
    
-   type ctler_fsm_type is (idle, wait_eof_st, discard_1st_lval_st, lval_meas_st, fetch_result_st, check_result_st1, check_result_st2, check_result_st3, output_st); 
+   type ctler_fsm_type is (idle, wait_eof_st, discard_1st_lval_st, dly_run_st, lval_meas_st, fetch_result_st, check_result_st1, check_result_st2, check_result_st3, output_st); 
    type timeout_fsm_type is (check_rate_st, timeout_st);
    
    signal ctler_fsm              : ctler_fsm_type;
@@ -78,6 +78,7 @@ architecture rtl of clink_validator_ctrler is
    signal fval_fe                : std_logic;
    signal lval_i                 : std_logic;
    signal lval_last              : std_logic;
+   signal lval_re                : std_logic;
    signal lval_fe                : std_logic;
    signal result_fail            : std_logic;
    signal lval_cnt               : unsigned(LVAL_NUM'length-1 downto 0);
@@ -134,6 +135,7 @@ begin
             lval_last <= lval_i;                  
             fval_fe <= not fval_i and fval_last;
             lval_fe <= not lval_i and lval_last;
+            lval_re <= lval_i and not lval_last;
             
             case ctler_fsm is  
                
@@ -154,9 +156,12 @@ begin
                   end if;  
                
                when discard_1st_lval_st =>             -- le premier lval est peut-etre un header. Donc on ne le mesure, ni le dénombre
-                  if lval_fe = '1' then   
-                     ctler_fsm <= lval_meas_st;
-                  end if;   
+                  if lval_re = '1' then   
+                     ctler_fsm <= dly_run_st;
+                  end if;
+               
+               when dly_run_st =>                 
+                  ctler_fsm <= lval_meas_st;
                
                when lval_meas_st =>                    -- mesure de la durée des lval et leur dénombrement
                   min_max_rst <= '0';
