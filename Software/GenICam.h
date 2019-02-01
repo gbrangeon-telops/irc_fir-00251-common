@@ -152,11 +152,11 @@ typedef struct gcRegister gcRegister_t;
 
 /* AUTO-CODE BEGIN */
 // Auto-generated GeniCam library.
-// Generated from XML camera definition file version 12.3.0
+// Generated from XML camera definition file version 12.4.0
 // using generateGenICamCommonCLib.m Matlab script.
 
 #define GC_XMLMAJORVERSION    12
-#define GC_XMLMINORVERSION    3
+#define GC_XMLMINORVERSION    4
 #define GC_XMLSUBMINORVERSION 0
 
 // Enumerations values and data types
@@ -1531,6 +1531,8 @@ typedef enum DeviceLedIndicatorStateEnum DeviceLedIndicatorState_t;
 // #define FocusFarFastAddr                              0x0000EC24  /**< FocusFarFast register address */
 // #define FocusPositionRawSetpointAddr                  0x0000EC28  /**< FocusPositionRawSetpoint register address */
 // #define FocusPositionRawAddr                          0x0000EC2C  /**< FocusPositionRaw register address */
+// #define LoadSavedConfigurationAtStartupAddr           0x0000EC30  /**< LoadSavedConfigurationAtStartup register address */
+// #define SaveConfigurationAddr                         0x0000EC34  /**< SaveConfiguration register address */
 
 // Registers definition array indices
 ////////////////////////////////////////////////////////////////////////////////
@@ -1821,11 +1823,13 @@ typedef enum DeviceLedIndicatorStateEnum DeviceLedIndicatorState_t;
 #define FocusFarFastIdx                               283
 #define FocusPositionRawSetpointIdx                   284
 #define FocusPositionRawIdx                           285
+#define LoadSavedConfigurationAtStartupIdx            286
+#define SaveConfigurationIdx                          287
 
 // Registers general macros
 ////////////////////////////////////////////////////////////////////////////////
 
-#define GC_REG_COUNT 286 /**< Number of GenICam registers */
+#define GC_REG_COUNT 288 /**< Number of GenICam registers */
 #define GC_REG_MAX_LENGTH 512 /**< GenICam registers maximum length (in bytes) */
 #define GC_REG_MAX_READ_LENGTH 512 /**< GenICam readable registers maximum length (in bytes) */
 #define GC_REG_MAX_WRITE_LENGTH 4 /**< GenICam writable registers maximum length (in bytes) */
