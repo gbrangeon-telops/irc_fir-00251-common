@@ -1,8 +1,8 @@
 /**
- *  @file mgt_ctrl.h
- *  MGT Controller header file.
+ *  @file fan_ctrl.h
+ *  FAN Controller header file.
  *
- *  This is the header file for the three MGT Cores.
+ *  This is the header file for the fans.
  *  It contains the driver structure.
  *
  *  $Rev$
@@ -12,12 +12,11 @@
  *  $URL: http://einstein/svn/firmware/FIR-00251-Common/trunk/VHDL/MGT/Driver/mgt_ctrl.h $
  */
 
-#ifndef PWM_CTRL_H
-#define PWM_CTRL_H
+#ifndef FAN_CTRL_H
+#define FAN_CTRL_H
 
 
 /****************** Include Files ********************/
-#include "xbasic_types.h"
 #include <stdint.h>
 
 #define FAN_PERCENT_MIN_VALUE    0.0F
@@ -56,5 +55,5 @@ void FAN_SET_PWM2(t_fan * inst, float Percentage);
 void FAN_SET_PWM3(t_fan * inst, float Percentage);
 void FAN_SET_PWM4(t_fan * inst, float Percentage);
 
-#endif // PWM_CTRL_H
+#endif // FAN_CTRL_H
 

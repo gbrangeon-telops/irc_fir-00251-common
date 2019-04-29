@@ -17,7 +17,6 @@
 
 /***************************** Include Files ********************************/
 #include <stdint.h>
-#include "xbasic_types.h"  
 
 /************************** Constant Definitions ****************************/
 

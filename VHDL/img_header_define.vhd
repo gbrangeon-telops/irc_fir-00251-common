@@ -22,7 +22,7 @@ use ieee.numeric_std.all;
 
 -- AUTO-CODE BEGIN
 -- Auto-generated IRCam image header definition package.
--- Generated from the IRCam header definition XLS file version 12.4
+-- Generated from the IRCam header definition XLS file version 12.5
 -- using generateIRCamHeaderVHDLLib.m Matlab script.
 
 package img_header_define is
@@ -148,6 +148,11 @@ package img_header_define is
    constant IntegrationModeAdd32                         : std_logic_vector(5 downto 0) := std_logic_vector(to_unsigned(13,6));  --! IntegrationMode field's 32-bit address
    constant IntegrationModeBWE                           : std_logic_vector(3 downto 0) := "0010";                               --! IntegrationMode field's word mask
    constant IntegrationModeShift                         : natural := 8;                                                         --! IntegrationMode field's shift value
+
+   constant EHDRINumberOfExposuresAdd8                   : std_logic_vector(7 downto 0) := x"37";                                --! EHDRINumberOfExposures field's 8-bit address
+   constant EHDRINumberOfExposuresAdd32                  : std_logic_vector(5 downto 0) := std_logic_vector(to_unsigned(13,6));  --! EHDRINumberOfExposures field's 32-bit address
+   constant EHDRINumberOfExposuresBWE                    : std_logic_vector(3 downto 0) := "0001";                               --! EHDRINumberOfExposures field's word mask
+   constant EHDRINumberOfExposuresShift                  : natural := 0;                                                         --! EHDRINumberOfExposures field's shift value
 
    constant AveragingNumberAdd8                          : std_logic_vector(7 downto 0) := x"38";                                --! AveragingNumber field's 8-bit address
    constant AveragingNumberAdd32                         : std_logic_vector(5 downto 0) := std_logic_vector(to_unsigned(14,6));  --! AveragingNumber field's 32-bit address

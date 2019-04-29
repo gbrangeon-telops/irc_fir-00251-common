@@ -22,4 +22,12 @@ package BufferingDefine is
    type MOI_MODE    is (EXT_SRC, SOFT_SRC, NO_SRC);
    type EDGE_TYPE   is (RISING, FALLING, ANY);
 
+   type t_MOI_MODE is record
+      MOIMODE : MOI_MODE;
+   end record;
+
+   type t_EDGE_TYPE is record
+      EDGETYPE : EDGE_TYPE;
+   end record;
+   
 end BufferingDefine;

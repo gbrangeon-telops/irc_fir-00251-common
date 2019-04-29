@@ -6,15 +6,9 @@ setenv COMMON "D:\Telops\FIR-00251-Common"
 ## Package and Defines
 acom "$COMMON\VHDL\tel2000pkg.vhd"
 acom "$COMMON\VHDL\img_header_define.vhd"
+acom "$COMMON\VHDL\Calibration\calib_define.vhd"
 
-## Compile All IP
-do "$COMMON\IP\data_mgt\compile_data_mgt_rtl.do"
-do "$COMMON\IP\exp_mgt\compile_exp_mgt_rtl.do"
-do "$COMMON\IP\video_mgt\compile_video_mgt_rtl.do"
-#do "$COMMON\IP\AXI4_Stream32_to_64\compile_AXI4_Stream32_to_64_rtl.do"
-#do "$COMMON\IP\AXI4_Stream64_to_32\compile_AXI4_Stream64_to_32_rtl.do"
-acom "$COMMON\IP\axis_conv_linebuffer_64w_1024d\axis_conv_linebuffer_64w_1024d_funcsim.vhdl"
-acom "$COMMON\IP\axis_data_fifo_32w_1024d_aclk\axis_data_fifo_32w_1024d_aclk_funcsim.vhdl"
+
 
 acom  "$COMMON\VHDL\Utilities\AXI4_Stream32_to_64_wrapper.vhd"
 acom  "$COMMON\VHDL\Utilities\AXI4_Stream64_to_32_wrapper.vhd" 
@@ -32,14 +26,23 @@ acom \
  "$COMMON\VHDL\Fifo\t_axi4_stream8_fifo.vhd" \
  "$COMMON\VHDL\Fifo\t_axi4_stream16_fifo.vhd" \
  "$COMMON\VHDL\Fifo\t_axi4_stream32_fifo.vhd" \
- "$COMMON\VHDL\Fifo\t_axi4_stream64_fifo.vhd"
-
+ "$COMMON\VHDL\Fifo\t_axi4_stream64_fifo.vhd" \
+ "$COMMON\VHDL\Fifo\t_axi4_stream_wr16_rd64_fifo.vhd" \
+ "$COMMON\VHDL\Fifo\t_axi4_stream_wr32_rd64_fifo.vhd" \
+ "$COMMON\VHDL\Fifo\t_axi4_stream_wr64_rd16_fifo.vhd" \
+ "$COMMON\VHDL\Fifo\t_axi4_stream_wr64_rd32_fifo.vhd" \
+ "$COMMON\VHDL\Fifo\t_axi4_stream_wr64_rd64_fifo.vhd" \
+ 
 #hdr extractor
-acom -relax "$COMMON\VHDL\hdr_extractor\hder_extractor.vhd"
+acom -relax \
+ "$COMMON\VHDL\hdr_extractor\axis16_hder_extractor.vhd" \
+ "$COMMON\VHDL\hdr_extractor\axis32_hder_extractor.vhd" \
+ "$COMMON\VHDL\hdr_extractor\axis64_hder_extractor.vhd"
 
 # Utilities
 acom \
  "$COMMON\VHDL\Utilities\axil32_to_native.vhd" \
+ "$COMMON\VHDL\Utilities\native_to_axil32.vhd" \
  "$COMMON\VHDL\Utilities\axil32_to_native96.vhd" \
  "$COMMON\VHDL\Utilities\axis_sync_flow.vhd" \
  "$COMMON\VHDL\Utilities\axis8_fanout2.vhd" \
@@ -48,6 +51,7 @@ acom \
  "$COMMON\VHDL\Utilities\native_to_axis32.vhd"  \
  "$COMMON\VHDL\Utilities\native_to_axis8.vhd"  \
  "$COMMON\VHDL\Utilities\axis32_fanout2.vhd" \
+ "$COMMON\VHDL\Utilities\axis64_fanout2.vhd" \
  "$COMMON\VHDL\Utilities\axis32_fanout3.vhd" \
  "$COMMON\VHDL\Utilities\axis32_hole.vhd"   \
  "$COMMON\VHDL\Utilities\axis32_img_boundaries.vhd"   \
@@ -56,11 +60,19 @@ acom \
  "$COMMON\VHDL\Utilities\axis64_reg.vhd" \
  "$COMMON\VHDL\Utilities\axis32_hole_sync.vhd"   \
  "$COMMON\VHDL\Utilities\axis64_hole_sync.vhd"   \
+ "$COMMON\VHDL\Utilities\axis32_sw_1_2.vhd" \
+ "$COMMON\VHDL\Utilities\axis64_sw_1_2.vhd" \
+ "$COMMON\VHDL\Utilities\axis32_sw_2_1.vhd" \
+ "$COMMON\VHDL\Utilities\axis64_sw_2_1.vhd" \
  "$COMMON\VHDL\Utilities\axis32_tid_gen.vhd"   \
  "$COMMON\VHDL\Utilities\axis64_tid_gen.vhd"   \
  "$COMMON\VHDL\Utilities\axis16_to_axis32.vhd" \
  "$COMMON\VHDL\Utilities\axis16_sw_1_2.vhd" \
  "$COMMON\VHDL\Utilities\axis16_auto_sw_1_2.vhd" \
+ "$COMMON\VHDL\Utilities\axis32_auto_sw_1_2.vhd" \
+ "$COMMON\VHDL\Utilities\axis32_auto_sw_2_1.vhd" \
+ "$COMMON\VHDL\Utilities\axis64_auto_sw_2_1.vhd" \
+ "$COMMON\VHDL\Utilities\axis64_auto_sw_1_2.vhd" \
  "$COMMON\VHDL\Utilities\axis16_sw_2_1.vhd" \
  "$COMMON\VHDL\Utilities\axis16_sw_3_1.vhd" \
  "$COMMON\VHDL\Utilities\axis16_hole.vhd" \
@@ -71,15 +83,28 @@ acom \
  "$COMMON\VHDL\axis64_pixel_cnt.vhd" \
  "$COMMON\VHDL\axis32_pixel_cnt.vhd" \
  "$COMMON\VHDL\axis16_pixel_cnt.vhd" \
+ "$COMMON\VHDL\axis64_frame_rate.vhd" \
+ "$COMMON\VHDL\axis32_frame_rate.vhd" \
+ "$COMMON\VHDL\axis16_frame_rate.vhd" \
+ "$COMMON\VHDL\axis64_frame_pix_cnt.vhd" \
+ "$COMMON\VHDL\axis32_frame_pix_cnt.vhd" \
+ "$COMMON\VHDL\axis16_frame_pix_cnt.vhd" \
  "$COMMON\VHDL\Utilities\axis16_merge_axis32.vhd" \
  "$COMMON\VHDL\Utilities\axis16_merge_axis64.vhd" \
  "$COMMON\VHDL\Utilities\axis32_merge_axis64.vhd" \
+ "$COMMON\VHDL\Utilities\axis16_combine_axis32.vhd" \
+ "$COMMON\VHDL\Utilities\axis32_split_axis16.vhd" \
+ "$COMMON\VHDL\Utilities\axis128_split_axis64.vhd" \
  "$COMMON\VHDL\Utilities\badpixel_handler.vhd" \
- "$COMMON\IP\axis_32_to_16\axis_32_to_16_funcsim.vhdl" \
- "$COMMON\VHDL\Utilities\axis_32_to_16_wrap.vhd"
+ "$COMMON\VHDL\Utilities\axis_32_to_16_wrap.vhd" \
+ "$COMMON\VHDL\Utilities\axis_64_to_32_wrap.vhd" \
+ "$COMMON\VHDL\Utilities\axis_64_to_16_wrap.vhd" \
+ "$COMMON\VHDL\Utilities\axis64_throughput_ctrl.vhd" \
+ "$COMMON\VHDL\Utilities\axis_128_to_64_wrap.vhd" 
 
 acom -nowarn DAGGEN_0523 \
  "$COMMON\VHDL\Utilities\axis16_reg.vhd" \
+ "$COMMON\VHDL\Utilities\axis16_reg_wrap.vhd" \
  "$COMMON\VHDL\Utilities\axis16_hole_sync.vhd" \
  "$COMMON\VHDL\Utilities\axis16_delay.vhd" \
  "$COMMON\VHDL\Utilities\axis16_img_boundaries.vhd"

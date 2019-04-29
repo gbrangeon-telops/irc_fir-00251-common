@@ -15,7 +15,6 @@
 
 #include "usart.h"
 #include "fsl.h"
-#include "xbasic_types.h"
 #include "mb_interface.h"
 #include "xparameters.h"
 #include "printf_utils.h"

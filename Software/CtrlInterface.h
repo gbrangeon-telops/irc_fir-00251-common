@@ -27,6 +27,13 @@
 #include "utils.h"
 #include <stdint.h>
 
+#define XUN_EVENT_RECV_DATA      1 /**< Data has been received */
+#define XUN_EVENT_RECV_TIMEOUT      2 /**< A receive timeout occurred */
+#define XUN_EVENT_SENT_DATA      3 /**< Data has been sent */
+#define XUN_EVENT_RECV_ERROR     4 /**< A receive error was detected */
+#define XUN_EVENT_MODEM       5 /**< A change in modem status */
+
+
 #ifdef CI_VERBOSE
    #define CI_PRINTF(fmt, ...)      FPGA_PRINTF("CI: " fmt, ##__VA_ARGS__)
 #else
@@ -37,11 +44,15 @@
 #define CI_INF(fmt, ...)            FPGA_PRINTF("CI: Info: " fmt "\n", ##__VA_ARGS__)
 #define CI_DBG(fmt, ...)            CI_PRINTF("Debug: " fmt "\n", ##__VA_ARGS__)
 
-#define CtrlIntf_GetLink(p_ctrlIntf) p_ctrlIntf->linkType == CILT_CUART ? ((circularUART_t *)p_ctrlIntf->p_link) : ((usart_t *)p_ctrlIntf->p_link)
-#define CtrlIntf_GetLinkTypeStr(p_ctrlIntf) p_ctrlIntf->linkType == CILT_CUART ? "CUART": (p_ctrlIntf->linkType == CILT_USART ? "USART" : "UNDEFINED")
+#define CtrlIntf_GetLink(p_ctrlIntf) (p_ctrlIntf->linkType == CILT_CUART)  ? ((circularUART_t *)p_ctrlIntf->p_link) : ((usart_t *)p_ctrlIntf->p_link)
+
+#define CtrlIntf_GetLinkTypeStr(p_ctrlIntf) (p_ctrlIntf->linkType == CILT_CUART) ? "CUART": (p_ctrlIntf->linkType == CILT_USART ? "USART" : "UNDEFINED")
+
 #define CtrlIntf_GetLinkBaseAddress(p_ctrlIntf) \
-      p_ctrlIntf->linkType == CILT_CUART ? ((circularUART_t *)p_ctrlIntf->p_link)->uart.BaseAddress : \
-      (p_ctrlIntf->linkType == CILT_USART ? ((usart_t *)p_ctrlIntf->p_link)->BaseAddress : 0)
+      p_ctrlIntf->linkType == CILT_USART ? ((usart_t *)p_ctrlIntf->p_link)->BaseAddress : \
+        (((circularUART_t *)p_ctrlIntf->p_link)->uartType == Lite ? ((circularUART_t *)p_ctrlIntf->p_link)->uart.Lite.RegBaseAddress :\
+        ((circularUART_t *)p_ctrlIntf->p_link)->uart.Ns550.BaseAddress)\
+
 #define CI_LINKERR(p_ctrlIntf, fmt, ...) CI_ERR("%s @ 0x%08X: " fmt, CtrlIntf_GetLinkTypeStr(p_ctrlIntf), CtrlIntf_GetLinkBaseAddress(p_ctrlIntf), ##__VA_ARGS__)
 
 

@@ -92,6 +92,17 @@ package TEL2000 is
    end record;
    
    -- AXI4 Stream ports
+   type t_axi4_stream_mosi128 is record
+      TVALID : std_logic; --! Stream Data Valid
+      TDATA : std_logic_vector(127 downto 0); --! Stream Data 128 bit
+      TSTRB : std_logic_vector(15 downto 0); --! Stream Data Strobe (16bits)
+      TKEEP : std_logic_vector(15 downto 0); --! Stream Data Keep (16bits)
+      TLAST : std_logic; --! Stream Data Last
+      TID : std_logic_vector(0 downto 0); --! Stream ID
+      TDEST : std_logic_vector(2 downto 0); --! Stream Destination
+      TUSER : std_logic_vector(31 downto 0); --! Stream User Data (32 bits)
+   end record;
+   
    type t_axi4_stream_mosi72 is record
       TVALID : std_logic; --! Stream Data Valid
       TDATA : std_logic_vector(71 downto 0); --! Stream Data 72 bits
@@ -102,7 +113,6 @@ package TEL2000 is
       TDEST : std_logic_vector(2 downto 0); --! Stream Destination
       TUSER : std_logic_vector(17 downto 0); --! Stream User Data (18 bits)
    end record;
-   
    
    type t_axi4_stream_mosi64 is record
       TVALID : std_logic; --! Stream Data Valid
@@ -373,6 +383,23 @@ package TEL2000 is
       bvalid :  STD_LOGIC;
    end record;
    
+   type t_axi4_a32_read_mosi is record --! AXI4-FULL MOSI
+      -- Read Address channel
+      araddr :  STD_LOGIC_VECTOR ( 31 downto 0 );
+      arburst :  STD_LOGIC_VECTOR ( 1 downto 0 );
+      arcache :  STD_LOGIC_VECTOR ( 3 downto 0 );
+      arid :  STD_LOGIC_VECTOR ( 3 downto 0 );
+      arlen :  STD_LOGIC_VECTOR ( 7 downto 0 );
+      arlock :  STD_LOGIC_VECTOR ( 0 to 0 );
+      arprot :  STD_LOGIC_VECTOR ( 2 downto 0 );
+      arqos :  STD_LOGIC_VECTOR ( 3 downto 0 );
+      arregion :  STD_LOGIC_VECTOR ( 3 downto 0 );
+      arsize :  STD_LOGIC_VECTOR ( 2 downto 0 );
+      arvalid :  STD_LOGIC;
+      -- Read Data Channel
+      rready :  STD_LOGIC;
+   end record;
+   
    type t_axi4_a64_read_mosi is record --! AXI4-FULL MOSI
       -- Read Address channel
       araddr : STD_LOGIC_VECTOR ( 63 downto 0 );
@@ -390,14 +417,81 @@ package TEL2000 is
       rready : STD_LOGIC;
    end record;
    
+   type t_axi4_d32_read_miso is record --! AXI4-FULL MISO
+      -- Read Address channel
+      arready :  STD_LOGIC;
+      -- Read Data Channel
+      rdata :  STD_LOGIC_VECTOR ( 31 downto 0 );
+      rlast :  STD_LOGIC;
+      rvalid :  STD_LOGIC;
+      rresp :  STD_LOGIC_VECTOR ( 1 downto 0 );
+      rid : STD_LOGIC_VECTOR ( 1 downto 0 );
+   end record;
+   
+   type t_axi4_d64_read_miso is record --! AXI4-FULL MISO
+      -- Read Address channel
+      arready :  STD_LOGIC;
+      -- Read Data Channel
+      rdata :  STD_LOGIC_VECTOR ( 63 downto 0 );
+      rlast :  STD_LOGIC;
+      rvalid :  STD_LOGIC;
+      rresp :  STD_LOGIC_VECTOR ( 1 downto 0 );
+      rid : STD_LOGIC_VECTOR ( 1 downto 0 );
+   end record;
+   
    type t_axi4_d256_read_miso is record --! AXI4-FULL MISO
       -- Read Address channel
       arready : STD_LOGIC;
+      -- Read Data Channel
       rdata : STD_LOGIC_VECTOR ( 255 downto 0 );
       rlast : STD_LOGIC;
       rresp : STD_LOGIC_VECTOR ( 1 downto 0 );
       rvalid : STD_LOGIC;
       rid : STD_LOGIC_VECTOR ( 3 downto 0 );
+   end record;
+   
+   type t_axi4_a32_d64_write_mosi is record --! AXI4-FULL MOSI
+      -- Write Addres Channel
+      awaddr :  STD_LOGIC_VECTOR ( 31 downto 0 );
+      awburst :  STD_LOGIC_VECTOR ( 1 downto 0 );
+      awcache :  STD_LOGIC_VECTOR ( 3 downto 0 );
+      awlen :  STD_LOGIC_VECTOR ( 7 downto 0 );
+      awlock :  STD_LOGIC_VECTOR ( 0 to 0 );
+      awprot :  STD_LOGIC_VECTOR ( 2 downto 0 );
+      awid :  STD_LOGIC_VECTOR ( 3 downto 0 );
+      awqos :  STD_LOGIC_VECTOR ( 3 downto 0 );
+      awregion :  STD_LOGIC_VECTOR ( 3 downto 0 );
+      awsize :  STD_LOGIC_VECTOR ( 2 downto 0 );
+      awvalid :  STD_LOGIC;
+      -- Write Data Channel
+      wdata :  STD_LOGIC_VECTOR ( 63 downto 0 );
+      wlast :  STD_LOGIC;
+      wstrb :  STD_LOGIC_VECTOR ( 7 downto 0 );
+      wvalid :  STD_LOGIC;   
+      -- Response Channel
+      bready :  STD_LOGIC;
+   end record;
+   
+   type t_axi4_a32_d128_write_mosi is record --! AXI4-FULL MOSI
+      -- Write Addres Channel
+      awaddr :  STD_LOGIC_VECTOR ( 31 downto 0 );
+      awburst :  STD_LOGIC_VECTOR ( 1 downto 0 );
+      awcache :  STD_LOGIC_VECTOR ( 3 downto 0 );
+      awlen :  STD_LOGIC_VECTOR ( 7 downto 0 );
+      awlock :  STD_LOGIC_VECTOR ( 0 to 0 );
+      awprot :  STD_LOGIC_VECTOR ( 2 downto 0 );
+      awid :  STD_LOGIC_VECTOR ( 3 downto 0 );
+      awqos :  STD_LOGIC_VECTOR ( 3 downto 0 );
+      awregion :  STD_LOGIC_VECTOR ( 3 downto 0 );
+      awsize :  STD_LOGIC_VECTOR ( 2 downto 0 );
+      awvalid :  STD_LOGIC;
+      -- Write Data Channel
+      wdata :  STD_LOGIC_VECTOR ( 127 downto 0 );
+      wlast :  STD_LOGIC;
+      wstrb :  STD_LOGIC_VECTOR ( 15 downto 0 );
+      wvalid :  STD_LOGIC;   
+      -- Response Channel
+      bready :  STD_LOGIC;
    end record;
    
    type t_axi4_a64_d256_write_mosi is record --! AXI4-FULL MOSI
@@ -474,6 +568,7 @@ package TEL2000 is
       frame_id     : unsigned(31 downto 0);  --! numero de l'image associée à exp_feedbk
       exp_info     : exp_info_type; --! données du temps d'intégration de l'image dont le numero est frame_id
       ref_feedbk   : std_logic_vector(1 downto 0); --! feedback pour elcorr. Utilisé uniquement dans module fpa
+      dval_gen_stat: std_logic_vector(7 downto 0); --! statut venant de dval_gen. Utilisé uniquement dans module fpa
    end record;
    
    
@@ -520,13 +615,14 @@ package TEL2000 is
    -- decoded header info
    type decoded_hdr_type is record
       dval           : std_logic;
-      exposure_time  : unsigned(31 downto 0);
-      width          : unsigned(15 downto 0);
-      height         : unsigned(15 downto 0);
-      offsetx        : unsigned(15 downto 0);
-      offsety        : unsigned(15 downto 0);
-      fw_position    : unsigned(7 downto 0);
-      ndf_position   : unsigned(7 downto 0);
+      exposure_time  : std_logic_vector(31 downto 0);
+      width          : std_logic_vector(15 downto 0);
+      height         : std_logic_vector(15 downto 0);
+      offsetx        : std_logic_vector(15 downto 0);
+      offsety        : std_logic_vector(15 downto 0);
+      fw_position    : std_logic_vector(7 downto 0);
+      ndf_position   : std_logic_vector(7 downto 0);
+      ehdri_index    : std_logic_vector(7 downto 0);
    end record;
    
    -- Response constant.
@@ -547,12 +643,24 @@ package TEL2000 is
    
    constant axi4_stream_mosi_status_dftl : t_axi4_stream_mosi_status := ((others => '0'),"0",'0','0');
    
+   
+   -- Pixel special values (tag)
+   constant VALID_PIX_MAX_VAL    : std_logic_vector(15 downto 0) := x"FFF0";
+   constant TAG_BAD_PIX          : std_logic_vector(15 downto 0) := x"FFFE";
+   constant TAG_SATURATED_PIX    : std_logic_vector(15 downto 0) := x"FFFF";
+   
+   -- TUSER bit definitions
+   constant TUSER_BAD_PIX_BIT       : integer := 0;
+   constant TUSER_SATURATED_PIX_BIT : integer := 1;
+   
+   
    ------------------------------------------
    -- General functions
    ------------------------------------------
    function log2 (x : unsigned) return natural;
    function log2 (x : positive) return natural;
    function resize(a: std_logic_vector; len: natural) return std_logic_vector;
+   function resize(a: std_logic; len: natural) return std_logic_vector;
    function BooltoStd(x:boolean) return std_logic;
    
    ------------------------------------------
@@ -560,6 +668,7 @@ package TEL2000 is
    ------------------------------------------
    procedure write_axi_lite (signal Clk : in std_logic; Addr : in std_logic_vector(31 downto 0); Value : in std_logic_vector(31 downto 0);signal  miso : in  t_axi4_lite_miso;signal  mosi : out t_axi4_lite_mosi);
    procedure read_axi_lite (signal Clk : in std_logic; Addr : in std_logic_vector(31 downto 0); signal miso : in  t_axi4_lite_miso; signal mosi : out t_axi4_lite_mosi;signal  ReadValue : out std_logic_vector(31 downto 0));
+   procedure write_axis64 (signal Clk : in std_logic; Value : in std_logic_vector; tlast : in std_logic; signal miso : in  t_axi4_stream_miso; signal mosi : out t_axi4_stream_mosi64 );
    procedure write_axis32 (signal Clk : in std_logic; Value : in std_logic_vector; tlast : in std_logic; signal miso : in  t_axi4_stream_miso; signal mosi : out t_axi4_stream_mosi32 );
    procedure write_axis32_hdr (signal Clk : in std_logic; Value : in std_logic_vector; tlast : in std_logic; signal miso : in  t_axi4_stream_miso; signal mosi : out t_axi4_stream_mosi32 );
    procedure write_axis16 (signal Clk : in std_logic; Value : in std_logic_vector; tlast : in std_logic; signal miso : in  t_axi4_stream_miso; signal mosi : out t_axi4_stream_mosi16 );
@@ -588,6 +697,13 @@ package body TEL2000 is
    function resize(a: std_logic_vector; len: natural) return std_logic_vector is
    begin
       return std_logic_vector(resize(unsigned(a), len));
+   end resize;
+   
+   function resize(a: std_logic; len: natural) return std_logic_vector is
+      variable	y : std_logic_vector(len-1 downto 0) := (others => '0');
+   begin
+      y(0) := a;
+      return y;
    end resize;
    
    function BooltoStd(x:boolean) return std_logic is 
@@ -649,6 +765,23 @@ package body TEL2000 is
       mosi.RREADY	   <= '0';
    end read_axi_lite; 
    
+   procedure write_axis64 (signal Clk : in std_logic; Value : in std_logic_vector; tlast : in std_logic; signal miso : in  t_axi4_stream_miso; signal mosi : out t_axi4_stream_mosi64 ) is
+      -- subprogram_declarative_items (constant declarations, variable declarations, etc.)      
+   begin
+      wait until (miso.TREADY = '1' and rising_edge(Clk));
+      mosi.TVALID   <= '1';
+      mosi.TDATA	   <= Value ;
+      mosi.TSTRB    <= (others => '1');
+      mosi.TKEEP    <= (others => '1');
+      mosi.TLAST    <= tlast;
+      mosi.TID    <= (others => '0') ;
+      mosi.TDEST	<= (others => '0') ;
+      mosi.TUSER	<= (others => '0') ;
+      wait until (miso.TREADY = '1' and rising_edge(Clk));
+      mosi.TVALID	<= '0';
+      mosi.TLAST	<= '0';
+   end write_axis64;
+   
    procedure write_axis32 (signal Clk : in std_logic; Value : in std_logic_vector; tlast : in std_logic; signal miso : in  t_axi4_stream_miso; signal mosi : out t_axi4_stream_mosi32 ) is
       -- subprogram_declarative_items (constant declarations, variable declarations, etc.)      
    begin
@@ -656,7 +789,7 @@ package body TEL2000 is
       mosi.TVALID   <= '1';
       mosi.TDATA	   <= Value ;
       mosi.TSTRB    <= (others => '1');
-      mosi.TKEEP    <= (others => '0');
+      mosi.TKEEP    <= (others => '1');
       mosi.TLAST    <= tlast;
       mosi.TID    <= (others => '0') ;
       mosi.TDEST	<= (others => '0') ;
@@ -673,7 +806,7 @@ package body TEL2000 is
       mosi.TVALID   <= '1';
       mosi.TDATA	   <= Value ;
       mosi.TSTRB    <= (others => '1');
-      mosi.TKEEP    <= (others => '0');
+      mosi.TKEEP    <= (others => '1');
       mosi.TLAST    <= tlast;
       mosi.TID    <= (others => '1') ;    -- TID = '1' in header
       mosi.TDEST	<= (others => '0') ;
@@ -690,7 +823,7 @@ package body TEL2000 is
       mosi.TVALID   <= '1';
       mosi.TDATA	   <= Value ;
       mosi.TSTRB    <= (others => '1');
-      mosi.TKEEP    <= (others => '0');
+      mosi.TKEEP    <= (others => '1');
       mosi.TLAST    <= tlast;
       mosi.TID    <= (others => '0') ;
       mosi.TDEST	<= (others => '0') ;

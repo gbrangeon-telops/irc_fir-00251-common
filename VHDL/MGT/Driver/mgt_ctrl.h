@@ -18,13 +18,13 @@
 
 /****************** Include Files ********************/
 #include "verbose.h"
-#include "xbasic_types.h"
 #include <stdint.h>
 
 #define CORE_STATUS_OFFSET 0
 #define PLL_STATUS_OFFSET 4
 #define POWER_DOWN_OFFSET 8
 #define LOOPBACK_OFFSET 12
+#define MEM_BUF_SEQ_DOWNLOAD_MODE_OFFSET 16
 
 #ifdef MGT_VERBOSE
    #define MGT_PRINTF(fmt, ...)     FPGA_PRINTF("MGT: " fmt "\n", ##__VA_ARGS__)
@@ -47,10 +47,11 @@ typedef struct
    uint32_t  PLL_STATUS;
    uint32_t  POWER_DOWN;
    uint32_t  LOOPBACK;
+   uint32_t  MEM_BUF_SEQ_DOWNLOAD_MODE;
 } t_mgt;
 
 /***************** Macros (Inline Functions) Definitions ********************/
-#define MGT_Ctor(add) {sizeof(t_mgt)/4 - 2, add, 0, 0, 0, 0}
+#define MGT_Ctor(add) {sizeof(t_mgt)/4 - 2, add, 0, 0, 0, 0, 0}
 
 
 // Mask for POWER_DOWN register
@@ -93,6 +94,7 @@ typedef struct
 
 // Function Prototype
 void MGT_Init(t_mgt *inst);
+void MGT_Send_MBSDM(t_mgt *inst, uint8_t state);
 
 uint32_t MGT_ReadCoreStatus(t_mgt *inst);
 uint32_t MGT_ReadPLLStatus(t_mgt *inst);

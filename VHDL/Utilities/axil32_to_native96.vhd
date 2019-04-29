@@ -19,6 +19,9 @@ use IEEE.numeric_std.ALL;
 use work.Tel2000.all;
 
 entity axil32_to_native96 is
+    generic(
+      ADDR_WIDTH : integer := 32
+    );
     port(
       ARESET       : in std_logic;
       CLK          : in std_logic;      
@@ -26,13 +29,13 @@ entity axil32_to_native96 is
       AXIL_MOSI    : in t_axi4_lite_mosi;
       AXIL_MISO    : out t_axi4_lite_miso;
       
-      WR_ADD       : out std_logic_vector(31 downto 0);
+      WR_ADD       : out std_logic_vector(ADDR_WIDTH-1 downto 0);
       WR_DATA      : out std_logic_vector(95 downto 0);
       
       WR_EN        : out std_logic;
       
       
-      RD_ADD       : out std_logic_vector(31 downto 0);      
+      RD_ADD       : out std_logic_vector(ADDR_WIDTH-1 downto 0);      
       RD_DATA      : in std_logic_vector(95 downto 0);
       RD_EN        : out std_logic;
       RD_DVAL      : in std_logic;
@@ -139,7 +142,7 @@ begin
 	-- This process is used to latch the address when both 
 	-- AXIL_MOSI.AWVALID and AXIL_MOSI.WVALID are valid. 
 
-   WR_ADD <= axi_awaddr;
+   WR_ADD <= axi_awaddr(WR_ADD'length-1 downto 0);
 	process (CLK)
 	begin
 	  if rising_edge(CLK) then 
@@ -272,7 +275,7 @@ end process;
 	-- de-asserted when reset (active low) is asserted. 
 	-- The read address is also latched when AXIL_MOSI.ARVALID is 
 	-- asserted. axi_araddr is reset to zero on reset assertion.
-RD_ADD <= axi_araddr;
+RD_ADD <= axi_araddr(RD_ADD'length-1 downto 0);
 process (CLK)
 begin
     if rising_edge(CLK) then 

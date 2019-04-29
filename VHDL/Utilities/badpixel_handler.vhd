@@ -7,9 +7,6 @@ use IEEE.STD_LOGIC_1164.all;
 use work.TEL2000.all;
 
 entity badpixel_handler is
-generic(
-   BAD_PIX_TAG : std_logic_vector(15 downto 0) := X"FFFE"
-   );
 port(
 
    CLK : in std_logic;
@@ -94,7 +91,7 @@ begin
                   if BADPIXEL_RX_MOSI.tdata = X"01" then            
                      TX_MOSI.TDATA   <= RX_MOSI.TDATA;
                   else              
-                     TX_MOSI.TDATA   <= BAD_PIX_TAG;
+                     TX_MOSI.TDATA   <= TAG_BAD_PIX;
                   end if;
                else
                   TX_MOSI.TVALID  <= '0';

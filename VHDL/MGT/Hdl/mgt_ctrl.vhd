@@ -49,7 +49,8 @@ entity MGT_CTRL is
 		 
        --! MGT Control Signals
        POWER_DOWN : out STD_LOGIC_VECTOR(2 downto 0);
-		 LOOPBACK : out STD_LOGIC_VECTOR(8 downto 0)
+		 LOOPBACK : out STD_LOGIC_VECTOR(8 downto 0);
+       MBSDM : out STD_LOGIC_VECTOR(0 downto 0) -- Memory Buffer Sequence Download Mode
 	    );
 end MGT_CTRL;
 
@@ -65,14 +66,16 @@ architecture MGT_CTRL of MGT_CTRL is
    constant C_S_AXI_DATA_WIDTH : integer := 32;
    constant C_S_AXI_ADDR_WIDTH : integer := 32;
    constant ADDR_LSB  : integer := (C_S_AXI_DATA_WIDTH/32)+ 1;
-   constant OPT_MEM_ADDR_BITS : integer := 1; -- Number of supplement bit
+   constant OPT_MEM_ADDR_BITS : integer := 2; -- Number of supplement bit
 
    -- Address of registers
    constant MGT_CORE_STATUS_ADR : std_logic_vector(ADDR_LSB + OPT_MEM_ADDR_BITS downto 0) := std_logic_vector(to_unsigned(0,ADDR_LSB + OPT_MEM_ADDR_BITS + 1));
    constant MGT_PLL_STATUS_ADR : std_logic_vector(ADDR_LSB + OPT_MEM_ADDR_BITS downto 0) := std_logic_vector(to_unsigned(4,ADDR_LSB + OPT_MEM_ADDR_BITS + 1));
    constant MGT_POWER_DOWN_ADR : std_logic_vector(ADDR_LSB + OPT_MEM_ADDR_BITS downto 0) := std_logic_vector(to_unsigned(8,ADDR_LSB + OPT_MEM_ADDR_BITS + 1));
    constant MGT_LOOPBACK_ADR : std_logic_vector(ADDR_LSB + OPT_MEM_ADDR_BITS downto 0) := std_logic_vector(to_unsigned(12,ADDR_LSB + OPT_MEM_ADDR_BITS + 1));
+   constant MGT_MBSDM_ADR :    std_logic_vector(ADDR_LSB + OPT_MEM_ADDR_BITS downto 0) := std_logic_vector(to_unsigned(16,ADDR_LSB + OPT_MEM_ADDR_BITS + 1));
 
+      
 component double_sync
   generic(
        INIT_VALUE : BIT := '0'
@@ -110,14 +113,14 @@ end component;
    --! User Output Register Declarations
    signal power_down_reg : std_logic_vector(31 downto 0); --! Power Down Control
    signal loopback_reg : std_logic_vector(31 downto 0); --! Loopback Control
-
+   signal mbsdm_reg : std_logic_vector(31 downto 0); --! Loopback Control
    
    -- Cross domain signal
    signal core_status_i : std_logic_vector(core_status_reg'range); 
    signal pll_status_i : std_logic_vector(pll_status_reg'range);
    signal power_down_sync : std_logic_vector(2 downto 0);
-   signal loopback_sync : std_logic_vector(8 downto 0);
-   
+   signal loopback_sync : std_logic_vector(8 downto 0);     
+   signal mbsdm_sync : std_logic_vector(0 downto 0) := "0"; 
    
    -- AXI4LITE signals
    signal axi_awaddr	: std_logic_vector(C_S_AXI_ADDR_WIDTH-1 downto 0);
@@ -144,7 +147,8 @@ begin
    -- Output Register Mapped to Output ports
    POWER_DOWN <= power_down_sync(2 downto 0);
    LOOPBACK <= loopback_sync(8 downto 0);
-
+   MBSDM <= mbsdm_sync(0 downto 0);
+   
    -- Input Register Mapped from Input ports
    core_status_i(2 downto 0) <= FRAME_ERR;
    core_status_i(5 downto 3) <= HARD_ERR;
@@ -188,7 +192,7 @@ begin
       Q => pll_status_reg,
       CLK => CLK
    );
-
+   
    data_loopback_sync : double_sync_vector
    port map (
       D => loopback_reg(2 downto 0),
@@ -232,7 +236,17 @@ begin
           D => power_down_reg(2),
           Q => power_down_sync(2),
           RESET => '0'
+     ); 
+     
+   stream_merger_mbsdm_sync : double_sync
+     port map(
+          CLK => CLK_DATA,
+          D => mbsdm_reg(0),
+          Q => mbsdm_sync(0),
+          RESET => '0'
      );
+     
+     
      
      sync_resetn_inst : sync_resetn port map(ARESETN => ARESETN, SRESETN => sresetn, CLK => CLK);
    
@@ -361,6 +375,7 @@ begin
 --            pll_status_i <= (others => '0');
             power_down_reg <= (others => '0');
             loopback_reg <= (others => '0');
+            mbsdm_reg <= (others => '0');
          else
             loc_addr := axi_awaddr(ADDR_LSB + OPT_MEM_ADDR_BITS downto 0);
             if (slv_reg_wren = '1') then
@@ -397,11 +412,23 @@ begin
                            loopback_reg(byte_index*8+7 downto byte_index*8) <= AXI4_LITE_MOSI.WDATA(byte_index*8+7 downto byte_index*8);
                         end if;
                      end loop;
+                     
+                  when MGT_MBSDM_ADR =>
+                     for byte_index in 0 to (C_S_AXI_DATA_WIDTH/8-1) loop
+                        if ( AXI4_LITE_MOSI.WSTRB(byte_index) = '1' ) then
+                           -- Respective byte enables are asserted as per write strobes 
+                           -- slave registor 3
+                           mbsdm_reg(byte_index*8+7 downto byte_index*8) <= AXI4_LITE_MOSI.WDATA(byte_index*8+7 downto byte_index*8);
+                        end if;
+                     end loop;
+                     
+                     
                   when others =>
                      --core_status_i <= core_status_i;
                      --pll_status_i <= pll_status_i;
                      power_down_reg <= power_down_reg;
                      loopback_reg <= loopback_reg;
+                     mbsdm_reg <= mbsdm_reg;
                end case;
             end if;
          end if;
@@ -487,7 +514,7 @@ begin
    -- and the slave is ready to accept the read address.
    slv_reg_rden <= axi_arready and AXI4_LITE_MOSI.ARVALID and (not axi_rvalid) ;
 
-   process (core_status_reg, pll_status_reg, power_down_reg, loopback_reg, axi_araddr, ARESETN, slv_reg_rden)
+   process (core_status_reg, pll_status_reg, power_down_reg, mbsdm_reg, loopback_reg, axi_araddr, ARESETN, slv_reg_rden)
    variable loc_addr :std_logic_vector(ADDR_LSB + OPT_MEM_ADDR_BITS downto 0);
    begin
       if ARESETN = '0' then
@@ -503,7 +530,10 @@ begin
             when MGT_POWER_DOWN_ADR =>
                reg_data_out <= std_logic_vector(resize(unsigned(power_down_reg), reg_data_out'length));
             when MGT_LOOPBACK_ADR =>
-               reg_data_out <= std_logic_vector(resize(unsigned(loopback_reg), reg_data_out'length));
+               reg_data_out <= std_logic_vector(resize(unsigned(loopback_reg), reg_data_out'length)); 
+            when MGT_MBSDM_ADR =>
+               reg_data_out <= std_logic_vector(resize(unsigned(mbsdm_reg), reg_data_out'length));
+
             when others =>
                reg_data_out  <= (others => '0');
          end case;

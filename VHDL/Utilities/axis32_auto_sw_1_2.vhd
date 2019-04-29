@@ -1,6 +1,6 @@
 -------------------------------------------------------------------------------
 --
--- Title       : axis16_auto_sw_1_2
+-- Title       : axis32_auto_sw_1_2
 -- Author      : Patrick Dubois
 -- Company     : Telops/COPL/LRTS
 --
@@ -31,80 +31,100 @@ entity axis32_auto_sw_1_2 is
       ARESETN  : in  std_logic;
       CLK      : in  std_logic     
       );
+   attribute keep_hierarchy : string;
+   attribute keep_hierarchy of axis32_auto_sw_1_2 : entity is "yes";
+   
 end axis32_auto_sw_1_2;
+
+
 
 
 architecture RTL of axis32_auto_sw_1_2 is 
    
-   signal areset, sreset   : std_logic;
-   signal tx0_mosi_i       : t_axi4_stream_mosi32;
-   signal tx1_mosi_i       : t_axi4_stream_mosi32;
-   signal out0_enabled_s   : std_logic;
-   signal out1_enabled_s   : std_logic;
+   signal sresetn       : std_logic;
+   signal rx_mosi_i     : t_axi4_stream_mosi32;
+   signal tx_miso_o     : t_axi4_stream_miso;
+   signal active_output : std_logic;
+
    
-   component sync_reset
+   component sync_resetn
       port(
-         ARESET : in std_logic;
-         SRESET : out std_logic;
+         ARESETN : in std_logic;
+         SRESETN : out std_logic;
          CLK    : in std_logic);
    end component;  
    
    
 begin    
-   
-   areset <= not ARESETN;     
-   
-   RX_MISO.TREADY <= (TX0_MISO.TREADY and out0_enabled_s) or (TX1_MISO.TREADY and out1_enabled_s);
-   TX0_MOSI <= tx0_mosi_i;
-   TX1_MOSI <= tx1_mosi_i;
-   
+
+   RX_MISO <= TX0_MISO when active_output = '0' else TX1_MISO;
+
    --------------------------------------------------
    -- synchro reset 
    --------------------------------------------------   
-   U1: sync_reset
+   U1: sync_resetn
    port map(
-      ARESET => ARESET,
+      ARESETN => ARESETN,
       CLK    => CLK,
-      SRESET => sreset
+      SRESETN => sresetn
       );
+   
+
    
    ----------------------------------------------------------
    --  aiguillage automatique
    ----------------------------------------------------------
    U2: process(CLK)
-      variable out0_enabled_v : std_logic;
-      variable out1_enabled_v : std_logic;
    begin
       if rising_edge(CLK) then
          
-         if sreset = '1' then            
-            tx0_mosi_i.tvalid <= '0';
-            tx1_mosi_i.tvalid <= '0';
-            out0_enabled_v  := '1';    -- la premiere position passante est TX0_MOSI;
-            out1_enabled_v  := '0';
-            out0_enabled_s <= out0_enabled_v;
-            out1_enabled_s <= out1_enabled_v;
+         if sresetn = '0' then            
+
+            TX0_MOSI.tuser <= (others => '0');
+            TX0_MOSI.tstrb <= (others => '1');
+            TX0_MOSI.tkeep <= (others => '1');
+            TX0_MOSI.tdest <= (others => '0');
+            TX0_MOSI.tid <= "1";
+            TX0_MOSI.tlast <= '0';
+            TX0_MOSI.tvalid <= '0';
+            
+            TX1_MOSI.tuser <= (others => '0');
+            TX1_MOSI.tstrb <= (others => '1');
+            TX1_MOSI.tkeep <= (others => '1');
+            TX1_MOSI.tdest <= (others => '0');
+            TX1_MOSI.tid <= "0";
+            TX1_MOSI.tlast <= '0';
+            TX1_MOSI.tvalid <= '0';
+
+            rx_mosi_i.tuser <= (others => '0');
+            rx_mosi_i.tstrb <= (others => '1');
+            rx_mosi_i.tkeep <= (others => '1');
+            rx_mosi_i.tdest <= (others => '0');
+            rx_mosi_i.tid <= "0";
+            rx_mosi_i.tlast <= '0';
+            rx_mosi_i.tvalid <= '0';
+            
+            tx_miso_o.TREADY <= '0';
+            
+            active_output <= '0';
             
          else
             -- assignations par defaut
-            tx0_mosi_i <= RX_MOSI;
-            tx1_mosi_i <= RX_MOSI;
-            
-            -- choix des canaux de sortie
-            if tx0_mosi_i.tvalid = '1' and tx0_mosi_i.tlast = '1' and TX0_MISO.TREADY = '1' then 
-               out0_enabled_v := '0';
-               out1_enabled_v := '1';
-            end if;                                  
-            if tx1_mosi_i.tvalid = '1' and tx1_mosi_i.tlast = '1' and TX1_MISO.TREADY = '1' then 
-               out0_enabled_v := '1';
-               out1_enabled_v := '0';
+            if( active_output = '0' and TX0_MISO.TREADY = '1') then
+                rx_mosi_i <= RX_MOSI;
+                TX0_MOSI <= rx_mosi_i;
+                TX1_MOSI.TVALID <= '0';
+            elsif( active_output = '1' and TX1_MISO.TREADY = '1') then
+                rx_mosi_i <= RX_MOSI;
+                TX1_MOSI <= rx_mosi_i;
+                TX0_MOSI.TVALID <= '0';
             end if;
-            out0_enabled_s <= out0_enabled_v;
-            out1_enabled_s <= out1_enabled_v;
-            
-            -- validation signal pour canal de sortie            
-            tx0_mosi_i.tvalid <= RX_MOSI.TVALID and out0_enabled_v;
-            tx1_mosi_i.tvalid <= RX_MOSI.TVALID and out1_enabled_v;
+
+            if(rx_mosi_i.tvalid = '1' and rx_mosi_i.tlast = '1' and active_output = '0' and TX0_MISO.TREADY = '1') then
+                active_output <= '1';
+            elsif(rx_mosi_i.tvalid = '1' and rx_mosi_i.tlast = '1' and active_output = '1' and TX1_MISO.TREADY = '1') then
+                active_output <= '0';
+            end if;
             
          end if;      
       end if;

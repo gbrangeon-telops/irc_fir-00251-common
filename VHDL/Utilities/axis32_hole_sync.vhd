@@ -105,6 +105,8 @@ begin
    
    tx_miso_i <= TX_MISO;
    
+   -- (ODI 2017-09-08) PROBLÈME POTENTIEL: j'ai eu des problèmes en simulation, avec un module basé sur ce hole_sync, connecté sur un RandomMiso.
+   -- L'ajustement du TREADY devrait se faire du côté TX plutôt que RX (voir flow_manager et axis32_sw_1_2).
    RX_MISO.TREADY <= rx_miso_i.TREADY or fall_sync;
    
    TX_MOSI.TDATA  <= tx_mosi_i.TDATA;  

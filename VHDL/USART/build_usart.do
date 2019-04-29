@@ -20,9 +20,7 @@ acom -incr -nowarn DAGGEN_0523 \
 #common
 
 acom -incr -nowarn DAGGEN_0523 \
-	"D:\Telops\FIR-00251-Proc\IP\t_axi4_stream32_afifo_d512\t_axi4_stream32_afifo_d512_funcsim.vhdl" \
-	"$COMMON\Fifo\t_axi4_stream32_fifo.vhd" \
-	"D:\Telops\FIR-00251-Proc\IP\usart_mmcm\usart_mmcm_funcsim.vhdl"
+	"$COMMON\Fifo\t_axi4_stream32_fifo.vhd"
 
 #source USART
 acom  -incr 	"$USART\usart_rx.vhd" \

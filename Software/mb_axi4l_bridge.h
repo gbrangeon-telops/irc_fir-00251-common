@@ -17,7 +17,6 @@
 extern "C" {
 #endif
 
-#include "xbasic_types.h"
 #include <stdint.h>
 
 void AXI4L_write32( uint32_t data, uint32_t add);

@@ -318,6 +318,7 @@ ATTRIBUTE BLACK_BOX_PAD_PIN OF t_axi4_stream32_sfifo_d512 : COMPONENT IS "s_aclk
    signal rx_tvalid        : std_logic  := '0';
    signal rx_tready        : std_logic  := '0';
    
+   attribute KEEP of ovfl_i : signal is "TRUE";
    
 begin
    

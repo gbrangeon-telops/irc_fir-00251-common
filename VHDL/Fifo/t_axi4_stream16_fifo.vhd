@@ -127,6 +127,7 @@ end component;
    signal rx_tvalid        : std_logic  := '0';
    signal rx_tready        : std_logic  := '0';
    
+   attribute KEEP of ovfl_i : signal is "TRUE";
    
 begin
    

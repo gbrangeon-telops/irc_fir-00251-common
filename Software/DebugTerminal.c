@@ -39,7 +39,12 @@ void outbyte(char c)
 
    if (gDebugTerminal.cuart != NULL)
    {
-      XUartNs550_SendByte(gDebugTerminal.cuart->uart.BaseAddress, c);
+      if (gDebugTerminal.cuart->uartType == Ns550) {
+      XUartNs550_SendByte(gDebugTerminal.cuart->uart.Ns550.BaseAddress, c);
+   }
+      else {
+         XUartLite_SendByte(gDebugTerminal.cuart->uart.Lite.RegBaseAddress, c);
+       }
    }
    else
    {
@@ -97,17 +102,25 @@ IRC_Status_t DebugTerminal_SetSerial(debugTerminal_t *debugTerminal, circularUAR
    if (debugTerminal->cuart != NULL)
    {
       // Reset circular UART RX FIFO
-      CircularUART_ResetRxFifo(cuart);
+      CircularUART_ResetFifo(cuart);
 
       // Connect new circular UART
       CircularUART_SetCircularBuffers(debugTerminal->cuart, debugTerminal->rxCircBuffer, debugTerminal->txCircBuffer);
-      CircularUART_SetHandler(debugTerminal->cuart, NULL, debugTerminal);
+      CircularUART_SetHandler(debugTerminal->cuart, NULL, NULL);
 
       // Transmit queued char if any
       while(!CBB_Empty(debugTerminal->txCircBuffer))
       {
          CBB_Pop(debugTerminal->txCircBuffer, &byte);
-         XUartNs550_SendByte(debugTerminal->cuart->uart.BaseAddress, byte);
+
+         if (debugTerminal->cuart->uartType == Ns550) {
+
+         XUartNs550_SendByte(debugTerminal->cuart->uart.Ns550.BaseAddress, byte);
+      }
+         else  {
+            XUartLite_SendByte(debugTerminal->cuart->uart.Lite.RegBaseAddress, byte);
+         }
+
       }
 
       // Check for possible TX circular byte buffer overflow
@@ -1198,7 +1211,16 @@ IRC_Status_t DebugTerminalParseCI(circByteBuffer_t *cbuf)
    DT_PRINTF("Debug Terminal Interface");
    DT_PRINTF("  Network port: %d", gDebugTerminal.port.port);
    if (gDebugTerminal.cuart != NULL) {
-      DT_PRINTF("  Link: CUART @ 0x%08X", gDebugTerminal.cuart->uart.BaseAddress);
+      if (gDebugTerminal.cuart->uartType == Ns550) {
+
+      DT_PRINTF("  Link: CUART @ 0x%08X", gDebugTerminal.cuart->uart.Ns550.BaseAddress);
+   }
+      else  {
+         DT_PRINTF("  Link: CUART @ 0x%08X", gDebugTerminal.cuart->uart.Lite.RegBaseAddress);
+      }
+
+
+
    }
    if (gDebugTerminal.rxCircBuffer != NULL) {
       DT_PRINTF("  RX buffer: %d / %d (max=%d, ovfl=%d)", gDebugTerminal.rxCircBuffer->length,

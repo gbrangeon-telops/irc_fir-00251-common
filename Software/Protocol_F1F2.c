@@ -158,6 +158,7 @@ IRC_Status_t F1F2_CircCommandParser(circByteBuffer_t *circByteBuffer, F1F2Comman
       return IRC_NOT_DONE;
    }
 
+
    // Validate payload data count
    if (F1F2_PayloadDataCountValidator(f1f2Cmd->cmd, pdc) != IRC_SUCCESS)
    {

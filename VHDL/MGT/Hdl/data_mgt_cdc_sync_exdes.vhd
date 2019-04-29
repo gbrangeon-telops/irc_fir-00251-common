@@ -81,7 +81,7 @@
 --
 --Whenever this file is used following XDC constraint has to be added 
 
---         set_false_path -to [get_pins -hier *cdc_to*]        
+--         set_false_path -to [get_pins -hier *data_mgt_cdc_to*/D]        
 
 
 --IO Ports 
@@ -174,7 +174,7 @@ begin
 GENERATE_PULSE_P_S_CDC_OPEN_ENDED : if C_CDC_TYPE = 0 generate
 
 -- Primary to Secondary
-signal s_out_d1_cdc_to          : std_logic := '0';
+signal s_out_d1_data_mgt_cdc_to          : std_logic := '0';
 signal s_out_d2           	: std_logic := '0';
 signal s_out_d3           	: std_logic := '0';
 signal s_out_d4           	: std_logic := '0';
@@ -192,7 +192,7 @@ signal p_in_d1_cdc_from   	: std_logic := '0';
   -----------------------------------------------------------------------------
   -- Prevent x-propagation on clock-domain crossing register
   ATTRIBUTE async_reg                      	: STRING;
-  ATTRIBUTE async_reg OF s_out_d1_cdc_to  	: SIGNAL IS "true"; 
+  ATTRIBUTE async_reg OF s_out_d1_data_mgt_cdc_to  	: SIGNAL IS "true"; 
   ATTRIBUTE async_reg OF s_out_d2  		: SIGNAL IS "true"; 
   ATTRIBUTE async_reg OF s_out_d3  		: SIGNAL IS "true"; 
   ATTRIBUTE async_reg OF s_out_d4  		: SIGNAL IS "true"; 
@@ -201,7 +201,7 @@ signal p_in_d1_cdc_from   	: std_logic := '0';
   ATTRIBUTE async_reg OF s_out_d7  		: SIGNAL IS "true"; 
 
   ATTRIBUTE shift_extract                      	: STRING;
-  ATTRIBUTE shift_extract OF s_out_d1_cdc_to  	: SIGNAL IS "no"; 
+  ATTRIBUTE shift_extract OF s_out_d1_data_mgt_cdc_to  	: SIGNAL IS "no"; 
   ATTRIBUTE shift_extract OF s_out_d2  		: SIGNAL IS "no"; 
   ATTRIBUTE shift_extract OF s_out_d3  		: SIGNAL IS "no"; 
   ATTRIBUTE shift_extract OF s_out_d4  		: SIGNAL IS "no"; 
@@ -234,7 +234,7 @@ prmry_in_xored <= prmry_in xor p_in_d1_cdc_from;
         begin
             if(scndry_aclk'EVENT and scndry_aclk ='1')then
                 if(scndry_resetn = '0' and C_RESET_STATE = 1)then
-                    s_out_d1_cdc_to  	<= '0';
+                    s_out_d1_data_mgt_cdc_to  	<= '0';
                     s_out_d2  		<= '0';
                     s_out_d3  		<= '0';
                     s_out_d4  		<= '0';
@@ -243,8 +243,8 @@ prmry_in_xored <= prmry_in xor p_in_d1_cdc_from;
                     s_out_d7  		<= '0';
                     scndry_out          <= '0';
                 else
-                    s_out_d1_cdc_to  	<= p_in_d1_cdc_from;
-                    s_out_d2  		<= s_out_d1_cdc_to;
+                    s_out_d1_data_mgt_cdc_to  	<= p_in_d1_cdc_from;
+                    s_out_d2  		<= s_out_d1_data_mgt_cdc_to;
                     s_out_d3  		<= s_out_d2;
                     s_out_d4  		<= s_out_d3;
                     s_out_d5  		<= s_out_d4;
@@ -299,7 +299,7 @@ SINGLE_BIT : if C_SINGLE_BIT = 1 generate
 
 signal p_level_in_d1_cdc_from        : std_logic := '0';
 signal p_level_in_int        : std_logic := '0';
-signal s_level_out_d1_cdc_to       : std_logic := '0';
+signal s_level_out_d1_data_mgt_cdc_to       : std_logic := '0';
 signal s_level_out_d2       : std_logic := '0';
 signal s_level_out_d3       : std_logic := '0';
 signal s_level_out_d4       : std_logic := '0';
@@ -310,7 +310,7 @@ signal s_level_out_d6       : std_logic := '0';
   -----------------------------------------------------------------------------
   -- Prevent x-propagation on clock-domain crossing register
   ATTRIBUTE async_reg                      : STRING;
-  ATTRIBUTE async_reg OF s_level_out_d1_cdc_to  : SIGNAL IS "true"; 
+  ATTRIBUTE async_reg OF s_level_out_d1_data_mgt_cdc_to  : SIGNAL IS "true"; 
   ATTRIBUTE async_reg OF s_level_out_d2  : SIGNAL IS "true"; 
   ATTRIBUTE async_reg OF s_level_out_d3  : SIGNAL IS "true"; 
   ATTRIBUTE async_reg OF s_level_out_d4  : SIGNAL IS "true"; 
@@ -318,13 +318,15 @@ signal s_level_out_d6       : std_logic := '0';
   ATTRIBUTE async_reg OF s_level_out_d6  : SIGNAL IS "true"; 
 
   ATTRIBUTE shift_extract                      	: STRING;
-  ATTRIBUTE shift_extract OF s_level_out_d1_cdc_to  : SIGNAL IS "no"; 
+  ATTRIBUTE shift_extract OF s_level_out_d1_data_mgt_cdc_to  : SIGNAL IS "no"; 
   ATTRIBUTE shift_extract OF s_level_out_d2  : SIGNAL IS "no"; 
   ATTRIBUTE shift_extract OF s_level_out_d3  : SIGNAL IS "no"; 
   ATTRIBUTE shift_extract OF s_level_out_d4  : SIGNAL IS "no"; 
   ATTRIBUTE shift_extract OF s_level_out_d5  : SIGNAL IS "no"; 
   ATTRIBUTE shift_extract OF s_level_out_d6  : SIGNAL IS "no"; 
 
+  ATTRIBUTE keep                           	: STRING;
+  ATTRIBUTE keep OF p_level_in_d1_cdc_from   : SIGNAL IS "true";
 begin
 
     --*****************************************************************************
@@ -363,15 +365,15 @@ end generate NO_INPUT_FLOP;
         begin
             if(scndry_aclk'EVENT and scndry_aclk ='1')then
                 if(scndry_resetn = '0' and C_RESET_STATE = 1)then
-                    s_level_out_d1_cdc_to  <= '0';
+                    s_level_out_d1_data_mgt_cdc_to  <= '0';
                     s_level_out_d2  <= '0';
                     s_level_out_d3  <= '0';
                     s_level_out_d4  <= '0';
                     s_level_out_d5  <= '0';
                     s_level_out_d6  <= '0';
                 else
-                    s_level_out_d1_cdc_to  <= p_level_in_int;
-                    s_level_out_d2  <= s_level_out_d1_cdc_to;
+                    s_level_out_d1_data_mgt_cdc_to  <= p_level_in_int;
+                    s_level_out_d2  <= s_level_out_d1_data_mgt_cdc_to;
                     s_level_out_d3  <= s_level_out_d2;
                     s_level_out_d4  <= s_level_out_d3;
                     s_level_out_d5  <= s_level_out_d4;
@@ -385,7 +387,7 @@ end generate NO_INPUT_FLOP;
 
 MTBF_L1 : if C_MTBF_STAGES = 1 generate
 begin
-    scndry_out <= s_level_out_d1_cdc_to;
+    scndry_out <= s_level_out_d1_data_mgt_cdc_to;
                    
 
 end generate MTBF_L1;
@@ -438,7 +440,7 @@ end generate SINGLE_BIT;
 MULTI_BIT : if C_SINGLE_BIT = 0 generate 
 
 signal p_level_in_bus_d1_cdc_from      : std_logic_vector(C_VECTOR_WIDTH - 1 downto 0);
-signal s_level_out_bus_d1_cdc_to       : std_logic_vector(C_VECTOR_WIDTH - 1 downto 0);
+signal s_level_out_bus_d1_data_mgt_cdc_to       : std_logic_vector(C_VECTOR_WIDTH - 1 downto 0);
 signal s_level_out_bus_d1_cdc_tig       : std_logic_vector(C_VECTOR_WIDTH - 1 downto 0);
 signal s_level_out_bus_d2       : std_logic_vector(C_VECTOR_WIDTH - 1 downto 0);
 signal s_level_out_bus_d3       : std_logic_vector(C_VECTOR_WIDTH - 1 downto 0);
@@ -450,7 +452,7 @@ signal s_level_out_bus_d6       : std_logic_vector(C_VECTOR_WIDTH - 1 downto 0);
   -----------------------------------------------------------------------------
   -- Prevent x-propagation on clock-domain crossing register
   ATTRIBUTE async_reg                      : STRING;
-  ATTRIBUTE async_reg OF s_level_out_bus_d1_cdc_to  : SIGNAL IS "true"; 
+  ATTRIBUTE async_reg OF s_level_out_bus_d1_data_mgt_cdc_to  : SIGNAL IS "true"; 
   ATTRIBUTE async_reg OF s_level_out_bus_d2  : SIGNAL IS "true"; 
   ATTRIBUTE async_reg OF s_level_out_bus_d3  : SIGNAL IS "true"; 
   ATTRIBUTE async_reg OF s_level_out_bus_d4  : SIGNAL IS "true"; 
@@ -458,7 +460,7 @@ signal s_level_out_bus_d6       : std_logic_vector(C_VECTOR_WIDTH - 1 downto 0);
   ATTRIBUTE async_reg OF s_level_out_bus_d6  : SIGNAL IS "true"; 
 
   ATTRIBUTE shift_extract                      	: STRING;
-  ATTRIBUTE shift_extract OF s_level_out_bus_d1_cdc_to  : SIGNAL IS "no"; 
+  ATTRIBUTE shift_extract OF s_level_out_bus_d1_data_mgt_cdc_to  : SIGNAL IS "no"; 
   ATTRIBUTE shift_extract OF s_level_out_bus_d2  : SIGNAL IS "no"; 
   ATTRIBUTE shift_extract OF s_level_out_bus_d3  : SIGNAL IS "no"; 
   ATTRIBUTE shift_extract OF s_level_out_bus_d4  : SIGNAL IS "no"; 
@@ -487,15 +489,15 @@ begin
         begin
             if(scndry_aclk'EVENT and scndry_aclk ='1')then
                 if(scndry_resetn = '0' and C_RESET_STATE = 1)then
-                    s_level_out_bus_d1_cdc_to  <= (others => '0');
+                    s_level_out_bus_d1_data_mgt_cdc_to  <= (others => '0');
                     s_level_out_bus_d2  <= (others => '0');
                     s_level_out_bus_d3  <= (others => '0');
                     s_level_out_bus_d4  <= (others => '0');
                     s_level_out_bus_d5  <= (others => '0');
                     s_level_out_bus_d6  <= (others => '0');
                 else
-                    s_level_out_bus_d1_cdc_to  <= prmry_vect_in;
-                    s_level_out_bus_d2  <= s_level_out_bus_d1_cdc_to;
+                    s_level_out_bus_d1_data_mgt_cdc_to  <= prmry_vect_in;
+                    s_level_out_bus_d2  <= s_level_out_bus_d1_data_mgt_cdc_to;
                     s_level_out_bus_d3  <= s_level_out_bus_d2;
                     s_level_out_bus_d4  <= s_level_out_bus_d3;
                     s_level_out_bus_d5  <= s_level_out_bus_d4;
@@ -509,7 +511,7 @@ begin
 MTBF_L1 : if C_MTBF_STAGES = 1 generate
 begin
 
-    scndry_vect_out <= s_level_out_bus_d1_cdc_to;
+    scndry_vect_out <= s_level_out_bus_d1_data_mgt_cdc_to;
                    
 
 end generate MTBF_L1;
@@ -567,13 +569,13 @@ GENERATE_LEVEL_ACK_P_S_CDC : if C_CDC_TYPE = 2 generate
 
 signal p_level_in_d1_cdc_from        : std_logic := '0';
 signal p_level_in_int              : std_logic := '0';
-signal s_level_out_d1_cdc_to       : std_logic := '0';
+signal s_level_out_d1_data_mgt_cdc_to       : std_logic := '0';
 signal s_level_out_d2       : std_logic := '0';
 signal s_level_out_d3       : std_logic := '0';
 signal s_level_out_d4       : std_logic := '0';
 signal s_level_out_d5       : std_logic := '0';
 signal s_level_out_d6       : std_logic := '0';
-signal p_level_out_d1_cdc_to       : std_logic := '0';
+signal p_level_out_d1_data_mgt_cdc_to       : std_logic := '0';
 signal p_level_out_d2       : std_logic := '0';
 signal p_level_out_d3       : std_logic := '0';
 signal p_level_out_d4       : std_logic := '0';
@@ -587,14 +589,14 @@ signal prmry_pulse_ack      : std_logic := '0';
   -----------------------------------------------------------------------------
   -- Prevent x-propagation on clock-domain crossing register
   ATTRIBUTE async_reg                      : STRING;
-  ATTRIBUTE async_reg OF s_level_out_d1_cdc_to  : SIGNAL IS "true"; 
+  ATTRIBUTE async_reg OF s_level_out_d1_data_mgt_cdc_to  : SIGNAL IS "true"; 
   ATTRIBUTE async_reg OF s_level_out_d2  : SIGNAL IS "true"; 
   ATTRIBUTE async_reg OF s_level_out_d3  : SIGNAL IS "true"; 
   ATTRIBUTE async_reg OF s_level_out_d4  : SIGNAL IS "true"; 
   ATTRIBUTE async_reg OF s_level_out_d5  : SIGNAL IS "true"; 
   ATTRIBUTE async_reg OF s_level_out_d6  : SIGNAL IS "true"; 
 
-  ATTRIBUTE async_reg OF p_level_out_d1_cdc_to  : SIGNAL IS "true"; 
+  ATTRIBUTE async_reg OF p_level_out_d1_data_mgt_cdc_to  : SIGNAL IS "true"; 
   ATTRIBUTE async_reg OF p_level_out_d2  : SIGNAL IS "true"; 
   ATTRIBUTE async_reg OF p_level_out_d3  : SIGNAL IS "true"; 
   ATTRIBUTE async_reg OF p_level_out_d4  : SIGNAL IS "true"; 
@@ -638,15 +640,15 @@ end generate NO_INPUT_FLOP;
         begin
             if(scndry_aclk'EVENT and scndry_aclk ='1')then
                 if(scndry_resetn = '0' and C_RESET_STATE = 1)then
-                    s_level_out_d1_cdc_to  <= '0';
+                    s_level_out_d1_data_mgt_cdc_to  <= '0';
                     s_level_out_d2  <= '0';
                     s_level_out_d3  <= '0';
                     s_level_out_d4  <= '0';
                     s_level_out_d5  <= '0';
                     s_level_out_d6  <= '0';
                 else
-                    s_level_out_d1_cdc_to  <= p_level_in_int;
-                    s_level_out_d2  <= s_level_out_d1_cdc_to;
+                    s_level_out_d1_data_mgt_cdc_to  <= p_level_in_int;
+                    s_level_out_d2  <= s_level_out_d1_data_mgt_cdc_to;
                     s_level_out_d3  <= s_level_out_d2;
                     s_level_out_d4  <= s_level_out_d3;
                     s_level_out_d5  <= s_level_out_d4;
@@ -660,7 +662,7 @@ end generate NO_INPUT_FLOP;
         begin
             if(prmry_aclk'EVENT and prmry_aclk ='1')then
                 if(prmry_resetn = '0' and C_RESET_STATE = 1)then
-                    p_level_out_d1_cdc_to  <= '0';
+                    p_level_out_d1_data_mgt_cdc_to  <= '0';
                     p_level_out_d2  <= '0';
                     p_level_out_d3  <= '0';
                     p_level_out_d4  <= '0';
@@ -669,8 +671,8 @@ end generate NO_INPUT_FLOP;
                     p_level_out_d7  <= '0';
                     prmry_ack       <= '0';
                 else
-                    p_level_out_d1_cdc_to  <= scndry_out_int;
-                    p_level_out_d2  <= p_level_out_d1_cdc_to;
+                    p_level_out_d1_data_mgt_cdc_to  <= scndry_out_int;
+                    p_level_out_d2  <= p_level_out_d1_data_mgt_cdc_to;
                     p_level_out_d3  <= p_level_out_d2;
                     p_level_out_d4  <= p_level_out_d3;
                     p_level_out_d5  <= p_level_out_d4;

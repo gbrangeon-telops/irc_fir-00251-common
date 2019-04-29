@@ -12,7 +12,6 @@
 library IEEE;
 use IEEE.std_logic_1164.all;   
 use ieee.numeric_std.all;
-use ieee.numeric_std.all;
 use work.tel2000.all;
 
 entity axis32_fanout2 is

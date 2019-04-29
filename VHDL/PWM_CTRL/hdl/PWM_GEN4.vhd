@@ -78,7 +78,8 @@ component PWM_CTRL is
       --! PWM Signals
       DATA_OUT0 : out std_logic_vector((PWM_SIZE-1) downto 0);
       DATA_OUT1 : out std_logic_vector((PWM_SIZE-1) downto 0);
-      DATA_OUT2 : out std_logic_vector((PWM_SIZE-1) downto 0)
+      DATA_OUT2 : out std_logic_vector((PWM_SIZE-1) downto 0);
+	  DATA_OUT3 : out std_logic_vector((PWM_SIZE-1) downto 0)
    );
 end component PWM_CTRL;
 
@@ -109,8 +110,8 @@ begin
       --! PWM Signals
       DATA_OUT0 => data_out0_s,
       DATA_OUT1 => data_out1_s,
-      DATA_OUT2 => data_out2_s--,
-      --DATA_OUT3 => ,
+      DATA_OUT2 => data_out2_s,
+      DATA_OUT3 => data_out3_s
    );
    
    pwm0 : component gh_pwm
@@ -165,7 +166,5 @@ begin
 		PWMo => PWM(3)--,
 		--ND => 
    );
-
-
 
 end PWM_GEN_4;

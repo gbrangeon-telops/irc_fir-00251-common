@@ -51,6 +51,168 @@
 #define REG_LITTLEENDIAN      0x00  /**< GenICam register is little endian */
 #define REG_BIGENDIAN         0x80  /**< GenICam register is big endian */
 
+
+/**
+ * Sensor code (based on firmware minor version number definition)
+ */
+#define Isc0207ASensor           1
+#define HawkASensor              2
+#define HerculesDSensor          3
+#define PelicanDSensor           4
+#define MarsASensor              5
+#define JupiterASensor           6
+#define ScorpiolwDSensor         7
+#define MarsDSensor              8
+#define ScorpiomwDSensor         9
+// ScorpiolwD_230HzSensor is not defined since it's using ScorpiolwDSensor
+#define Isc0209ASensor           11
+#define ScorpiomwASensor         12
+#define Isc0207A_3kSensor        13
+#define Isc0804ASensor           14
+#define BlackbirdDSensor         15
+#define Isc0804A_500HzSensor     16
+#define SuperhawkASensor         17
+
+/**
+ * TDCFlags register bit field definition
+ */
+#define ITRIsImplementedMask                             0x00000001  /**< TDCFlags register bit mask for ITRIsImplemented field */
+#define IWRIsImplementedMask                             0x00000002  /**< TDCFlags register bit mask for IWRIsImplemented field */
+#define ClBaseIsImplementedMask                          0x00000004  /**< TDCFlags register bit mask for ClBaseIsImplemented field */
+#define ClFullIsImplementedMask                          0x00000008  /**< TDCFlags register bit mask for ClFullIsImplemented field */
+#define ImageCorrectionIsImplementedMask                 0x00000010  /**< TDCFlags register bit mask for ImageCorrectionIsImplemented field */
+#define HighGainSWDIsImplementedMask                     0x00000020  /**< TDCFlags register bit mask for HighGainSWDIsImplemented field */
+#define ICUIsImplementedMask                             0x00000040  /**< TDCFlags register bit mask for ICUIsImplemented field */
+#define NDFilterIsImplementedMask                        0x00000080  /**< TDCFlags register bit mask for NDFilterIsImplemented field */
+#define FWIsImplementedMask                              0x00000100  /**< TDCFlags register bit mask for FWIsImplemented field */
+#define FWAsynchronouslyRotatingModeIsImplementedMask    0x00000200  /**< TDCFlags register bit mask for FWAsynchronouslyRotatingModeIsImplemented field */
+#define FWSynchronouslyRotatingModeIsImplementedMask     0x00000400  /**< TDCFlags register bit mask for FWSynchronouslyRotatingModeIsImplemented field */
+#define AECPlusIsImplementedMask                         0x00000800  /**< TDCFlags register bit mask for AECPlusIsImplemented field */
+#define ExternalMemoryBufferIsImplementedMask            0x00001000  /**< TDCFlags register bit mask for ExternalMemoryBufferIsImplemented field */
+#define ExternalZeroMeanBetaCorrectionIsImplementedMask  0x00002000  /**< TDCFlags register bit mask for ExternalZeroMeanBetaCorrectionIsImplemented field */
+#define ADCReadoutIsImplementedMask                      0x00004000  /**< TDCFlags register bit mask for ADCReadoutIsImplemented field */
+#define MotorizedFOVLensIsImplementedMask                0x00008000  /**< TDCFlags register bit mask for MotorizedFOVLensIsImplemented field */
+#define MotorizedFocusLensIsImplementedMask              0x00010000  /**< TDCFlags register bit mask for MotorizedFocusLensIsImplemented field */
+#define AutofocusIsImplementedMask                       0x00020000  /**< TDCFlags register bit mask for AutofocusIsImplemented field */
+#define ClDualBaseIsImplementedMask                      0x00040000  /**< TDCFlags register bit mask for ClDualBaseIsImplementedMask field */
+#define SaveConfigurationIsImplementedMask               0x00080000  /**< TDCFlags register bit mask for SaveConfigurationIsImplementedMask field */
+#define SensorIsImplementedMask                          0xF8000000  /**< TDCFlags register bit mask for SensorIsImplemented field */
+#define SensorIsImplementedBitPos                        27          /**< TDCFlags register bit position for SensorIsImplemented field */
+
+#define SensorIsImplemented(sensorCode)   ((sensorCode << SensorIsImplementedBitPos) & SensorIsImplementedMask)
+
+#define Isc0207AIsImplemented          SensorIsImplemented(Isc0207ASensor)
+#define HawkAIsImplemented             SensorIsImplemented(HawkASensor)
+#define HerculesDIsImplemented         SensorIsImplemented(HerculesDSensor)
+#define PelicanDIsImplemented          SensorIsImplemented(PelicanDSensor)
+#define MarsAIsImplemented             SensorIsImplemented(MarsASensor)
+#define JupiterAIsImplemented          SensorIsImplemented(JupiterASensor)
+#define ScorpiolwDIsImplemented        SensorIsImplemented(ScorpiolwDSensor)
+#define MarsDIsImplemented             SensorIsImplemented(MarsDSensor)
+#define ScorpiomwDIsImplemented        SensorIsImplemented(ScorpiomwDSensor)
+#define Isc0209AIsImplemented          SensorIsImplemented(Isc0209ASensor)
+#define ScorpiomwAIsImplemented        SensorIsImplemented(ScorpiomwASensor)
+#define Isc0207A_3kIsImplemented       SensorIsImplemented(Isc0207A_3kSensor)
+#define Isc0804AIsImplemented          SensorIsImplemented(Isc0804ASensor)
+#define BlackbirdDIsImplemented        SensorIsImplemented(BlackbirdDSensor)
+#define Isc0804A_500HzIsImplemented    SensorIsImplemented(Isc0804A_500HzSensor)
+#define SuperhawkAIsImplemented        SensorIsImplemented(SuperhawkASensor)
+
+#define TDCFlagsSet(mask) GC_RegisterSetBitsUI32(&gcRegsDef[TDCFlagsIdx], mask)  /**< Set masked bits in TDCFlags register */
+#define TDCFlagsClr(mask) GC_RegisterClearBitsUI32(&gcRegsDef[TDCFlagsIdx], mask)  /**< Clear masked bits in TDCFlags register */
+#define TDCFlagsTst(mask) BitMaskTst(gcRegsData.TDCFlags, mask)  /**< Test if masked bits in TDCFlags register are all set */
+#define TDCFlagsTstAny(mask) BitMaskTstAny(gcRegsData.TDCFlags, mask)  /**< Test if at least one of the masked bits in TDCFlags register is set */
+
+/**
+ * TDCStatus register bit field definition
+ */
+#define WaitingForCoolerMask                    0x00000001  /**< TDCStatus register bit mask for WaitingForCooler field */
+#define WaitingForSensorMask                    0x00000002  /**< TDCStatus register bit mask for WaitingForSensor field */
+#define WaitingForInitMask                      0x00000004  /**< TDCStatus register bit mask for WaitingForInit field */
+// #define WaitingForCameraLinkMask                0x00000008  /**< TDCStatus register bit mask for WaitingForCameraLink field */
+#define WaitingForICUMask                       0x00000010  /**< TDCStatus register bit mask for WaitingForICU field */
+#define WaitingForNDFilterMask                  0x00000020  /**< TDCStatus register bit mask for WaitingForNDFilter field */
+#define WaitingForCalibrationInitMask           0x00000040  /**< TDCStatus register bit mask for WaitingForCalibrationInit field */
+#define WaitingForFilterWheelMask               0x00000080  /**< TDCStatus register bit mask for WaitingForFilterWheel field */
+#define WaitingForArmMask                       0x00000100  /**< TDCStatus register bit mask for WaitingForArm field */
+#define WaitingForValidParametersMask           0x00000200  /**< TDCStatus register bit mask for WaitingForValidParameters field */
+#define AcquisitionStartedMask                  0x00000400  /**< TDCStatus register bit mask for AcquisitionStarted field */
+// #define WaitingForSCDCmdAckMask                 0x00000800  /**< TDCStatus register bit mask for WaitingForSCDCmdAck field */
+#define WaitingForCalibrationDataMask           0x00001000  /**< TDCStatus register bit mask for WaitingForCalibrationData field */
+#define WaitingForImageCorrectionMask           0x00002000  /**< TDCStatus register bit mask for WaitingForImageCorrection field */
+#define WaitingForOutputFPGAMask                0x00004000  /**< TDCStatus register bit mask for WaitingForOutputFPGA field */
+#define WaitingForPowerMask                     0x00008000  /**< TDCStatus register bit mask for WaitingForPower field */
+#define WaitingForFlashSettingsInitMask         0x00010000  /**< TDCStatus register bit mask for WaitingForFlashSettingsInit field */
+
+#define TDC_STATUS_INIT                         (WaitingForCoolerMask | WaitingForInitMask | WaitingForCalibrationInitMask | WaitingForArmMask | \
+                                                WaitingForOutputFPGAMask | WaitingForFlashSettingsInitMask)
+
+#define TDCStatusSet(mask) GC_RegisterSetBitsUI32(&gcRegsDef[TDCStatusIdx], mask)  /**< Set masked bits in TDCStatus register */
+#define TDCStatusClr(mask) GC_RegisterClearBitsUI32(&gcRegsDef[TDCStatusIdx], mask)  /**< Clear masked bits in TDCStatus register */
+#define TDCStatusTst(mask) BitMaskTst(gcRegsData.TDCStatus, mask)  /**< Test if masked bits in TDCStatus register are all set */
+#define TDCStatusTstAny(mask) BitMaskTstAny(gcRegsData.TDCStatus, mask)  /**< Test if at least one of the masked bits in TDCStatus register is set */
+
+/**
+ * AvailabilityFlags register bit field definition
+ */
+#define DiscreteExposureTimeIsAvailableMask     0x00000001  /**< AvailabilityFlags register bit mask for DiscreteExposureTimeIsAvailable field */
+#define CalibrationIsAvailableMask              0x00000002  /**< AvailabilityFlags register bit mask for CalibrationIsAvailable field */
+#define Raw0IsAvailableMask                     0x00000004  /**< AvailabilityFlags register bit mask for Raw0IsAvailable field */
+#define RawIsAvailableMask                      0x00000008  /**< AvailabilityFlags register bit mask for RawIsAvailable field */
+#define NUCIsAvailableMask                      0x00000010  /**< AvailabilityFlags register bit mask for NUCIsAvailable field */
+#define RTIsAvailableMask                       0x00000020  /**< AvailabilityFlags register bit mask for RTIsAvailable field */
+#define IBRIsAvailableMask                      0x00000040  /**< AvailabilityFlags register bit mask for IBRIsAvailable field */
+#define IBIIsAvailableMask                      0x00000080  /**< AvailabilityFlags register bit mask for CalibrationIsAvailable field */
+#define AECPlusIsAvailableMask                  0x00000100  /**< AvailabilityFlags register bit mask for AECPlusIsAvailable field */
+#define NDFilter1IsAvailableMask                0x00000200  /**< AvailabilityFlags register bit mask for NDFilter1IsAvailable field */
+#define NDFilter2IsAvailableMask                0x00000400  /**< AvailabilityFlags register bit mask for NDFilter2IsAvailable field */
+#define NDFilter3IsAvailableMask                0x00000800  /**< AvailabilityFlags register bit mask for NDFilter3IsAvailable field */
+#define ManufacturerTestImageIsAvailableMask    0x00001000  /**< AvailabilityFlags register bit mask for ManufacturerTestImageIsAvailable field */
+#define ExternalFanControlIsAvailableMask       0x00002000  /**< AvailabilityFlags register bit mask for ExternalFanControlIsAvailable field */
+
+#define AvailabilityFlagsSet(mask) GC_RegisterSetBitsUI32(&gcRegsDef[AvailabilityFlagsIdx], mask)  /**< Set masked bits in AvailabilityFlags register */
+#define AvailabilityFlagsClr(mask) GC_RegisterClearBitsUI32(&gcRegsDef[AvailabilityFlagsIdx], mask)  /**< Clear masked bits in AvailabilityFlags register */
+#define AvailabilityFlagsTst(mask) BitMaskTst(gcRegsData.AvailabilityFlags, mask)  /**< Test if masked bits in AvailabilityFlags register are all set */
+#define AvailabilityFlagsTstAny(mask) BitMaskTstAny(gcRegsData.AvailabilityFlags, mask)  /**< Test if at least one of the masked bits in AvailabilityFlags register is set */
+
+/**
+ * IsActiveFlags register bit field definition
+ */
+#define AcquisitionStartTriggerIsActiveMask     0x00000001  /**< IsActiveFlags register bit mask for AcquisitionStartTriggerIsActive field */
+#define FlaggingTriggerIsActiveMask             0x00000002  /**< IsActiveFlags register bit mask for FlaggingTriggerIsActive field */
+#define GatingTriggerIsActiveMask               0x00000004  /**< IsActiveFlags register bit mask for GatingTriggerIsActive field */
+#define AutofocusIsActiveMask                   0x00000008  /**< IsActiveFlags register bit mask for AutofocusIsActive field */
+
+#define IsActiveFlagsSet(mask) GC_RegisterSetBitsUI32(&gcRegsDef[IsActiveFlagsIdx], mask)  /**< Set masked bits in IsActiveFlags register */
+#define IsActiveFlagsClr(mask) GC_RegisterClearBitsUI32(&gcRegsDef[IsActiveFlagsIdx], mask)  /**< Clear masked bits in IsActiveFlags register */
+#define IsActiveFlagsTst(mask) BitMaskTst(gcRegsData.IsActiveFlags, mask)  /**< Test if masked bits in IsActiveFlags register are all set */
+#define IsActiveFlagsTstAny(mask) BitMaskTstAny(gcRegsData.IsActiveFlags, mask)  /**< Test if at least one of the masked bits in IsActiveFlags register is set */
+
+/**
+ * MemoryBufferStatus register bit field definition
+ */
+#define MemoryBufferRecordingMask             0x00000001  /**< MemoryBufferStatus register bit mask for MemoryBufferRecording field */
+#define MemoryBufferTransmittingMask          0x00000002  /**< MemoryBufferStatus register bit mask for MemoryBufferTransmitting field */
+#define MemoryBufferDefragingMask             0x00000004  /**< MemoryBufferStatus register bit mask for MemoryBufferDefraging field */
+#define MemoryBufferUpdatingMask              0x00000008  /**< MemoryBufferStatus register bit mask for MemoryBufferUpdating field */
+#define MemoryBufferHoldingMask               0x00000010  /**< MemoryBufferStatus register bit mask for MemoryBufferHolding field */
+#define MemoryBufferDeactivatedMask           0x00000020  /**< MemoryBufferStatus register bit mask for MemoryBufferDeactivated field */
+
+#define MEMORY_BUFFER_STATUS_INIT             (MemoryBufferDeactivatedMask)
+#define MEMORY_BUFFER_DOWNLOADBITRATEMAX_REGMIN (0.1)
+
+#define MemoryBufferStatusSet(mask) GC_RegisterSetBitsUI32(&gcRegsDef[MemoryBufferStatusIdx], mask)  /**< Set masked bits in MemoryBufferStatus register */
+#define MemoryBufferStatusClr(mask) GC_RegisterClearBitsUI32(&gcRegsDef[MemoryBufferStatusIdx], mask)  /**< Clear masked bits in MemoryBufferStatus register */
+#define MemoryBufferStatusTst(mask) BitMaskTst(gcRegsData.MemoryBufferStatus, mask)  /**< Test if masked bits in MemoryBufferStatus register are all set */
+#define MemoryBufferStatusTstAny(mask) BitMaskTstAny(gcRegsData.MemoryBufferStatus, mask)  /**< Test if at least one of the masked bits in MemoryBufferStatus register is set */
+
+/**
+ * Camera Link output clock frequency values
+ */
+#define CLINK_OUT_CLK_SLOW    50E+6F   /**< Hz */
+#define CLINK_OUT_CLK_FAST    85E+6F   /**< Hz */
+
+
 /**
  * GenICam registers owner.
  */
@@ -126,37 +288,13 @@ struct gcRegister
 typedef struct gcRegister gcRegister_t;
 
 
-/*
- * MemoryBufferStatus register bit field definition
- */
-#define MemoryBufferIsRecordingMask             0x00000001  /**< MemoryBufferStatus register bit mask for MemoryBufferIsRecording field */
-#define MemoryBufferIsTransmittingMask          0x00000002  /**< MemoryBufferStatus register bit mask for MemoryBufferIsTransmitting field */
-#define MemoryBufferIsDefraggingMask            0x00000004  /**< MemoryBufferStatus register bit mask for MemoryBufferIsDefragging field */
-#define MemoryBufferIsUpdatingMask              0x00000008  /**< MemoryBufferStatus register bit mask for MemoryBufferIsUpdating field */
-
-#define MEMORY_BUFFER_STATUS_INIT               (0)
-
-#define MemoryBufferStatusSet(mask) GC_RegisterSetBitsUI32(&gcRegsDef[MemoryBufferStatusIdx], mask)  /**< Set masked bits in MemoryBufferStatus register */
-#define MemoryBufferStatusClr(mask) GC_RegisterClearBitsUI32(&gcRegsDef[MemoryBufferStatusIdx], mask)  /**< Clear masked bits in MemoryBufferStatus register */
-#define MemoryBufferStatusTst(mask) BitMaskTst(gcRegsData.MemoryBufferStatus, mask)  /**< Test if masked bits in MemoryBufferStatus register are all set */
-#define MemoryBufferStatusTstAny(mask) BitMaskTstAny(gcRegsData.MemoryBufferStatus, mask)  /**< Test if at least one of the masked bits in MemoryBufferStatus register is set */
-
-#define GC_MemoryBufferIsRecording     MemoryBufferStatusTst(MemoryBufferRecordingMask)
-#define GC_MemoryBufferIsTransmitting  MemoryBufferStatusTst(MemoryBufferTransmittingMask)
-#define GC_MemoryBufferIsDefragging    MemoryBufferStatusTst(MemoryBufferDefraggingMask)
-#define GC_MemoryBufferIsUpdating      MemoryBufferStatusTst(MemoryBufferUpdatingMask)
-#define GC_MemoryBufferIsBusy          MemoryBufferStatusTstAny(MemoryBufferRecordingMask | MemoryBufferTransmittingMask | MemoryBufferDefraggingMask | MemoryBufferUpdatingMask)
-
-#define CLINK_OUT_CLK_SLOW    50E+6F   /**< Hz */
-#define CLINK_OUT_CLK_FAST    85E+6F   /**< Hz */
-
 /* AUTO-CODE BEGIN */
 // Auto-generated GeniCam library.
-// Generated from XML camera definition file version 12.4.0
+// Generated from XML camera definition file version 12.5.0
 // using generateGenICamCommonCLib.m Matlab script.
 
 #define GC_XMLMAJORVERSION    12
-#define GC_XMLMINORVERSION    4
+#define GC_XMLMINORVERSION    5
 #define GC_XMLSUBMINORVERSION 0
 
 // Enumerations values and data types
@@ -1245,294 +1383,294 @@ typedef enum DeviceLedIndicatorStateEnum DeviceLedIndicatorState_t;
 // Registers address definition
 ////////////////////////////////////////////////////////////////////////////////
 
-// #define DeviceVendorNameAddr                          0x00000048  /**< DeviceVendorName register address */
-// #define DeviceModelNameAddr                           0x00000068  /**< DeviceModelName register address */
-// #define DeviceVersionAddr                             0x00000088  /**< DeviceVersion register address */
-// #define DeviceManufacturerInfoAddr                    0x000000A8  /**< DeviceManufacturerInfo register address */
-// #define DeviceIDAddr                                  0x000000D8  /**< DeviceID register address */
-// #define GevFirstURLAddr                               0x00000200  /**< GevFirstURL register address */
-// #define GevSecondURLAddr                              0x00000400  /**< GevSecondURL register address */
-// #define SensorWidthAddr                               0x0000A020  /**< SensorWidth register address */
-// #define SensorHeightAddr                              0x0000A024  /**< SensorHeight register address */
-// #define DeviceRegistersStreamingStartAddr             0x0000D1BC  /**< DeviceRegistersStreamingStart register address */
-// #define DeviceRegistersStreamingEndAddr               0x0000D1C0  /**< DeviceRegistersStreamingEnd register address */
-// #define WidthAddr                                     0x0000D300  /**< Width register address */
-// #define HeightAddr                                    0x0000D304  /**< Height register address */
-// #define PixelFormatAddr                               0x0000D308  /**< PixelFormat register address */
-// #define PayloadSizeAddr                               0x0000D30C  /**< PayloadSize register address */
-// #define AcquisitionModeAddr                           0x0000D310  /**< AcquisitionMode register address */
-// #define AcquisitionStartAddr                          0x0000D314  /**< AcquisitionStart register address */
-// #define AcquisitionStopAddr                           0x0000D318  /**< AcquisitionStop register address */
-// #define DeviceResetAddr                               0x0000D340  /**< DeviceReset register address */
-// #define AcquisitionArmAddr                            0x0000E800  /**< AcquisitionArm register address */
-// #define ExposureModeAddr                              0x0000E804  /**< ExposureMode register address */
-// #define ExposureTimeAddr                              0x0000E808  /**< ExposureTime register address */
-// #define ExposureTimeSetToMaxAddr                      0x0000E80C  /**< ExposureTimeSetToMax register address */
-// #define AcquisitionFrameRateAddr                      0x0000E810  /**< AcquisitionFrameRate register address */
-// #define AcquisitionFrameRateSetToMaxAddr              0x0000E814  /**< AcquisitionFrameRateSetToMax register address */
-// #define AcquisitionFrameRateModeAddr                  0x0000E818  /**< AcquisitionFrameRateMode register address */
-// #define AcquisitionFrameRateMaxFGAddr                 0x0000E81C  /**< AcquisitionFrameRateMaxFG register address */
-// #define AECImageFractionAddr                          0x0000E820  /**< AECImageFraction register address */
-// #define AECTargetWellFillingAddr                      0x0000E824  /**< AECTargetWellFilling register address */
-// #define AECResponseTimeAddr                           0x0000E828  /**< AECResponseTime register address */
-// #define ExposureAutoAddr                              0x0000E82C  /**< ExposureAuto register address */
-// #define EHDRIModeAddr                                 0x0000E830  /**< EHDRIMode register address */
-// #define EHDRIExpectedTemperatureMinAddr               0x0000E834  /**< EHDRIExpectedTemperatureMin register address */
-// #define EHDRIExpectedTemperatureMinMaxAddr            0x0000E838  /**< EHDRIExpectedTemperatureMinMax register address */
-// #define EHDRIExpectedTemperatureMaxAddr               0x0000E83C  /**< EHDRIExpectedTemperatureMax register address */
-// #define EHDRIExpectedTemperatureMaxMinAddr            0x0000E840  /**< EHDRIExpectedTemperatureMaxMin register address */
-// #define EHDRINumberOfExposuresAddr                    0x0000E844  /**< EHDRINumberOfExposures register address */
-// #define EHDRIResetToDefaultAddr                       0x0000E848  /**< EHDRIResetToDefault register address */
-// #define ExposureTime1Addr                             0x0000E84C  /**< ExposureTime1 register address */
-// #define ExposureTime2Addr                             0x0000E850  /**< ExposureTime2 register address */
-// #define ExposureTime3Addr                             0x0000E854  /**< ExposureTime3 register address */
-// #define ExposureTime4Addr                             0x0000E858  /**< ExposureTime4 register address */
-// #define EHDRIExposureOccurrence1Addr                  0x0000E85C  /**< EHDRIExposureOccurrence1 register address */
-// #define EHDRIExposureOccurrence2Addr                  0x0000E860  /**< EHDRIExposureOccurrence2 register address */
-// #define EHDRIExposureOccurrence3Addr                  0x0000E864  /**< EHDRIExposureOccurrence3 register address */
-// #define EHDRIExposureOccurrence4Addr                  0x0000E868  /**< EHDRIExposureOccurrence4 register address */
-// #define CalibrationModeAddr                           0x0000E86C  /**< CalibrationMode register address */
-// #define CalibrationCollectionCountAddr                0x0000E870  /**< CalibrationCollectionCount register address */
-// #define CalibrationCollectionSelectorAddr             0x0000E874  /**< CalibrationCollectionSelector register address */
-// #define CalibrationCollectionPOSIXTimeAddr            0x0000E878  /**< CalibrationCollectionPOSIXTime register address */
-// #define CalibrationCollectionLoadAddr                 0x0000E87C  /**< CalibrationCollectionLoad register address */
-// #define CalibrationCollectionActivePOSIXTimeAddr      0x0000E880  /**< CalibrationCollectionActivePOSIXTime register address */
-// #define ImageCorrectionModeAddr                       0x0000E884  /**< ImageCorrectionMode register address */
-// #define ImageCorrectionAddr                           0x0000E888  /**< ImageCorrection register address */
-// #define NDFilterPositionSetpointAddr                  0x0000E88C  /**< NDFilterPositionSetpoint register address */
-// #define NDFilterPositionAddr                          0x0000E890  /**< NDFilterPosition register address */
-// #define NDFilterNumberAddr                            0x0000E894  /**< NDFilterNumber register address */
-// #define NDFilterPositionRawSetpointAddr               0x0000E898  /**< NDFilterPositionRawSetpoint register address */
-// #define NDFilterPositionRawAddr                       0x0000E89C  /**< NDFilterPositionRaw register address */
-// #define FWModeAddr                                    0x0000E8A0  /**< FWMode register address */
-// #define FWPositionSetpointAddr                        0x0000E8A4  /**< FWPositionSetpoint register address */
-// #define FWPositionAddr                                0x0000E8A8  /**< FWPosition register address */
-// #define FWFilterNumberAddr                            0x0000E8AC  /**< FWFilterNumber register address */
-// #define FWPositionRawSetpointAddr                     0x0000E8B0  /**< FWPositionRawSetpoint register address */
-// #define FWPositionRawAddr                             0x0000E8B4  /**< FWPositionRaw register address */
-// #define FWSpeedSetpointAddr                           0x0000E8B8  /**< FWSpeedSetpoint register address */
-// #define FWSpeedAddr                                   0x0000E8BC  /**< FWSpeed register address */
-// #define FWSpeedMaxAddr                                0x0000E8C0  /**< FWSpeedMax register address */
-// #define ExternalLensSerialNumberAddr                  0x0000E8C4  /**< ExternalLensSerialNumber register address */
-// #define ManualFilterSerialNumberAddr                  0x0000E8C8  /**< ManualFilterSerialNumber register address */
-// #define ICUPositionSetpointAddr                       0x0000E8CC  /**< ICUPositionSetpoint register address */
-// #define ICUPositionAddr                               0x0000E8D0  /**< ICUPosition register address */
-// #define ReverseXAddr                                  0x0000E8D4  /**< ReverseX register address */
-// #define ReverseYAddr                                  0x0000E8D8  /**< ReverseY register address */
-// #define SensorWellDepthAddr                           0x0000E8DC  /**< SensorWellDepth register address */
-// #define IntegrationModeAddr                           0x0000E8E0  /**< IntegrationMode register address */
-// #define AcquisitionStartAtStartupAddr                 0x0000E8E4  /**< AcquisitionStartAtStartup register address */
-// #define CenterImageAddr                               0x0000E8E8  /**< CenterImage register address */
-// #define LockedCenterImageAddr                         0x0000E8EC  /**< LockedCenterImage register address */
-// #define TriggerSelectorAddr                           0x0000E8F0  /**< TriggerSelector register address */
-// #define TriggerModeAddr                               0x0000E8F4  /**< TriggerMode register address */
-// #define TriggerSoftwareAddr                           0x0000E8F8  /**< TriggerSoftware register address */
-// #define TriggerSourceAddr                             0x0000E8FC  /**< TriggerSource register address */
-// #define TriggerActivationAddr                         0x0000E900  /**< TriggerActivation register address */
-// #define TriggerDelayAddr                              0x0000E904  /**< TriggerDelay register address */
-// #define MemoryBufferModeAddr                          0x0000E908  /**< MemoryBufferMode register address */
-// #define MemoryBufferNumberOfImagesMaxAddr             0x0000E90C  /**< MemoryBufferNumberOfImagesMax register address */
-// #define MemoryBufferNumberOfSequencesMaxAddr          0x0000E910  /**< MemoryBufferNumberOfSequencesMax register address */
-// #define MemoryBufferSequenceCountAddr                 0x0000E914  /**< MemoryBufferSequenceCount register address */
-// #define MemoryBufferNumberOfSequencesAddr             0x0000E918  /**< MemoryBufferNumberOfSequences register address */
-// #define MemoryBufferSequenceSizeMaxAddr               0x0000E91C  /**< MemoryBufferSequenceSizeMax register address */
-// #define MemoryBufferSequenceSizeAddr                  0x0000E920  /**< MemoryBufferSequenceSize register address */
-// #define MemoryBufferSequencePreMOISizeAddr            0x0000E924  /**< MemoryBufferSequencePreMOISize register address */
-// #define MemoryBufferSequenceSelectorAddr              0x0000E928  /**< MemoryBufferSequenceSelector register address */
-// #define MemoryBufferSequenceFirstFrameIDAddr          0x0000E92C  /**< MemoryBufferSequenceFirstFrameID register address */
-// #define MemoryBufferSequenceMOIFrameIDAddr            0x0000E930  /**< MemoryBufferSequenceMOIFrameID register address */
-// #define MemoryBufferSequenceRecordedSizeAddr          0x0000E934  /**< MemoryBufferSequenceRecordedSize register address */
-// #define MemoryBufferSequenceDownloadImageFrameIDAddr  0x0000E938  /**< MemoryBufferSequenceDownloadImageFrameID register address */
-// #define MemoryBufferSequenceDownloadModeAddr          0x0000E93C  /**< MemoryBufferSequenceDownloadMode register address */
-// #define MemoryBufferSequenceClearAllAddr              0x0000E940  /**< MemoryBufferSequenceClearAll register address */
-// #define ExternalBlackBodyTemperatureAddr              0x0000E944  /**< ExternalBlackBodyTemperature register address */
-// #define DevicePowerStateSetpointAddr                  0x0000E948  /**< DevicePowerStateSetpoint register address */
-// #define DevicePowerStateAddr                          0x0000E94C  /**< DevicePowerState register address */
-// #define DeviceLedIndicatorStateAddr                   0x0000E950  /**< DeviceLedIndicatorState register address */
-// #define StealthModeAddr                               0x0000E954  /**< StealthMode register address */
-// #define PowerOnAtStartupAddr                          0x0000E958  /**< PowerOnAtStartup register address */
-// #define GPSLongitudeAddr                              0x0000E95C  /**< GPSLongitude register address */
-// #define GPSLatitudeAddr                               0x0000E960  /**< GPSLatitude register address */
-// #define GPSAltitudeAddr                               0x0000E964  /**< GPSAltitude register address */
-// #define GPSModeIndicatorAddr                          0x0000E968  /**< GPSModeIndicator register address */
-// #define GPSNumberOfSatellitesInUseAddr                0x0000E96C  /**< GPSNumberOfSatellitesInUse register address */
-// #define AutomaticExternalFanSpeedModeAddr             0x0000E970  /**< AutomaticExternalFanSpeedMode register address */
-// #define ExternalFanSpeedSetpointAddr                  0x0000E974  /**< ExternalFanSpeedSetpoint register address */
-// #define ExternalFanSpeedAddr                          0x0000E978  /**< ExternalFanSpeed register address */
-// #define TimeSourceAddr                                0x0000E97C  /**< TimeSource register address */
-// #define POSIXTimeAddr                                 0x0000E980  /**< POSIXTime register address */
-// #define SubSecondTimeAddr                             0x0000E984  /**< SubSecondTime register address */
-// #define VideoAGCAddr                                  0x0000E988  /**< VideoAGC register address */
-// #define VideoColorMapAddr                             0x0000E98C  /**< VideoColorMap register address */
-// #define VideoColorMapMinAddr                          0x0000E990  /**< VideoColorMapMin register address */
-// #define VideoColorMapMaxAddr                          0x0000E994  /**< VideoColorMapMax register address */
-// #define VideoDigitalZoomFactorAddr                    0x0000E998  /**< VideoDigitalZoomFactor register address */
-// #define VideoEHDRIExposureIndexAddr                   0x0000E99C  /**< VideoEHDRIExposureIndex register address */
-// #define VideoFWPositionAddr                           0x0000E9A0  /**< VideoFWPosition register address */
-// #define VideoBadPixelReplacementAddr                  0x0000E9A4  /**< VideoBadPixelReplacement register address */
-// #define VideoAGCFractionMinAddr                       0x0000E9A8  /**< VideoAGCFractionMin register address */
-// #define VideoAGCFractionMinMaxAddr                    0x0000E9AC  /**< VideoAGCFractionMinMax register address */
-// #define VideoAGCFractionMaxAddr                       0x0000E9B0  /**< VideoAGCFractionMax register address */
-// #define VideoAGCFractionMaxMinAddr                    0x0000E9B4  /**< VideoAGCFractionMaxMin register address */
-// #define VideoAGCResponseTimeAddr                      0x0000E9B8  /**< VideoAGCResponseTime register address */
-// #define VideoDigitalZoomModeAddr                      0x0000E9BC  /**< VideoDigitalZoomMode register address */
-// #define VideoDigitalZoomWidthAddr                     0x0000E9C0  /**< VideoDigitalZoomWidth register address */
-// #define VideoDigitalZoomHeightAddr                    0x0000E9C4  /**< VideoDigitalZoomHeight register address */
-// #define VideoDigitalZoomOffsetXAddr                   0x0000E9C8  /**< VideoDigitalZoomOffsetX register address */
-// #define VideoDigitalZoomOffsetYAddr                   0x0000E9CC  /**< VideoDigitalZoomOffsetY register address */
-// #define VideoReverseXAddr                             0x0000E9D0  /**< VideoReverseX register address */
-// #define VideoReverseYAddr                             0x0000E9D4  /**< VideoReverseY register address */
-// #define VideoFreezeAddr                               0x0000E9D8  /**< VideoFreeze register address */
-// #define DeviceSerialPortSelectorAddr                  0x0000E9E0  /**< DeviceSerialPortSelector register address */
-// #define DeviceSerialPortBaudRateAddr                  0x0000E9E4  /**< DeviceSerialPortBaudRate register address */
-// #define ProprietaryFeatureAddr                        0x0000E9E8  /**< ProprietaryFeature register address */
-// #define DeviceSerialNumberAddr                        0x0000E9EC  /**< DeviceSerialNumber register address */
-// #define SensorIDAddr                                  0x0000E9F0  /**< SensorID register address */
-// #define WidthMaxAddr                                  0x0000E9F4  /**< WidthMax register address */
-// #define HeightMaxAddr                                 0x0000E9F8  /**< HeightMax register address */
-// #define WidthMinAddr                                  0x0000E9FC  /**< WidthMin register address */
-// #define WidthIncAddr                                  0x0000EA00  /**< WidthInc register address */
-// #define HeightMinAddr                                 0x0000EA04  /**< HeightMin register address */
-// #define HeightIncAddr                                 0x0000EA08  /**< HeightInc register address */
-// #define OffsetXIncAddr                                0x0000EA0C  /**< OffsetXInc register address */
-// #define OffsetYIncAddr                                0x0000EA10  /**< OffsetYInc register address */
-// #define PixelDataResolutionAddr                       0x0000EA14  /**< PixelDataResolution register address */
-// #define EventSelectorAddr                             0x0000EA18  /**< EventSelector register address */
-// #define EventNotificationAddr                         0x0000EA1C  /**< EventNotification register address */
-// #define EventErrorAddr                                0x0000EA20  /**< EventError register address */
-// #define EventErrorTimestampAddr                       0x0000EA24  /**< EventErrorTimestamp register address */
-// #define EventErrorCodeAddr                            0x0000EA28  /**< EventErrorCode register address */
-// #define EventTelopsAddr                               0x0000EA2C  /**< EventTelops register address */
-// #define EventTelopsTimestampAddr                      0x0000EA30  /**< EventTelopsTimestamp register address */
-// #define EventTelopsCodeAddr                           0x0000EA34  /**< EventTelopsCode register address */
-// #define FValSizeAddr                                  0x0000EA38  /**< FValSize register address */
-// #define LValSizeAddr                                  0x0000EA3C  /**< LValSize register address */
-// #define ClConfigurationAddr                           0x0000EA40  /**< ClConfiguration register address */
-// #define DeviceTapGeometryAddr                         0x0000EA44  /**< DeviceTapGeometry register address */
-// #define DeviceXMLMajorVersionAddr                     0x0000EA48  /**< DeviceXMLMajorVersion register address */
-// #define DeviceXMLMinorVersionAddr                     0x0000EA4C  /**< DeviceXMLMinorVersion register address */
-// #define DeviceXMLSubMinorVersionAddr                  0x0000EA50  /**< DeviceXMLSubMinorVersion register address */
-// #define DeviceFirmwareMajorVersionAddr                0x0000EA54  /**< DeviceFirmwareMajorVersion register address */
-// #define DeviceFirmwareMinorVersionAddr                0x0000EA58  /**< DeviceFirmwareMinorVersion register address */
-// #define DeviceFirmwareSubMinorVersionAddr             0x0000EA5C  /**< DeviceFirmwareSubMinorVersion register address */
-// #define DeviceFirmwareBuildVersionAddr                0x0000EA60  /**< DeviceFirmwareBuildVersion register address */
-// #define DeviceFirmwareModuleSelectorAddr              0x0000EA64  /**< DeviceFirmwareModuleSelector register address */
-// #define DeviceFirmwareModuleRevisionAddr              0x0000EA68  /**< DeviceFirmwareModuleRevision register address */
-// #define DeviceTemperatureSelectorAddr                 0x0000EA6C  /**< DeviceTemperatureSelector register address */
-// #define DeviceTemperatureAddr                         0x0000EA70  /**< DeviceTemperature register address */
-// #define DeviceClockSelectorAddr                       0x0000EA74  /**< DeviceClockSelector register address */
-// #define DeviceClockFrequencyAddr                      0x0000EA78  /**< DeviceClockFrequency register address */
-// #define DeviceRegistersCheckAddr                      0x0000EA7C  /**< DeviceRegistersCheck register address */
-// #define DeviceRegistersValidAddr                      0x0000EA80  /**< DeviceRegistersValid register address */
-// #define DeviceNotReadyAddr                            0x0000EA84  /**< DeviceNotReady register address */
-// #define DeviceVoltageSelectorAddr                     0x0000EA88  /**< DeviceVoltageSelector register address */
-// #define DeviceVoltageAddr                             0x0000EA8C  /**< DeviceVoltage register address */
-// #define DeviceCurrentSelectorAddr                     0x0000EA90  /**< DeviceCurrentSelector register address */
-// #define DeviceCurrentAddr                             0x0000EA94  /**< DeviceCurrent register address */
-// #define DeviceRunningTimeAddr                         0x0000EA98  /**< DeviceRunningTime register address */
-// #define DeviceCoolerRunningTimeAddr                   0x0000EA9C  /**< DeviceCoolerRunningTime register address */
-// #define DevicePowerOnCyclesAddr                       0x0000EAA0  /**< DevicePowerOnCycles register address */
-// #define DeviceCoolerPowerOnCyclesAddr                 0x0000EAA4  /**< DeviceCoolerPowerOnCycles register address */
-// #define TDCFlagsAddr                                  0x0000EAA8  /**< TDCFlags register address */
-// #define TDCStatusAddr                                 0x0000EAAC  /**< TDCStatus register address */
-// #define AvailabilityFlagsAddr                         0x0000EAB0  /**< AvailabilityFlags register address */
-// #define AcquisitionFrameRateMaxAddr                   0x0000EAB4  /**< AcquisitionFrameRateMax register address */
-// #define ExposureTimeMinAddr                           0x0000EAB8  /**< ExposureTimeMin register address */
-// #define ExposureTimeMaxAddr                           0x0000EABC  /**< ExposureTimeMax register address */
-// #define DeviceBuiltInTestsResults1Addr                0x0000EAC0  /**< DeviceBuiltInTestsResults1 register address */
-// #define DeviceBuiltInTestsResults2Addr                0x0000EAC4  /**< DeviceBuiltInTestsResults2 register address */
-// #define DeviceBuiltInTestsResults3Addr                0x0000EAC8  /**< DeviceBuiltInTestsResults3 register address */
-// #define TestImageSelectorAddr                         0x0000EACC  /**< TestImageSelector register address */
-// #define TriggerFrameCountAddr                         0x0000EAD0  /**< TriggerFrameCount register address */
-// #define MemoryBufferSequenceDownloadBitRateMaxAddr    0x0000EAD4  /**< MemoryBufferSequenceDownloadBitRateMax register address */
-// #define AcquisitionFrameRateMinAddr                   0x0000EAD8  /**< AcquisitionFrameRateMin register address */
-// #define VideoDigitalZoomFactorMaxAddr                 0x0000EADC  /**< VideoDigitalZoomFactorMax register address */
-// #define PayloadSizeMinFGAddr                          0x0000EAE0  /**< PayloadSizeMinFG register address */
-// #define CalibrationCollectionActiveTypeAddr           0x0000EAE4  /**< CalibrationCollectionActiveType register address */
-// #define ExposureTime5Addr                             0x0000EAE8  /**< ExposureTime5 register address */
-// #define ExposureTime6Addr                             0x0000EAEC  /**< ExposureTime6 register address */
-// #define ExposureTime7Addr                             0x0000EAF0  /**< ExposureTime7 register address */
-// #define ExposureTime8Addr                             0x0000EAF4  /**< ExposureTime8 register address */
-// #define DeviceDetectorPolarizationVoltageAddr         0x0000EAF8  /**< DeviceDetectorPolarizationVoltage register address */
-// #define CalibrationCollectionBlockCountAddr           0x0000EAFC  /**< CalibrationCollectionBlockCount register address */
-// #define CalibrationCollectionBlockSelectorAddr        0x0000EB00  /**< CalibrationCollectionBlockSelector register address */
-// #define CalibrationCollectionBlockPOSIXTimeAddr       0x0000EB04  /**< CalibrationCollectionBlockPOSIXTime register address */
-// #define CalibrationCollectionBlockLoadAddr            0x0000EB08  /**< CalibrationCollectionBlockLoad register address */
-// #define CalibrationCollectionActiveBlockPOSIXTimeAddr 0x0000EB0C  /**< CalibrationCollectionActiveBlockPOSIXTime register address */
-// #define CalibrationCollectionTypeAddr                 0x0000EB10  /**< CalibrationCollectionType register address */
-// #define DeviceBuiltInTestsResults4Addr                0x0000EB14  /**< DeviceBuiltInTestsResults4 register address */
-// #define DeviceBuiltInTestsResults5Addr                0x0000EB18  /**< DeviceBuiltInTestsResults5 register address */
-// #define DeviceBuiltInTestsResults6Addr                0x0000EB1C  /**< DeviceBuiltInTestsResults6 register address */
-// #define DeviceBuiltInTestsResults7Addr                0x0000EB20  /**< DeviceBuiltInTestsResults7 register address */
-// #define DeviceBuiltInTestsResults8Addr                0x0000EB24  /**< DeviceBuiltInTestsResults8 register address */
-// #define OffsetXMinAddr                                0x0000EB28  /**< OffsetXMin register address */
-// #define MemoryBufferMOISourceAddr                     0x0000EB2C  /**< MemoryBufferMOISource register address */
-// #define MemoryBufferMOIActivationAddr                 0x0000EB30  /**< MemoryBufferMOIActivation register address */
-// #define MemoryBufferMOISoftwareAddr                   0x0000EB34  /**< MemoryBufferMOISoftware register address */
-// #define OffsetXMaxAddr                                0x0000EB38  /**< OffsetXMax register address */
-// #define OffsetYMinAddr                                0x0000EB3C  /**< OffsetYMin register address */
-// #define OffsetYMaxAddr                                0x0000EB40  /**< OffsetYMax register address */
-// #define OffsetXAddr                                   0x0000EB44  /**< OffsetX register address */
-// #define OffsetYAddr                                   0x0000EB48  /**< OffsetY register address */
-// #define AECPlusExtrapolationWeightAddr                0x0000EB4C  /**< AECPlusExtrapolationWeight register address */
-// #define IsActiveFlagsAddr                             0x0000EB50  /**< IsActiveFlags register address */
-// #define DeviceKeyValidationLowAddr                    0x0000EB54  /**< DeviceKeyValidationLow register address */
-// #define DeviceKeyValidationHighAddr                   0x0000EB58  /**< DeviceKeyValidationHigh register address */
-// #define NDFilterArmedPositionSetpointAddr             0x0000EB5C  /**< NDFilterArmedPositionSetpoint register address */
-// #define BadPixelReplacementAddr                       0x0000EB60  /**< BadPixelReplacement register address */
-// #define DeviceDetectorElectricalTapsRefAddr           0x0000EB64  /**< DeviceDetectorElectricalTapsRef register address */
-// #define DeviceDetectorElectricalRefOffsetAddr         0x0000EB68  /**< DeviceDetectorElectricalRefOffset register address */
-// #define ExposureTimeSetToMinAddr                      0x0000EB6C  /**< ExposureTimeSetToMin register address */
-// #define MemoryBufferAvailableFreeSpaceHighAddr        0x0000EB70  /**< MemoryBufferAvailableFreeSpaceHigh register address */
-// #define MemoryBufferAvailableFreeSpaceLowAddr         0x0000EB74  /**< MemoryBufferAvailableFreeSpaceLow register address */
-// #define MemoryBufferFragmentedFreeSpaceHighAddr       0x0000EB78  /**< MemoryBufferFragmentedFreeSpaceHigh register address */
-// #define MemoryBufferFragmentedFreeSpaceLowAddr        0x0000EB7C  /**< MemoryBufferFragmentedFreeSpaceLow register address */
-// #define MemoryBufferTotalSpaceHighAddr                0x0000EB80  /**< MemoryBufferTotalSpaceHigh register address */
-// #define MemoryBufferTotalSpaceLowAddr                 0x0000EB84  /**< MemoryBufferTotalSpaceLow register address */
-// #define MemoryBufferSequenceOffsetXAddr               0x0000EB88  /**< MemoryBufferSequenceOffsetX register address */
-// #define MemoryBufferSequenceOffsetYAddr               0x0000EB8C  /**< MemoryBufferSequenceOffsetY register address */
-// #define MemoryBufferSequenceWidthAddr                 0x0000EB90  /**< MemoryBufferSequenceWidth register address */
-// #define MemoryBufferSequenceHeightAddr                0x0000EB94  /**< MemoryBufferSequenceHeight register address */
-// #define MemoryBufferSequenceClearAddr                 0x0000EB98  /**< MemoryBufferSequenceClear register address */
-// #define MemoryBufferSequenceDefragAddr                0x0000EB9C  /**< MemoryBufferSequenceDefrag register address */
-// #define MemoryBufferSequenceSizeMinAddr               0x0000EBA0  /**< MemoryBufferSequenceSizeMin register address */
-// #define MemoryBufferSequenceSizeIncAddr               0x0000EBA4  /**< MemoryBufferSequenceSizeInc register address */
-// #define MemoryBufferSequenceDownloadFrameIDAddr       0x0000EBA8  /**< MemoryBufferSequenceDownloadFrameID register address */
-// #define MemoryBufferSequenceDownloadFrameCountAddr    0x0000EBAC  /**< MemoryBufferSequenceDownloadFrameCount register address */
-// #define MemoryBufferStatusAddr                        0x0000EBB0  /**< MemoryBufferStatus register address */
-// #define MemoryBufferLegacyModeAddr                    0x0000EBB4  /**< MemoryBufferLegacyMode register address */
-// #define DeviceSerialPortFunctionAddr                  0x0000EBB8  /**< DeviceSerialPortFunction register address */
-// #define ImageCorrectionFWAcquisitionFrameRateMinAddr  0x0000EBBC  /**< ImageCorrectionFWAcquisitionFrameRateMin register address */
-// #define ImageCorrectionFWAcquisitionFrameRateMaxAddr  0x0000EBC0  /**< ImageCorrectionFWAcquisitionFrameRateMax register address */
-// #define ImageCorrectionBlockSelectorAddr              0x0000EBC4  /**< ImageCorrectionBlockSelector register address */
-// #define ImageCorrectionFWModeAddr                     0x0000EBC8  /**< ImageCorrectionFWMode register address */
-// #define ImageCorrectionFWAcquisitionFrameRateAddr     0x0000EBCC  /**< ImageCorrectionFWAcquisitionFrameRate register address */
-// #define FOVPositionRawMinAddr                         0x0000EBD0  /**< FOVPositionRawMin register address */
-// #define FOVPositionRawMaxAddr                         0x0000EBD4  /**< FOVPositionRawMax register address */
-// #define FocusPositionRawMinAddr                       0x0000EBD8  /**< FocusPositionRawMin register address */
-// #define FocusPositionRawMaxAddr                       0x0000EBDC  /**< FocusPositionRawMax register address */
-// #define FOVPositionSetpointAddr                       0x0000EBE0  /**< FOVPositionSetpoint register address */
-// #define FOVPositionAddr                               0x0000EBE4  /**< FOVPosition register address */
-// #define FOVPositionNumberAddr                         0x0000EBE8  /**< FOVPositionNumber register address */
-// #define ZoomInFastAddr                                0x0000EBEC  /**< ZoomInFast register address */
-// #define ZoomInSlowAddr                                0x0000EBF0  /**< ZoomInSlow register address */
-// #define ZoomOutSlowAddr                               0x0000EBF4  /**< ZoomOutSlow register address */
-// #define ZoomOutFastAddr                               0x0000EBF8  /**< ZoomOutFast register address */
-// #define HFOVAddr                                      0x0000EBFC  /**< HFOV register address */
-// #define VFOVAddr                                      0x0000EC00  /**< VFOV register address */
-// #define FOVPositionRawSetpointAddr                    0x0000EC04  /**< FOVPositionRawSetpoint register address */
-// #define FOVPositionRawAddr                            0x0000EC08  /**< FOVPositionRaw register address */
-// #define AutofocusModeAddr                             0x0000EC0C  /**< AutofocusMode register address */
-// #define AutofocusROIAddr                              0x0000EC10  /**< AutofocusROI register address */
-// #define AutofocusAddr                                 0x0000EC14  /**< Autofocus register address */
-// #define FocusNearFastAddr                             0x0000EC18  /**< FocusNearFast register address */
-// #define FocusNearSlowAddr                             0x0000EC1C  /**< FocusNearSlow register address */
-// #define FocusFarSlowAddr                              0x0000EC20  /**< FocusFarSlow register address */
-// #define FocusFarFastAddr                              0x0000EC24  /**< FocusFarFast register address */
-// #define FocusPositionRawSetpointAddr                  0x0000EC28  /**< FocusPositionRawSetpoint register address */
-// #define FocusPositionRawAddr                          0x0000EC2C  /**< FocusPositionRaw register address */
-// #define LoadSavedConfigurationAtStartupAddr           0x0000EC30  /**< LoadSavedConfigurationAtStartup register address */
-// #define SaveConfigurationAddr                         0x0000EC34  /**< SaveConfiguration register address */
+#define DeviceVendorNameAddr                          0x00000048  /**< DeviceVendorName register address */
+#define DeviceModelNameAddr                           0x00000068  /**< DeviceModelName register address */
+#define DeviceVersionAddr                             0x00000088  /**< DeviceVersion register address */
+#define DeviceManufacturerInfoAddr                    0x000000A8  /**< DeviceManufacturerInfo register address */
+#define DeviceIDAddr                                  0x000000D8  /**< DeviceID register address */
+#define GevFirstURLAddr                               0x00000200  /**< GevFirstURL register address */
+#define GevSecondURLAddr                              0x00000400  /**< GevSecondURL register address */
+#define SensorWidthAddr                               0x0000A020  /**< SensorWidth register address */
+#define SensorHeightAddr                              0x0000A024  /**< SensorHeight register address */
+#define DeviceRegistersStreamingStartAddr             0x0000D1BC  /**< DeviceRegistersStreamingStart register address */
+#define DeviceRegistersStreamingEndAddr               0x0000D1C0  /**< DeviceRegistersStreamingEnd register address */
+#define WidthAddr                                     0x0000D300  /**< Width register address */
+#define HeightAddr                                    0x0000D304  /**< Height register address */
+#define PixelFormatAddr                               0x0000D308  /**< PixelFormat register address */
+#define PayloadSizeAddr                               0x0000D30C  /**< PayloadSize register address */
+#define AcquisitionModeAddr                           0x0000D310  /**< AcquisitionMode register address */
+#define AcquisitionStartAddr                          0x0000D314  /**< AcquisitionStart register address */
+#define AcquisitionStopAddr                           0x0000D318  /**< AcquisitionStop register address */
+#define DeviceResetAddr                               0x0000D340  /**< DeviceReset register address */
+#define AcquisitionArmAddr                            0x0000E800  /**< AcquisitionArm register address */
+#define ExposureModeAddr                              0x0000E804  /**< ExposureMode register address */
+#define ExposureTimeAddr                              0x0000E808  /**< ExposureTime register address */
+#define ExposureTimeSetToMaxAddr                      0x0000E80C  /**< ExposureTimeSetToMax register address */
+#define AcquisitionFrameRateAddr                      0x0000E810  /**< AcquisitionFrameRate register address */
+#define AcquisitionFrameRateSetToMaxAddr              0x0000E814  /**< AcquisitionFrameRateSetToMax register address */
+#define AcquisitionFrameRateModeAddr                  0x0000E818  /**< AcquisitionFrameRateMode register address */
+#define AcquisitionFrameRateMaxFGAddr                 0x0000E81C  /**< AcquisitionFrameRateMaxFG register address */
+#define AECImageFractionAddr                          0x0000E820  /**< AECImageFraction register address */
+#define AECTargetWellFillingAddr                      0x0000E824  /**< AECTargetWellFilling register address */
+#define AECResponseTimeAddr                           0x0000E828  /**< AECResponseTime register address */
+#define ExposureAutoAddr                              0x0000E82C  /**< ExposureAuto register address */
+#define EHDRIModeAddr                                 0x0000E830  /**< EHDRIMode register address */
+#define EHDRIExpectedTemperatureMinAddr               0x0000E834  /**< EHDRIExpectedTemperatureMin register address */
+#define EHDRIExpectedTemperatureMinMaxAddr            0x0000E838  /**< EHDRIExpectedTemperatureMinMax register address */
+#define EHDRIExpectedTemperatureMaxAddr               0x0000E83C  /**< EHDRIExpectedTemperatureMax register address */
+#define EHDRIExpectedTemperatureMaxMinAddr            0x0000E840  /**< EHDRIExpectedTemperatureMaxMin register address */
+#define EHDRINumberOfExposuresAddr                    0x0000E844  /**< EHDRINumberOfExposures register address */
+#define EHDRIResetToDefaultAddr                       0x0000E848  /**< EHDRIResetToDefault register address */
+#define ExposureTime1Addr                             0x0000E84C  /**< ExposureTime1 register address */
+#define ExposureTime2Addr                             0x0000E850  /**< ExposureTime2 register address */
+#define ExposureTime3Addr                             0x0000E854  /**< ExposureTime3 register address */
+#define ExposureTime4Addr                             0x0000E858  /**< ExposureTime4 register address */
+#define EHDRIExposureOccurrence1Addr                  0x0000E85C  /**< EHDRIExposureOccurrence1 register address */
+#define EHDRIExposureOccurrence2Addr                  0x0000E860  /**< EHDRIExposureOccurrence2 register address */
+#define EHDRIExposureOccurrence3Addr                  0x0000E864  /**< EHDRIExposureOccurrence3 register address */
+#define EHDRIExposureOccurrence4Addr                  0x0000E868  /**< EHDRIExposureOccurrence4 register address */
+#define CalibrationModeAddr                           0x0000E86C  /**< CalibrationMode register address */
+#define CalibrationCollectionCountAddr                0x0000E870  /**< CalibrationCollectionCount register address */
+#define CalibrationCollectionSelectorAddr             0x0000E874  /**< CalibrationCollectionSelector register address */
+#define CalibrationCollectionPOSIXTimeAddr            0x0000E878  /**< CalibrationCollectionPOSIXTime register address */
+#define CalibrationCollectionLoadAddr                 0x0000E87C  /**< CalibrationCollectionLoad register address */
+#define CalibrationCollectionActivePOSIXTimeAddr      0x0000E880  /**< CalibrationCollectionActivePOSIXTime register address */
+#define ImageCorrectionModeAddr                       0x0000E884  /**< ImageCorrectionMode register address */
+#define ImageCorrectionAddr                           0x0000E888  /**< ImageCorrection register address */
+#define NDFilterPositionSetpointAddr                  0x0000E88C  /**< NDFilterPositionSetpoint register address */
+#define NDFilterPositionAddr                          0x0000E890  /**< NDFilterPosition register address */
+#define NDFilterNumberAddr                            0x0000E894  /**< NDFilterNumber register address */
+#define NDFilterPositionRawSetpointAddr               0x0000E898  /**< NDFilterPositionRawSetpoint register address */
+#define NDFilterPositionRawAddr                       0x0000E89C  /**< NDFilterPositionRaw register address */
+#define FWModeAddr                                    0x0000E8A0  /**< FWMode register address */
+#define FWPositionSetpointAddr                        0x0000E8A4  /**< FWPositionSetpoint register address */
+#define FWPositionAddr                                0x0000E8A8  /**< FWPosition register address */
+#define FWFilterNumberAddr                            0x0000E8AC  /**< FWFilterNumber register address */
+#define FWPositionRawSetpointAddr                     0x0000E8B0  /**< FWPositionRawSetpoint register address */
+#define FWPositionRawAddr                             0x0000E8B4  /**< FWPositionRaw register address */
+#define FWSpeedSetpointAddr                           0x0000E8B8  /**< FWSpeedSetpoint register address */
+#define FWSpeedAddr                                   0x0000E8BC  /**< FWSpeed register address */
+#define FWSpeedMaxAddr                                0x0000E8C0  /**< FWSpeedMax register address */
+#define ExternalLensSerialNumberAddr                  0x0000E8C4  /**< ExternalLensSerialNumber register address */
+#define ManualFilterSerialNumberAddr                  0x0000E8C8  /**< ManualFilterSerialNumber register address */
+#define ICUPositionSetpointAddr                       0x0000E8CC  /**< ICUPositionSetpoint register address */
+#define ICUPositionAddr                               0x0000E8D0  /**< ICUPosition register address */
+#define ReverseXAddr                                  0x0000E8D4  /**< ReverseX register address */
+#define ReverseYAddr                                  0x0000E8D8  /**< ReverseY register address */
+#define SensorWellDepthAddr                           0x0000E8DC  /**< SensorWellDepth register address */
+#define IntegrationModeAddr                           0x0000E8E0  /**< IntegrationMode register address */
+#define AcquisitionStartAtStartupAddr                 0x0000E8E4  /**< AcquisitionStartAtStartup register address */
+#define CenterImageAddr                               0x0000E8E8  /**< CenterImage register address */
+#define LockedCenterImageAddr                         0x0000E8EC  /**< LockedCenterImage register address */
+#define TriggerSelectorAddr                           0x0000E8F0  /**< TriggerSelector register address */
+#define TriggerModeAddr                               0x0000E8F4  /**< TriggerMode register address */
+#define TriggerSoftwareAddr                           0x0000E8F8  /**< TriggerSoftware register address */
+#define TriggerSourceAddr                             0x0000E8FC  /**< TriggerSource register address */
+#define TriggerActivationAddr                         0x0000E900  /**< TriggerActivation register address */
+#define TriggerDelayAddr                              0x0000E904  /**< TriggerDelay register address */
+#define MemoryBufferModeAddr                          0x0000E908  /**< MemoryBufferMode register address */
+#define MemoryBufferNumberOfImagesMaxAddr             0x0000E90C  /**< MemoryBufferNumberOfImagesMax register address */
+#define MemoryBufferNumberOfSequencesMaxAddr          0x0000E910  /**< MemoryBufferNumberOfSequencesMax register address */
+#define MemoryBufferSequenceCountAddr                 0x0000E914  /**< MemoryBufferSequenceCount register address */
+#define MemoryBufferNumberOfSequencesAddr             0x0000E918  /**< MemoryBufferNumberOfSequences register address */
+#define MemoryBufferSequenceSizeMaxAddr               0x0000E91C  /**< MemoryBufferSequenceSizeMax register address */
+#define MemoryBufferSequenceSizeAddr                  0x0000E920  /**< MemoryBufferSequenceSize register address */
+#define MemoryBufferSequencePreMOISizeAddr            0x0000E924  /**< MemoryBufferSequencePreMOISize register address */
+#define MemoryBufferSequenceSelectorAddr              0x0000E928  /**< MemoryBufferSequenceSelector register address */
+#define MemoryBufferSequenceFirstFrameIDAddr          0x0000E92C  /**< MemoryBufferSequenceFirstFrameID register address */
+#define MemoryBufferSequenceMOIFrameIDAddr            0x0000E930  /**< MemoryBufferSequenceMOIFrameID register address */
+#define MemoryBufferSequenceRecordedSizeAddr          0x0000E934  /**< MemoryBufferSequenceRecordedSize register address */
+#define MemoryBufferSequenceDownloadImageFrameIDAddr  0x0000E938  /**< MemoryBufferSequenceDownloadImageFrameID register address */
+#define MemoryBufferSequenceDownloadModeAddr          0x0000E93C  /**< MemoryBufferSequenceDownloadMode register address */
+#define MemoryBufferSequenceClearAllAddr              0x0000E940  /**< MemoryBufferSequenceClearAll register address */
+#define ExternalBlackBodyTemperatureAddr              0x0000E944  /**< ExternalBlackBodyTemperature register address */
+#define DevicePowerStateSetpointAddr                  0x0000E948  /**< DevicePowerStateSetpoint register address */
+#define DevicePowerStateAddr                          0x0000E94C  /**< DevicePowerState register address */
+#define DeviceLedIndicatorStateAddr                   0x0000E950  /**< DeviceLedIndicatorState register address */
+#define StealthModeAddr                               0x0000E954  /**< StealthMode register address */
+#define PowerOnAtStartupAddr                          0x0000E958  /**< PowerOnAtStartup register address */
+#define GPSLongitudeAddr                              0x0000E95C  /**< GPSLongitude register address */
+#define GPSLatitudeAddr                               0x0000E960  /**< GPSLatitude register address */
+#define GPSAltitudeAddr                               0x0000E964  /**< GPSAltitude register address */
+#define GPSModeIndicatorAddr                          0x0000E968  /**< GPSModeIndicator register address */
+#define GPSNumberOfSatellitesInUseAddr                0x0000E96C  /**< GPSNumberOfSatellitesInUse register address */
+#define AutomaticExternalFanSpeedModeAddr             0x0000E970  /**< AutomaticExternalFanSpeedMode register address */
+#define ExternalFanSpeedSetpointAddr                  0x0000E974  /**< ExternalFanSpeedSetpoint register address */
+#define ExternalFanSpeedAddr                          0x0000E978  /**< ExternalFanSpeed register address */
+#define TimeSourceAddr                                0x0000E97C  /**< TimeSource register address */
+#define POSIXTimeAddr                                 0x0000E980  /**< POSIXTime register address */
+#define SubSecondTimeAddr                             0x0000E984  /**< SubSecondTime register address */
+#define VideoAGCAddr                                  0x0000E988  /**< VideoAGC register address */
+#define VideoColorMapAddr                             0x0000E98C  /**< VideoColorMap register address */
+#define VideoColorMapMinAddr                          0x0000E990  /**< VideoColorMapMin register address */
+#define VideoColorMapMaxAddr                          0x0000E994  /**< VideoColorMapMax register address */
+#define VideoDigitalZoomFactorAddr                    0x0000E998  /**< VideoDigitalZoomFactor register address */
+#define VideoEHDRIExposureIndexAddr                   0x0000E99C  /**< VideoEHDRIExposureIndex register address */
+#define VideoFWPositionAddr                           0x0000E9A0  /**< VideoFWPosition register address */
+#define VideoBadPixelReplacementAddr                  0x0000E9A4  /**< VideoBadPixelReplacement register address */
+#define VideoAGCFractionMinAddr                       0x0000E9A8  /**< VideoAGCFractionMin register address */
+#define VideoAGCFractionMinMaxAddr                    0x0000E9AC  /**< VideoAGCFractionMinMax register address */
+#define VideoAGCFractionMaxAddr                       0x0000E9B0  /**< VideoAGCFractionMax register address */
+#define VideoAGCFractionMaxMinAddr                    0x0000E9B4  /**< VideoAGCFractionMaxMin register address */
+#define VideoAGCResponseTimeAddr                      0x0000E9B8  /**< VideoAGCResponseTime register address */
+#define VideoDigitalZoomModeAddr                      0x0000E9BC  /**< VideoDigitalZoomMode register address */
+#define VideoDigitalZoomWidthAddr                     0x0000E9C0  /**< VideoDigitalZoomWidth register address */
+#define VideoDigitalZoomHeightAddr                    0x0000E9C4  /**< VideoDigitalZoomHeight register address */
+#define VideoDigitalZoomOffsetXAddr                   0x0000E9C8  /**< VideoDigitalZoomOffsetX register address */
+#define VideoDigitalZoomOffsetYAddr                   0x0000E9CC  /**< VideoDigitalZoomOffsetY register address */
+#define VideoReverseXAddr                             0x0000E9D0  /**< VideoReverseX register address */
+#define VideoReverseYAddr                             0x0000E9D4  /**< VideoReverseY register address */
+#define VideoFreezeAddr                               0x0000E9D8  /**< VideoFreeze register address */
+#define DeviceSerialPortSelectorAddr                  0x0000E9E0  /**< DeviceSerialPortSelector register address */
+#define DeviceSerialPortBaudRateAddr                  0x0000E9E4  /**< DeviceSerialPortBaudRate register address */
+#define ProprietaryFeatureAddr                        0x0000E9E8  /**< ProprietaryFeature register address */
+#define DeviceSerialNumberAddr                        0x0000E9EC  /**< DeviceSerialNumber register address */
+#define SensorIDAddr                                  0x0000E9F0  /**< SensorID register address */
+#define WidthMaxAddr                                  0x0000E9F4  /**< WidthMax register address */
+#define HeightMaxAddr                                 0x0000E9F8  /**< HeightMax register address */
+#define WidthMinAddr                                  0x0000E9FC  /**< WidthMin register address */
+#define WidthIncAddr                                  0x0000EA00  /**< WidthInc register address */
+#define HeightMinAddr                                 0x0000EA04  /**< HeightMin register address */
+#define HeightIncAddr                                 0x0000EA08  /**< HeightInc register address */
+#define OffsetXIncAddr                                0x0000EA0C  /**< OffsetXInc register address */
+#define OffsetYIncAddr                                0x0000EA10  /**< OffsetYInc register address */
+#define PixelDataResolutionAddr                       0x0000EA14  /**< PixelDataResolution register address */
+#define EventSelectorAddr                             0x0000EA18  /**< EventSelector register address */
+#define EventNotificationAddr                         0x0000EA1C  /**< EventNotification register address */
+#define EventErrorAddr                                0x0000EA20  /**< EventError register address */
+#define EventErrorTimestampAddr                       0x0000EA24  /**< EventErrorTimestamp register address */
+#define EventErrorCodeAddr                            0x0000EA28  /**< EventErrorCode register address */
+#define EventTelopsAddr                               0x0000EA2C  /**< EventTelops register address */
+#define EventTelopsTimestampAddr                      0x0000EA30  /**< EventTelopsTimestamp register address */
+#define EventTelopsCodeAddr                           0x0000EA34  /**< EventTelopsCode register address */
+#define FValSizeAddr                                  0x0000EA38  /**< FValSize register address */
+#define LValSizeAddr                                  0x0000EA3C  /**< LValSize register address */
+#define ClConfigurationAddr                           0x0000EA40  /**< ClConfiguration register address */
+#define DeviceTapGeometryAddr                         0x0000EA44  /**< DeviceTapGeometry register address */
+#define DeviceXMLMajorVersionAddr                     0x0000EA48  /**< DeviceXMLMajorVersion register address */
+#define DeviceXMLMinorVersionAddr                     0x0000EA4C  /**< DeviceXMLMinorVersion register address */
+#define DeviceXMLSubMinorVersionAddr                  0x0000EA50  /**< DeviceXMLSubMinorVersion register address */
+#define DeviceFirmwareMajorVersionAddr                0x0000EA54  /**< DeviceFirmwareMajorVersion register address */
+#define DeviceFirmwareMinorVersionAddr                0x0000EA58  /**< DeviceFirmwareMinorVersion register address */
+#define DeviceFirmwareSubMinorVersionAddr             0x0000EA5C  /**< DeviceFirmwareSubMinorVersion register address */
+#define DeviceFirmwareBuildVersionAddr                0x0000EA60  /**< DeviceFirmwareBuildVersion register address */
+#define DeviceFirmwareModuleSelectorAddr              0x0000EA64  /**< DeviceFirmwareModuleSelector register address */
+#define DeviceFirmwareModuleRevisionAddr              0x0000EA68  /**< DeviceFirmwareModuleRevision register address */
+#define DeviceTemperatureSelectorAddr                 0x0000EA6C  /**< DeviceTemperatureSelector register address */
+#define DeviceTemperatureAddr                         0x0000EA70  /**< DeviceTemperature register address */
+#define DeviceClockSelectorAddr                       0x0000EA74  /**< DeviceClockSelector register address */
+#define DeviceClockFrequencyAddr                      0x0000EA78  /**< DeviceClockFrequency register address */
+#define DeviceRegistersCheckAddr                      0x0000EA7C  /**< DeviceRegistersCheck register address */
+#define DeviceRegistersValidAddr                      0x0000EA80  /**< DeviceRegistersValid register address */
+#define DeviceNotReadyAddr                            0x0000EA84  /**< DeviceNotReady register address */
+#define DeviceVoltageSelectorAddr                     0x0000EA88  /**< DeviceVoltageSelector register address */
+#define DeviceVoltageAddr                             0x0000EA8C  /**< DeviceVoltage register address */
+#define DeviceCurrentSelectorAddr                     0x0000EA90  /**< DeviceCurrentSelector register address */
+#define DeviceCurrentAddr                             0x0000EA94  /**< DeviceCurrent register address */
+#define DeviceRunningTimeAddr                         0x0000EA98  /**< DeviceRunningTime register address */
+#define DeviceCoolerRunningTimeAddr                   0x0000EA9C  /**< DeviceCoolerRunningTime register address */
+#define DevicePowerOnCyclesAddr                       0x0000EAA0  /**< DevicePowerOnCycles register address */
+#define DeviceCoolerPowerOnCyclesAddr                 0x0000EAA4  /**< DeviceCoolerPowerOnCycles register address */
+#define TDCFlagsAddr                                  0x0000EAA8  /**< TDCFlags register address */
+#define TDCStatusAddr                                 0x0000EAAC  /**< TDCStatus register address */
+#define AvailabilityFlagsAddr                         0x0000EAB0  /**< AvailabilityFlags register address */
+#define AcquisitionFrameRateMaxAddr                   0x0000EAB4  /**< AcquisitionFrameRateMax register address */
+#define ExposureTimeMinAddr                           0x0000EAB8  /**< ExposureTimeMin register address */
+#define ExposureTimeMaxAddr                           0x0000EABC  /**< ExposureTimeMax register address */
+#define DeviceBuiltInTestsResults1Addr                0x0000EAC0  /**< DeviceBuiltInTestsResults1 register address */
+#define DeviceBuiltInTestsResults2Addr                0x0000EAC4  /**< DeviceBuiltInTestsResults2 register address */
+#define DeviceBuiltInTestsResults3Addr                0x0000EAC8  /**< DeviceBuiltInTestsResults3 register address */
+#define TestImageSelectorAddr                         0x0000EACC  /**< TestImageSelector register address */
+#define TriggerFrameCountAddr                         0x0000EAD0  /**< TriggerFrameCount register address */
+#define MemoryBufferSequenceDownloadBitRateMaxAddr    0x0000EAD4  /**< MemoryBufferSequenceDownloadBitRateMax register address */
+#define AcquisitionFrameRateMinAddr                   0x0000EAD8  /**< AcquisitionFrameRateMin register address */
+#define VideoDigitalZoomFactorMaxAddr                 0x0000EADC  /**< VideoDigitalZoomFactorMax register address */
+#define PayloadSizeMinFGAddr                          0x0000EAE0  /**< PayloadSizeMinFG register address */
+#define CalibrationCollectionActiveTypeAddr           0x0000EAE4  /**< CalibrationCollectionActiveType register address */
+#define ExposureTime5Addr                             0x0000EAE8  /**< ExposureTime5 register address */
+#define ExposureTime6Addr                             0x0000EAEC  /**< ExposureTime6 register address */
+#define ExposureTime7Addr                             0x0000EAF0  /**< ExposureTime7 register address */
+#define ExposureTime8Addr                             0x0000EAF4  /**< ExposureTime8 register address */
+#define DeviceDetectorPolarizationVoltageAddr         0x0000EAF8  /**< DeviceDetectorPolarizationVoltage register address */
+#define CalibrationCollectionBlockCountAddr           0x0000EAFC  /**< CalibrationCollectionBlockCount register address */
+#define CalibrationCollectionBlockSelectorAddr        0x0000EB00  /**< CalibrationCollectionBlockSelector register address */
+#define CalibrationCollectionBlockPOSIXTimeAddr       0x0000EB04  /**< CalibrationCollectionBlockPOSIXTime register address */
+#define CalibrationCollectionBlockLoadAddr            0x0000EB08  /**< CalibrationCollectionBlockLoad register address */
+#define CalibrationCollectionActiveBlockPOSIXTimeAddr 0x0000EB0C  /**< CalibrationCollectionActiveBlockPOSIXTime register address */
+#define CalibrationCollectionTypeAddr                 0x0000EB10  /**< CalibrationCollectionType register address */
+#define DeviceBuiltInTestsResults4Addr                0x0000EB14  /**< DeviceBuiltInTestsResults4 register address */
+#define DeviceBuiltInTestsResults5Addr                0x0000EB18  /**< DeviceBuiltInTestsResults5 register address */
+#define DeviceBuiltInTestsResults6Addr                0x0000EB1C  /**< DeviceBuiltInTestsResults6 register address */
+#define DeviceBuiltInTestsResults7Addr                0x0000EB20  /**< DeviceBuiltInTestsResults7 register address */
+#define DeviceBuiltInTestsResults8Addr                0x0000EB24  /**< DeviceBuiltInTestsResults8 register address */
+#define OffsetXMinAddr                                0x0000EB28  /**< OffsetXMin register address */
+#define MemoryBufferMOISourceAddr                     0x0000EB2C  /**< MemoryBufferMOISource register address */
+#define MemoryBufferMOIActivationAddr                 0x0000EB30  /**< MemoryBufferMOIActivation register address */
+#define MemoryBufferMOISoftwareAddr                   0x0000EB34  /**< MemoryBufferMOISoftware register address */
+#define OffsetXMaxAddr                                0x0000EB38  /**< OffsetXMax register address */
+#define OffsetYMinAddr                                0x0000EB3C  /**< OffsetYMin register address */
+#define OffsetYMaxAddr                                0x0000EB40  /**< OffsetYMax register address */
+#define OffsetXAddr                                   0x0000EB44  /**< OffsetX register address */
+#define OffsetYAddr                                   0x0000EB48  /**< OffsetY register address */
+#define AECPlusExtrapolationWeightAddr                0x0000EB4C  /**< AECPlusExtrapolationWeight register address */
+#define IsActiveFlagsAddr                             0x0000EB50  /**< IsActiveFlags register address */
+#define DeviceKeyValidationLowAddr                    0x0000EB54  /**< DeviceKeyValidationLow register address */
+#define DeviceKeyValidationHighAddr                   0x0000EB58  /**< DeviceKeyValidationHigh register address */
+#define NDFilterArmedPositionSetpointAddr             0x0000EB5C  /**< NDFilterArmedPositionSetpoint register address */
+#define BadPixelReplacementAddr                       0x0000EB60  /**< BadPixelReplacement register address */
+#define DeviceDetectorElectricalTapsRefAddr           0x0000EB64  /**< DeviceDetectorElectricalTapsRef register address */
+#define DeviceDetectorElectricalRefOffsetAddr         0x0000EB68  /**< DeviceDetectorElectricalRefOffset register address */
+#define ExposureTimeSetToMinAddr                      0x0000EB6C  /**< ExposureTimeSetToMin register address */
+#define MemoryBufferAvailableFreeSpaceHighAddr        0x0000EB70  /**< MemoryBufferAvailableFreeSpaceHigh register address */
+#define MemoryBufferAvailableFreeSpaceLowAddr         0x0000EB74  /**< MemoryBufferAvailableFreeSpaceLow register address */
+#define MemoryBufferFragmentedFreeSpaceHighAddr       0x0000EB78  /**< MemoryBufferFragmentedFreeSpaceHigh register address */
+#define MemoryBufferFragmentedFreeSpaceLowAddr        0x0000EB7C  /**< MemoryBufferFragmentedFreeSpaceLow register address */
+#define MemoryBufferTotalSpaceHighAddr                0x0000EB80  /**< MemoryBufferTotalSpaceHigh register address */
+#define MemoryBufferTotalSpaceLowAddr                 0x0000EB84  /**< MemoryBufferTotalSpaceLow register address */
+#define MemoryBufferSequenceOffsetXAddr               0x0000EB88  /**< MemoryBufferSequenceOffsetX register address */
+#define MemoryBufferSequenceOffsetYAddr               0x0000EB8C  /**< MemoryBufferSequenceOffsetY register address */
+#define MemoryBufferSequenceWidthAddr                 0x0000EB90  /**< MemoryBufferSequenceWidth register address */
+#define MemoryBufferSequenceHeightAddr                0x0000EB94  /**< MemoryBufferSequenceHeight register address */
+#define MemoryBufferSequenceClearAddr                 0x0000EB98  /**< MemoryBufferSequenceClear register address */
+#define MemoryBufferSequenceDefragAddr                0x0000EB9C  /**< MemoryBufferSequenceDefrag register address */
+#define MemoryBufferSequenceSizeMinAddr               0x0000EBA0  /**< MemoryBufferSequenceSizeMin register address */
+#define MemoryBufferSequenceSizeIncAddr               0x0000EBA4  /**< MemoryBufferSequenceSizeInc register address */
+#define MemoryBufferSequenceDownloadFrameIDAddr       0x0000EBA8  /**< MemoryBufferSequenceDownloadFrameID register address */
+#define MemoryBufferSequenceDownloadFrameCountAddr    0x0000EBAC  /**< MemoryBufferSequenceDownloadFrameCount register address */
+#define MemoryBufferStatusAddr                        0x0000EBB0  /**< MemoryBufferStatus register address */
+#define MemoryBufferLegacyModeAddr                    0x0000EBB4  /**< MemoryBufferLegacyMode register address */
+#define DeviceSerialPortFunctionAddr                  0x0000EBB8  /**< DeviceSerialPortFunction register address */
+#define ImageCorrectionFWAcquisitionFrameRateMinAddr  0x0000EBBC  /**< ImageCorrectionFWAcquisitionFrameRateMin register address */
+#define ImageCorrectionFWAcquisitionFrameRateMaxAddr  0x0000EBC0  /**< ImageCorrectionFWAcquisitionFrameRateMax register address */
+#define ImageCorrectionBlockSelectorAddr              0x0000EBC4  /**< ImageCorrectionBlockSelector register address */
+#define ImageCorrectionFWModeAddr                     0x0000EBC8  /**< ImageCorrectionFWMode register address */
+#define ImageCorrectionFWAcquisitionFrameRateAddr     0x0000EBCC  /**< ImageCorrectionFWAcquisitionFrameRate register address */
+#define FOVPositionRawMinAddr                         0x0000EBD0  /**< FOVPositionRawMin register address */
+#define FOVPositionRawMaxAddr                         0x0000EBD4  /**< FOVPositionRawMax register address */
+#define FocusPositionRawMinAddr                       0x0000EBD8  /**< FocusPositionRawMin register address */
+#define FocusPositionRawMaxAddr                       0x0000EBDC  /**< FocusPositionRawMax register address */
+#define FOVPositionSetpointAddr                       0x0000EBE0  /**< FOVPositionSetpoint register address */
+#define FOVPositionAddr                               0x0000EBE4  /**< FOVPosition register address */
+#define FOVPositionNumberAddr                         0x0000EBE8  /**< FOVPositionNumber register address */
+#define ZoomInFastAddr                                0x0000EBEC  /**< ZoomInFast register address */
+#define ZoomInSlowAddr                                0x0000EBF0  /**< ZoomInSlow register address */
+#define ZoomOutSlowAddr                               0x0000EBF4  /**< ZoomOutSlow register address */
+#define ZoomOutFastAddr                               0x0000EBF8  /**< ZoomOutFast register address */
+#define HFOVAddr                                      0x0000EBFC  /**< HFOV register address */
+#define VFOVAddr                                      0x0000EC00  /**< VFOV register address */
+#define FOVPositionRawSetpointAddr                    0x0000EC04  /**< FOVPositionRawSetpoint register address */
+#define FOVPositionRawAddr                            0x0000EC08  /**< FOVPositionRaw register address */
+#define AutofocusModeAddr                             0x0000EC0C  /**< AutofocusMode register address */
+#define AutofocusROIAddr                              0x0000EC10  /**< AutofocusROI register address */
+#define AutofocusAddr                                 0x0000EC14  /**< Autofocus register address */
+#define FocusNearFastAddr                             0x0000EC18  /**< FocusNearFast register address */
+#define FocusNearSlowAddr                             0x0000EC1C  /**< FocusNearSlow register address */
+#define FocusFarSlowAddr                              0x0000EC20  /**< FocusFarSlow register address */
+#define FocusFarFastAddr                              0x0000EC24  /**< FocusFarFast register address */
+#define FocusPositionRawSetpointAddr                  0x0000EC28  /**< FocusPositionRawSetpoint register address */
+#define FocusPositionRawAddr                          0x0000EC2C  /**< FocusPositionRaw register address */
+#define LoadSavedConfigurationAtStartupAddr           0x0000EC30  /**< LoadSavedConfigurationAtStartup register address */
+#define SaveConfigurationAddr                         0x0000EC34  /**< SaveConfiguration register address */
 
 // Registers definition array indices
 ////////////////////////////////////////////////////////////////////////////////

@@ -64,6 +64,7 @@ architecture rtl of t_axi4_stream8_fifo is
    signal rx_tvalid        : std_logic  := '0';
    signal rx_tready        : std_logic  := '0';
    
+   attribute KEEP of ovfl_i : signal is "TRUE";
    
 begin
    

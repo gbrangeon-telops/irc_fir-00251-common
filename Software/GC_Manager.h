@@ -83,6 +83,7 @@ IRC_Status_t GC_RegisterClearBitsUI32(gcRegister_t *p_register, uint32_t mask);
 IRC_Status_t GC_RegisterWriteI32(gcRegister_t *p_register, int32_t value);
 IRC_Status_t GC_RegisterWriteFloat(gcRegister_t *p_register, float value);
 IRC_Status_t GC_BroadcastRegisterWrite(gcRegister_t *p_register);
+gcSelectedReg_t* findSelectedRegister(uint32_t registerIdx);
 
 #endif // GC_MANAGER_H
 

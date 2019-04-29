@@ -18,7 +18,10 @@
 
 library IEEE;
 use IEEE.STD_LOGIC_1164.all;
-use IEEE.numeric_std.all; 
+use IEEE.numeric_std.all;
+
+library work;
+use work.tel2000.all;
 
 package calib_define is 
    
@@ -48,7 +51,12 @@ package calib_define is
    constant CBSM_FW_POSITION     : calib_block_sel_mode_type  := std_logic_vector(to_unsigned(9, calib_block_sel_mode_type'length));
    constant CBSM_NDF_POSITION    : calib_block_sel_mode_type  := std_logic_vector(to_unsigned(10, calib_block_sel_mode_type'length));
    
-   -- aoi
+   -- Bad pixel replacement modes
+   subtype bpr_mode_type is std_logic_vector(2 downto 0);
+   constant BPR_MODE_NO_REPL     : bpr_mode_type := std_logic_vector(to_unsigned(0, bpr_mode_type'length));
+   constant BPR_MODE_LAST_VALID  : bpr_mode_type := std_logic_vector(to_unsigned(1, bpr_mode_type'length));
+   
+   -- AOI
    type aoi_param_type is
    record
       width             : unsigned(15 downto 0);
@@ -57,7 +65,7 @@ package calib_define is
       offsety           : unsigned(15 downto 0);
    end record;
    
-   -- calibration header
+   -- Calibration header
    type calib_hder_type is
    record
       cal_block_index   : cal_block_index_type;
@@ -86,6 +94,89 @@ package calib_define is
       ((others => '0'), (CAL_BLOCK_INDEX_6, (others => '0'), (others => '0'), (others => '0'), (others => '0'), (others => '0'), (others => '0'))),
       ((others => '0'), (CAL_BLOCK_INDEX_7, (others => '0'), (others => '0'), (others => '0'), (others => '0'), (others => '0'), (others => '0'))) );
    
+   -- Calibration data flow config
+   type calib_flow_config_type is
+   record
+      input_sw       : std_logic_vector(1 downto 0);
+      datatype_sw    : std_logic_vector(1 downto 0);
+      output_sw      : std_logic_vector(1 downto 0);
+      nlc_fall       : std_logic;
+      rqc_fall       : std_logic; 
+      fcc_fall       : std_logic;
+   end record;
+      
+   -- Calibration parameters
+   type calib_param_type is
+   record
+      -- Saturation
+      sat_threshold              : std_logic_vector(31 downto 0);
+      sat_threshold_wr_en        : std_logic;
+      -- NLC
+      nlc_lut_param              : lut_param_type;
+      nlc_lut_param_wr_en        : std_logic;
+      range_ofs_fp32             : std_logic_vector(31 downto 0);
+      range_ofs_fp32_wr_en       : std_logic;
+      pow2_offset_exp_fp32       : std_logic_vector(31 downto 0);
+      pow2_offset_exp_fp32_wr_en : std_logic;
+      pow2_range_exp_fp32        : std_logic_vector(31 downto 0);
+      pow2_range_exp_fp32_wr_en  : std_logic;
+      nlc_pow2_m_exp_fp32        : std_logic_vector(31 downto 0);
+      nlc_pow2_m_exp_fp32_wr_en  : std_logic;
+      nlc_pow2_b_exp_fp32        : std_logic_vector(31 downto 0);
+      nlc_pow2_b_exp_fp32_wr_en  : std_logic;
+      -- FSU
+      delta_temp_fp32            : std_logic_vector(31 downto 0);
+      delta_temp_fp32_wr_en      : std_logic;
+      alpha_offset_fp32          : std_logic_vector(31 downto 0);
+      alpha_offset_fp32_wr_en    : std_logic;
+      pow2_alpha_exp_fp32        : std_logic_vector(31 downto 0);
+      pow2_alpha_exp_fp32_wr_en  : std_logic;
+      pow2_beta0_exp_fp32        : std_logic_vector(31 downto 0);
+      pow2_beta0_exp_fp32_wr_en  : std_logic;
+      pow2_kappa_exp_fp32        : std_logic_vector(31 downto 0);
+      pow2_kappa_exp_fp32_wr_en  : std_logic;
+      -- FCC
+      nuc_mult_factor_fp32       : std_logic_vector(31 downto 0);
+      nuc_mult_factor_fp32_wr_en : std_logic;
+      -- RQC
+      rqc_lut_param              : lut_param_type;
+      rqc_lut_param_wr_en        : std_logic;
+      rqc_lut_page               : std_logic_vector(31 downto 0); --same as calib block index
+      rqc_lut_page_wr_en         : std_logic;
+      rqc_pow2_m_exp_fp32        : std_logic_vector(31 downto 0);
+      rqc_pow2_m_exp_fp32_wr_en  : std_logic;
+      rqc_pow2_b_exp_fp32        : std_logic_vector(31 downto 0);
+      rqc_pow2_b_exp_fp32_wr_en  : std_logic;
+      -- CFF
+      offset_fp32                : std_logic_vector(31 downto 0);
+      offset_fp32_wr_en          : std_logic;
+      pow2_lsb_fp32              : std_logic_vector(31 downto 0);
+      pow2_lsb_fp32_wr_en        : std_logic;
+   end record;
+      
+   -- Video config
+   type video_config_type is
+   record
+      selector       : std_logic_vector(1 downto 0);
+      ehdri_index    : std_logic_vector(7 downto 0);
+      fw_position    : std_logic_vector(7 downto 0);
+      freeze_cmd     : std_logic;
+   end record;
+      
+   -- Calibration config
+   type calib_config_type is
+   record
+      cal_flow_cfg               : calib_flow_config_type;
+      cal_param                  : calib_param_type;
+      aoi_param                  : aoi_param_type;
+      aoi_param_dval             : std_logic;
+      exp_time_mult_fp32         : std_logic_vector(31 downto 0);
+      exp_time_mult_fp32_dval    : std_logic;
+      cal_bpr_mode               : bpr_mode_type;
+      video_cfg                  : video_config_type;
+      video_bpr_mode             : bpr_mode_type;
+   end record;
+      
    -- error_type
    type error_reg_type is array (0 to 4) of std_logic_vector(31 downto 0);
    

@@ -1,11 +1,12 @@
 @echo off
-rem Syntax: startxmd r|d target
+rem Syntax: startxmd r|d target size
 
 rem Clear variables
 set xDir=
 set x_xmd=
 set config=
 set target=
+set size=
 set sensorName=
 set deviceNumber=
 set bitFile=
@@ -37,19 +38,22 @@ set target=proc
 set sensorName=%2
 )
 
+rem Parse size parameter
+set size=%3
+
 rem Set programming parameter
 if "%target%"=="proc" (
 set deviceNumber=1
-set bitFile=D:\Telops\FIR-00251-Proc\sdk\fir_00251_proc_%sensorName%\hw\fir_00251_proc_%sensorName%.bit
-set elfFile=D:\Telops\FIR-00251-Proc\sdk\fir_00251_proc_%sensorName%\fir_00251_proc_%sensorName%\%config%\fir_00251_proc_%sensorName%.elf
+set bitFile=D:\Telops\FIR-00251-Proc\sdk\fir_00251_proc_%sensorName%\hw_platform_%size%\fir_00251_proc_%sensorName%.bit
+set elfFile=D:\Telops\FIR-00251-Proc\sdk\fir_00251_proc_%sensorName%\fir_00251_proc_%sensorName%_%size%\%config%\fir_00251_proc_%sensorName%_%size%.elf
 ) else if "%target%"=="output" (
 set deviceNumber=2
-set bitFile=D:\Telops\FIR-00251-Output\sdk\hw\fir_251_output_top.bit
-set elfFile=D:\Telops\FIR-00251-Output\sdk\fir_00251_output\%config%\fir_00251_output.elf
+set bitFile=D:\Telops\FIR-00251-Output\sdk\hw_%size%\fir_251_output_top.bit
+set elfFile=D:\Telops\FIR-00251-Output\sdk\fir_00251_output_%size%\%config%\fir_00251_output_%size%.elf
 ) else if "%target%"=="storage" (
 set deviceNumber=3
-set bitFile=D:\Telops\FIR-00257-Storage\sdk\hw_platform_0\fir_257_top.bit
-set elfFile=D:\Telops\FIR-00257-Storage\sdk\fir_00257_storage\%config%\fir_00257_storage.elf
+set bitFile=D:\Telops\FIR-00257-Storage\sdk\hw_platform_%size%\fir_257_top.bit
+set elfFile=D:\Telops\FIR-00257-Storage\sdk\fir_00257_storage_%size%\%config%\fir_00257_storage_%size%.elf
 )
 
 if not exist %bitFile% (

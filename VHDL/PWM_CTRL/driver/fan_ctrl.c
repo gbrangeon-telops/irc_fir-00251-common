@@ -1,8 +1,8 @@
 /**
- *  @file mgt_ctrl.c
- *  Source file for MGT Cores.
+ *  @file fan_ctrl.c
+ *  FAN Controller source file.
  *  
- *  Theses functions permit to control and read status from the MGT Cores.
+ *  Theses functions permit to control fans.
  *  
  *  $Rev$
  *  $Author$
@@ -27,15 +27,15 @@
 /************************** Function Definitions ***************************/
 
 /**
- *  MGT_Init.
- *  Initialize the MGT cores at Startup.
+ *  FAN_Init.
+ *  Initialize the FAN controller.
  *  
  *  @param inst Pointer to the instance
  *  
  *  @return void
  */
 void FAN_Init(t_fan *inst){
-   // Enable all MGT
+   // Disable all FAN
    AXI4L_write32(0, inst->ADD + PWM1_VALUE_OFFSET);
    AXI4L_write32(0, inst->ADD + PWM2_VALUE_OFFSET);
    AXI4L_write32(0, inst->ADD + PWM3_VALUE_OFFSET);

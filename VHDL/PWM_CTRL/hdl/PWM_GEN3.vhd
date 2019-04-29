@@ -78,7 +78,8 @@ component PWM_CTRL is
       --! PWM Signals
       DATA_OUT0 : out std_logic_vector((PWM_SIZE-1) downto 0);
       DATA_OUT1 : out std_logic_vector((PWM_SIZE-1) downto 0);
-      DATA_OUT2 : out std_logic_vector((PWM_SIZE-1) downto 0)
+      DATA_OUT2 : out std_logic_vector((PWM_SIZE-1) downto 0);
+	  DATA_OUT3 : out std_logic_vector((PWM_SIZE-1) downto 0)
    );
 end component PWM_CTRL;
 
@@ -87,7 +88,6 @@ end component PWM_CTRL;
 signal data_out0_s : std_logic_vector((PWM_SIZE-1) downto 0);
 signal data_out1_s : std_logic_vector((PWM_SIZE-1) downto 0);
 signal data_out2_s : std_logic_vector((PWM_SIZE-1) downto 0);
-signal data_out3_s : std_logic_vector((PWM_SIZE-1) downto 0);
 signal aresetn : std_logic;
 
 begin
@@ -95,7 +95,7 @@ begin
    aresetn <= not ARESET;
    
    
-   fan_ctrl_inst :  component PWM_CTRL 
+   pwm_ctrl_inst :  component PWM_CTRL 
    generic map(
       PWM_SIZE => PWM_SIZE
    )
@@ -109,8 +109,8 @@ begin
       --! PWM Signals
       DATA_OUT0 => data_out0_s,
       DATA_OUT1 => data_out1_s,
-      DATA_OUT2 => data_out2_s--,
-      --DATA_OUT3 => ,
+      DATA_OUT2 => data_out2_s,
+      DATA_OUT3 => open
    );
    
    pwm0 : component gh_pwm
@@ -152,7 +152,5 @@ begin
 		PWMo => PWM(2)--,
 		--ND => 
    );
-
-
 
 end PWM_GEN_3;

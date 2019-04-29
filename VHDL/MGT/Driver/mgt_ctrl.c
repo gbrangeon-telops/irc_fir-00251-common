@@ -29,6 +29,20 @@
 /************************** Function Definitions ***************************/
 
 /**
+ *  MGT_Send_MBSDM.
+ *
+ *
+ *  @param inst Pointer to the instance
+ *
+ *  @return void
+ */
+void MGT_Send_MBSDM(t_mgt *inst, uint8_t state)
+{
+   AXI4L_write32(state, inst->ADD + MEM_BUF_SEQ_DOWNLOAD_MODE_OFFSET);
+}
+
+
+/**
  *  MGT_Init.
  *  Initialize the MGT cores at Startup.
  *  
@@ -45,7 +59,12 @@ void MGT_Init(t_mgt *inst)
    // No loopback
    AXI4L_write32(0, inst->ADD + LOOPBACK_OFFSET);
 
+   // disable download mode
+   MGT_Send_MBSDM(inst, 0);
+
 }
+
+
 
 /**
  *  MGT_EnableMGT.

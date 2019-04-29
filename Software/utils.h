@@ -46,10 +46,10 @@
 #define BitTst(arg, pos) BitMaskTst(arg, (1ULL << (pos)))   	/**< Test if bit(pos) in arg is true else false */
 #define BitFlp(arg, pos) BitMaskFlp(arg, (1ULL << (pos)))   	/**< Flip bit(pos) in arg */
 
-#define MAX(a,b) (a>b? a : b) /**< Find maximum between to number */
-#define MIN(a,b) (a>b? b : a) /**< Find minimum between to number */
+#define MAX(a,b) ((a)>(b)? (a) : (b)) /**< Find maximum between two numbers */
+#define MIN(a,b) ((a)>(b)? (b) : (a)) /**< Find minimum between two numbers */
 #define NUM_OF(x) (sizeof (x) / sizeof *(x)) /**< Get the number of element in an array */
-#define XOR(a,b) (!a != !b)
+#define XOR(a,b) (!(a) != !(b))
 
 typedef struct
 {

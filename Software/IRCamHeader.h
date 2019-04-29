@@ -16,7 +16,7 @@
 
 /* AUTO-CODE BEGIN */
 // Auto-generated IRCam header library.
-// Generated from the IRCam header definition XLS file version 12.4
+// Generated from the IRCam header definition XLS file version 12.5
 // using generateIRCamHeaderCLib.m Matlab script.
 
 #define SignatureHdrAddr                              0x00  /**< Signature header field address */
@@ -44,6 +44,7 @@
 #define TriggerModeHdrAddr                            0x34  /**< TriggerMode header field address */
 #define TriggerSourceHdrAddr                          0x35  /**< TriggerSource header field address */
 #define IntegrationModeHdrAddr                        0x36  /**< IntegrationMode header field address */
+#define EHDRINumberOfExposuresHdrAddr                 0x37  /**< EHDRINumberOfExposures header field address */
 #define AveragingNumberHdrAddr                        0x38  /**< AveragingNumber header field address */
 #define ADCReadoutHdrAddr                             0x39  /**< ADCReadout header field address */
 #define ExposureAutoHdrAddr                           0x3B  /**< ExposureAuto header field address */

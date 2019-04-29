@@ -16,19 +16,21 @@
 #ifndef DEBUGTERMINAL_H
 #define DEBUGTERMINAL_H
 
+
+#include "xuartns550.h"
 #include "CircularUART.h"
 #include "CircularByteBuffer.h"
 #include "CircularBuffer.h"
 #include "NetworkInterface.h"
 #include "CtrlInterface.h"
-#include "xuartns550.h"
+#include "xuartlite.h"
 #include "xintc.h"
 #include "IRC_Status.h"
 #include "utils.h"
 #include "verbose.h"
 
-#if (defined(STDOUT_BASEADDRESS) || defined(STDIN_BASEADDRESS))
-#error STDIN and STDOUT must be set to "none" in the BSP.
+#if (!defined(STDOUT_BASEADDRESS) || !defined(STDIN_BASEADDRESS))
+#error STDIN and STDOUT must be set to "USB" in the BSP.
 #endif
 
 #define DT_ERR(fmt, ...)         FPGA_PRINTF("DT: Error: " fmt "\n", ##__VA_ARGS__)

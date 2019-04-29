@@ -35,7 +35,10 @@ netIntfPort_t gcmPort;
 
 
 /** Private functions */
-static gcSelectedReg_t* findSelectedRegister(uint32_t registerIdx);
+// static gcSelectedReg_t* findSelectedRegister(uint32_t registerIdx);
+static bool filter_request(F1F2Command_t *p_request, F1F2Command_t *p_response);
+static bool filter_pleora(F1F2Command_t *p_request, F1F2Command_t *p_response);
+
 
 /**
  * Initializes the GenICam Manager.
@@ -98,25 +101,28 @@ void GC_Manager_SM()
 
       GCM_DBG("Request has been received (cmd: 0x%02X, addr: 0x%08X).", gcmRequest.f1f2.cmd, gcmRequest.f1f2.payload.regRW.address);
 
-      // Process request
-      switch (gcmRequest.f1f2.cmd)
+      if (!filter_request(&gcmRequest.f1f2, &gcmResponse.f1f2))
       {
-         case F1F2_CMD_REG_READ_REQ:
-            GC_RegisterReadRequest(&gcmRequest.f1f2, &gcmResponse.f1f2);
-            break;
+         // Process request
+         switch (gcmRequest.f1f2.cmd)
+         {
+            case F1F2_CMD_REG_READ_REQ:
+               GC_RegisterReadRequest(&gcmRequest.f1f2, &gcmResponse.f1f2);
+               break;
 
-         case F1F2_CMD_REG_WRITE:
-            GC_RegisterWriteRequest(&gcmRequest.f1f2, &gcmResponse.f1f2);
-            break;
+            case F1F2_CMD_REG_WRITE:
+               GC_RegisterWriteRequest(&gcmRequest.f1f2, &gcmResponse.f1f2);
+               break;
 
-         case F1F2_CMD_PING:
-            F1F2_BuildACKResponse(&gcmRequest.f1f2, &gcmResponse.f1f2);
-            break;
+            case F1F2_CMD_PING:
+               F1F2_BuildACKResponse(&gcmRequest.f1f2, &gcmResponse.f1f2);
+               break;
 
-         default:
-            GCM_ERR("Invalid GC manager request command code.");
-            F1F2_BuildNAKResponse(&gcmRequest.f1f2, &gcmResponse.f1f2);
-            break;
+            default:
+               GCM_ERR("Invalid GC manager request command code.");
+               F1F2_BuildNAKResponse(&gcmRequest.f1f2, &gcmResponse.f1f2);
+               break;
+         }
       }
 
       if ((gcmRequest.f1f2.destAddr != NIA_BROADCAST) && (gcmResponse.f1f2.cmd != F1F2_CMD_NONE))
@@ -547,7 +553,7 @@ IRC_Status_t GC_BroadcastRegisterWrite(gcRegister_t *p_register)
  * @return selected register pointer if found.
  * @return NULL if not found.
  */
-static gcSelectedReg_t* findSelectedRegister(uint32_t registerIdx)
+gcSelectedReg_t* findSelectedRegister(uint32_t registerIdx)
 {
    gcSelectedReg_t* pReg = NULL;
    uint32_t idx;
@@ -562,4 +568,51 @@ static gcSelectedReg_t* findSelectedRegister(uint32_t registerIdx)
    }
 
    return pReg;
+}
+
+/**
+ * Filter network requests
+ *
+ * @param p_request is the pointer to the request command.
+ * @param p_response is the pointer to the response command to fill.
+ *
+ * @return true if request has been filtered
+ * @return false if the request must go through
+ */
+static bool filter_request(F1F2Command_t *p_request, F1F2Command_t *p_response)
+{
+   return filter_pleora(p_request, p_response);
+}
+
+
+/**
+ * Filter NTX-Mini resolution change requests
+ *
+ * @param p_request is the pointer to the request command.
+ * @param p_response is the pointer to the response command to fill.
+ *
+ * @return true if request has been filtered
+ * @return false if the request must go through
+ */
+static bool filter_pleora(F1F2Command_t *p_request, F1F2Command_t *p_response)
+{
+   static bool width_once, height_once;
+   static bool pixfmt_once;
+   static bool acqmode_once;
+
+   if (p_request->cmd != F1F2_CMD_REG_WRITE) return false;
+   if (p_request->payload.regRW.address != WidthAddr && p_request->payload.regRW.address != HeightAddr &&
+       p_request->payload.regRW.address != PixelFormatAddr && p_request->payload.regRW.address != AcquisitionModeAddr) return false;
+   if (p_request->srcAddr != NIA_PROCESSING_FPGA) return false;
+   if (p_request->srcPort != NIP_CI_PLEORA) return false;
+   if (p_request->destAddr != NIA_PROCESSING_FPGA) return false;
+   if (p_request->destPort != NIP_GC_MANAGER) return false;
+   if (width_once && height_once && pixfmt_once && acqmode_once) return false;
+
+   if (p_request->payload.regRW.address == WidthAddr) width_once = true;
+   if (p_request->payload.regRW.address == HeightAddr) height_once = true;
+   if (p_request->payload.regRW.address == PixelFormatAddr) pixfmt_once = true;
+   if (p_request->payload.regRW.address == AcquisitionModeAddr) acqmode_once = true;
+   F1F2_BuildACKResponse(p_request, p_response);
+   return true;
 }

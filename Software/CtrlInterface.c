@@ -14,7 +14,8 @@
  */
 
 #include "CtrlInterface.h"
-#include "UART_Utils.h"
+
+
 #include "Protocol_F1F2.h"
 #include "Protocol_Pleora.h"
 #include <stdio.h> // For NULL
@@ -57,6 +58,7 @@ IRC_Status_t CtrlIntf_Init(ctrlIntf_t *ctrlIntf,
    ctrlIntf->port.port = niPort;
    ctrlIntf->port.cmdQueue = cmdQueue;
 
+
    // Connect control interface to network interface
    if (NetIntf_Connect(netIntf, &ctrlIntf->port) != IRC_SUCCESS)
    {
@@ -79,6 +81,7 @@ IRC_Status_t CtrlIntf_Init(ctrlIntf_t *ctrlIntf,
  */
 IRC_Status_t CtrlIntf_SetLink(ctrlIntf_t *ctrlIntf, ciLinkType_t linkType, void *p_link)
 {
+
    if (ctrlIntf == NULL) return IRC_FAILURE;
    if ((linkType == ctrlIntf->linkType) && (p_link == ctrlIntf->p_link)) return IRC_SUCCESS;
 
@@ -86,8 +89,10 @@ IRC_Status_t CtrlIntf_SetLink(ctrlIntf_t *ctrlIntf, ciLinkType_t linkType, void 
    switch (ctrlIntf->linkType)
    {
       case CILT_CUART:
+
          CircularUART_SetCircularBuffers((circularUART_t *)ctrlIntf->p_link, NULL, NULL);
          CircularUART_SetHandler((circularUART_t *)ctrlIntf->p_link, NULL, NULL);
+
          break;
 
       case CILT_USART:
@@ -112,7 +117,8 @@ IRC_Status_t CtrlIntf_SetLink(ctrlIntf_t *ctrlIntf, ciLinkType_t linkType, void 
    switch (ctrlIntf->linkType)
    {
       case CILT_CUART:
-         CircularUART_ResetRxFifo((circularUART_t *)ctrlIntf->p_link);
+
+         CircularUART_ResetFifo((circularUART_t *)ctrlIntf->p_link);
          CircularUART_SetCircularBuffers((circularUART_t *)ctrlIntf->p_link, ctrlIntf->rxCircBuffer, ctrlIntf->txCircBuffer);
          CircularUART_SetHandler((circularUART_t *)ctrlIntf->p_link, CtrlIntf_IntrHandler, ctrlIntf);
          break;
@@ -250,6 +256,7 @@ IRC_Status_t CtrlIntf_Send(ctrlIntf_t *ctrlIntf, F1F2Command_t *f1f2Cmd)
 {
    uint32_t buflen;
 
+
    if (ctrlIntf == NULL)
    {
       CI_ERR("Control interface pointer is NULL.");
@@ -267,7 +274,7 @@ IRC_Status_t CtrlIntf_Send(ctrlIntf_t *ctrlIntf, F1F2Command_t *f1f2Cmd)
       switch (ctrlIntf->linkType)
       {
          case CILT_CUART:
-            CircularUART_SendData((circularUART_t *)ctrlIntf->p_link);
+            CircularUART_SendData((circularUART_t *)ctrlIntf->p_link, buflen);
             break;
 
          case CILT_USART:
@@ -295,6 +302,7 @@ IRC_Status_t CtrlIntf_Send(ctrlIntf_t *ctrlIntf, F1F2Command_t *f1f2Cmd)
  */
 void CtrlIntf_Process(ctrlIntf_t *ctrlIntf)
 {
+   //IRC_Status_t status = IRC_FAILURE;
    IRC_Status_t status;
    networkCommand_t netCmd;
    gcRegister_t *p_register;
@@ -445,6 +453,7 @@ void CtrlIntf_Process(ctrlIntf_t *ctrlIntf)
       else if (status == IRC_NOT_DONE)
       {
          if (!CBB_Empty(ctrlIntf->rxCircBuffer) && ((elapsed_time_us(ctrlIntf->rxByteTime) > CI_RX_TIMEOUT_US) || (ctrlIntf->linkType == CILT_USART)))
+
          {
             CI_LINKERR(ctrlIntf, "RX timeout.");
             CBB_Flush(ctrlIntf->rxCircBuffer);
@@ -458,31 +467,34 @@ void CtrlIntf_Process(ctrlIntf_t *ctrlIntf)
       }
    }
 
+
+
    // Transmit data
-   switch (ctrlIntf->txStatus)
-   {
-      case CITS_READY:
-         // TODO Transfer following code in control interface interruption handler.
-         // Check for new response
-         if (CB_Pop(ctrlIntf->port.cmdQueue, &netCmd) == IRC_SUCCESS)
-         {
-            if (ctrlIntf->protocol != CIP_F1F2_NETWORK)
-            {
-               // Convert F1F2 network command to standard F1F2 command
-               netCmd.f1f2.isNetwork = 0;
-            }
+      switch (ctrlIntf->txStatus)
+      {
+         case CITS_READY:
+            // TODO Transfer following code in control interface interruption handler.
+            // Check for new response
 
-            if (CtrlIntf_Send(ctrlIntf, &netCmd.f1f2) == IRC_FAILURE)
+            if (CB_Pop(ctrlIntf->port.cmdQueue, &netCmd) == IRC_SUCCESS)
             {
-               CI_ERR("Failed to transmit command.");
-            }
-         }
-         break;
+               if (ctrlIntf->protocol != CIP_F1F2_NETWORK)
+               {
+                  // Convert F1F2 network command to standard F1F2 command
+                  netCmd.f1f2.isNetwork = 0;
+               }
 
-      case CITS_BUSY:
-         // Waiting for the end of transmission
-         break;
-   }
+               if (CtrlIntf_Send(ctrlIntf, &netCmd.f1f2) == IRC_FAILURE)
+               {
+                  CI_ERR("Failed to transmit command.");
+               }
+            }
+            break;
+
+         case CITS_BUSY:
+            // Waiting for the end of transmission
+            break;
+      }
 }
 
 /**
@@ -492,24 +504,26 @@ void CtrlIntf_Process(ctrlIntf_t *ctrlIntf)
  * @param Event is used to identify the cause of the interrupt.
  * @param EventData is the number of received or sent bytes.
  */
-void CtrlIntf_IntrHandler(void *CallBackRef,
-      u32 Event,
-      unsigned int EventData)
+void CtrlIntf_IntrHandler(void *CallBackRef, u32 Event, unsigned int EventData)
 {
    ctrlIntf_t *ctrlIntf = (ctrlIntf_t *)CallBackRef;
 
    if ( ((ctrlIntf->linkType == CILT_CUART) && ((Event == XUN_EVENT_RECV_DATA) || (Event == XUN_EVENT_RECV_TIMEOUT))) ||
         ((ctrlIntf->linkType == CILT_USART) && ((Event == USART_EVENT_RX_FULL) || (Event == USART_EVENT_RX_TIMEOUT))) )
    {
-      // Bytes received
-      GETTIME(&ctrlIntf->rxByteTime);
+
+         // Bytes received
+         GETTIME(&ctrlIntf->rxByteTime);
+
    }
    else if ( ((ctrlIntf->linkType == CILT_CUART) && (Event == XUN_EVENT_SENT_DATA)) ||
              ((ctrlIntf->linkType == CILT_USART) && (Event == USART_EVENT_TX_DONE)) )
    {
       // Bytes transmit
       ctrlIntf->txStatus = CITS_READY;
-}
+
+   }
+
    else if ((ctrlIntf->linkType == CILT_CUART) && (Event == XUN_EVENT_RECV_ERROR))
    {
       // Error
@@ -591,3 +605,5 @@ IRC_Status_t CtrlIntf_Reset(ctrlIntf_t *ctrlIntf)
 
    return IRC_SUCCESS;
          }
+
+
