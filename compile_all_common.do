@@ -7,11 +7,6 @@ setenv COMMON "D:\Telops\FIR-00251-Common"
 acom "$COMMON\VHDL\tel2000pkg.vhd"
 acom "$COMMON\VHDL\img_header_define.vhd"
 acom "$COMMON\VHDL\Calibration\calib_define.vhd"
-
-
-
-acom  "$COMMON\VHDL\Utilities\AXI4_Stream32_to_64_wrapper.vhd"
-acom  "$COMMON\VHDL\Utilities\AXI4_Stream64_to_32_wrapper.vhd" 
  
 ## Compile All VHDL Source
 #MGT
