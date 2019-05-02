@@ -24,7 +24,7 @@ entity Usart_Ctrl is
     port(
 
     --------------------------------
-    -- PowerPC Interface
+    -- MB Interface
     -------------------------------- 
     AXI4_LITE_MOSI : in t_axi4_lite_mosi;
     AXI4_LITE_MISO : out t_axi4_lite_miso;
@@ -34,6 +34,7 @@ entity Usart_Ctrl is
     -- USART_CTRL
     --------------------------------
     TX_BYTES_TO_TRANSMIT    :   out std_logic_vector(15 downto 0);
+    TX_BYTES_VALID          :   out std_logic;
     TIMOUT_LENGTH           :   out std_logic_vector(7 downto 0); -- In bytes
     RX_BYTES_COUNT          :   in unsigned(15 downto 0);
     CLEAR_INTR              :   out std_logic_vector(2 downto 0); --[rx_full_i,rx_timeout_i,tx_done_i]
@@ -121,6 +122,8 @@ architecture RTL of Usart_Ctrl is
 
     --! User Output Register Declarations
     signal tx_bytes_to_transmit_o   : std_logic_vector(15 downto 0);
+    signal tx_bytes_valid_o         : std_logic;
+    signal tx_bytes_valid_s         : std_logic;
     signal rx_timeout_length_o      : std_logic_vector(7 downto 0);
     signal clear_intr_o               : std_logic_vector(2 downto 0);
     signal clear_intr_d               : std_logic_vector(2 downto 0);
@@ -153,29 +156,31 @@ begin
     U0A : sync_resetn port map(ARESETN => ARESETN, SRESETN => sresetn, CLK => CLK_MB);
     
     -- Input ctrl double Sync
-    U1A : double_sync port map(D => RX_FULL,Q =>  rx_full_i, RESET =>  sresetn, CLK => CLK_MB);
-    U1B : double_sync port map(D => RX_TIMEOUT,Q =>  rx_timeout_i, RESET =>  sresetn, CLK => CLK_MB);
-    U1C : double_sync port map(D => TX_DONE,Q =>  tx_done_i, RESET => sresetn, CLK => CLK_MB);
-    U2A : double_sync_vector port map(D => std_logic_vector(RX_BYTES_COUNT) , Q => rx_bytes_cnt_i ,  CLK => CLK_MB);
+    U1A : double_sync port map(D => RX_FULL,Q =>  rx_full_i, RESET =>  sreset, CLK => CLK_MB);
+    U1B : double_sync port map(D => RX_TIMEOUT,Q =>  rx_timeout_i, RESET =>  sreset, CLK => CLK_MB);
+    U1C : double_sync port map(D => TX_DONE,Q =>  tx_done_i, RESET => sreset, CLK => CLK_MB);
+	rx_bytes_cnt_i <= std_logic_vector(RX_BYTES_COUNT);
 
     -- Output ctrl double Sync
-    U3A : double_sync_vector port map(D => tx_bytes_to_transmit_o   ,Q => TX_BYTES_TO_TRANSMIT  , CLK => CLK_USART);
-    U3B : double_sync_vector port map(D => rx_timeout_length_o      ,Q => TIMOUT_LENGTH         , CLK => CLK_USART);
+    U2A : gh_stretch  generic map( stretch_count => 10)
+                      port map(CLK => CLK_MB , rst => sreset, D => tx_bytes_valid_o, Q => tx_bytes_valid_s);
+    U2B : double_sync port map(D => tx_bytes_valid_s, Q =>  TX_BYTES_VALID, RESET =>  sreset, CLK => CLK_USART);
+    TIMOUT_LENGTH <= rx_timeout_length_o;
     
     --TODO Utiliser un CDC plutot qu'un double sync. LE signal MB est beaucoup plus rapide que CLK USART -- voir le strech signal
     -- Aussi il devrais être pulser ^plutot qu'ecrit à 1 plutot que 0
-    U3C : double_sync_vector port map(D => clear_intr_o ,Q =>  CLEAR_INTR, CLK => CLK_USART);
+    U2C : double_sync_vector port map(D => clear_intr_o ,Q =>  CLEAR_INTR, CLK => CLK_USART);
     
-    --Strech signal
-    U4A : gh_stretch 
+    --Stretch signal
+    U3A : gh_stretch 
     generic map( stretch_count => 10)
     port map(CLK => CLK_MB , rst => sreset, D => clear_intr_d(0),Q => clear_intr_o(0));
     
-    U4B : gh_stretch 
+    U3B : gh_stretch 
     generic map( stretch_count =>10)
     port map(CLK => CLK_MB , rst => sreset, D => clear_intr_d(1),Q => clear_intr_o(1));
     
-    U4C : gh_stretch 
+    U3C : gh_stretch 
     generic map( stretch_count => 10)
     port map(CLK => CLK_MB , rst => sreset, D => clear_intr_d(2),Q => clear_intr_o(2));
 
@@ -238,11 +243,13 @@ begin
                case axi_awaddr(OPT_MEM_ADDR_BITS+ADDR_LSB downto 0) is      
                   when TIMEOUT_LENGTH_ADDR      =>  rx_timeout_length_o  <= AXI4_LITE_MOSI.WDATA(rx_timeout_length_o'length-1 downto 0);
                   when BYTES_TO_TRANSMIT_ADDR   =>  tx_bytes_to_transmit_o  <= AXI4_LITE_MOSI.WDATA(tx_bytes_to_transmit_o'length-1 downto 0);
+                                                    tx_bytes_valid_o <= '1';
                   when CLEAR_INTR_ADDR          =>  clear_intr_d  <= AXI4_LITE_MOSI.WDATA(clear_intr_o'length-1 downto 0);
                   when others  =>  
                end case;                                                                                          
             else
                 clear_intr_d <= (others => '0');
+                tx_bytes_valid_o <= '0';
             end if;
             
          end if;
