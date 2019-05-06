@@ -15,6 +15,7 @@ entity AXIS_TO_USART is
     AXIS_MISO   : out t_axi4_stream_miso;
     
     BYTES_TO_TRANSMIT   : IN std_logic_vector(15 downto 0);
+    BYTES_TR_VALID      : in std_logic;
     TRANSMIT_DONE       : OUT std_logic;
     TR_RESET            : IN std_logic;
     
@@ -95,7 +96,7 @@ begin
                         TX_BYTES <= tx_data(7 downto 0);
                         tx_state <= STANDBY;
                         
-                        if(packet_complete = '1') then
+                        if (packet_complete = '1' and BYTES_TR_VALID = '1') then
                             bytes_to_send <= unsigned(BYTES_TO_TRANSMIT); -- latch the number of bytes to send while waiting for data to send
                         else
                             bytes_to_send <= bytes_to_send ;
