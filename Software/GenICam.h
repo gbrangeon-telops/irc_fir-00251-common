@@ -71,7 +71,7 @@
 #define Isc0804ASensor           14
 #define BlackbirdDSensor         15
 #define Isc0804A_500HzSensor     16
-#define SuperhawkASensor         17
+#define SuphawkASensor           17
 
 /**
  * TDCFlags register bit field definition
@@ -116,7 +116,7 @@
 #define Isc0804AIsImplemented          SensorIsImplemented(Isc0804ASensor)
 #define BlackbirdDIsImplemented        SensorIsImplemented(BlackbirdDSensor)
 #define Isc0804A_500HzIsImplemented    SensorIsImplemented(Isc0804A_500HzSensor)
-#define SuperhawkAIsImplemented        SensorIsImplemented(SuperhawkASensor)
+#define SuphawkAIsImplemented          SensorIsImplemented(SuphawkASensor)
 
 #define TDCFlagsSet(mask) GC_RegisterSetBitsUI32(&gcRegsDef[TDCFlagsIdx], mask)  /**< Set masked bits in TDCFlags register */
 #define TDCFlagsClr(mask) GC_RegisterClearBitsUI32(&gcRegsDef[TDCFlagsIdx], mask)  /**< Clear masked bits in TDCFlags register */
