@@ -70,7 +70,9 @@ architecture rtl of t_axi4_stream_wr64_rd32_fifo is
           dout : out STD_LOGIC_VECTOR ( 33 downto 0 );
           full : out STD_LOGIC;
           empty : out STD_LOGIC;
-          valid : out STD_LOGIC
+          valid : out STD_LOGIC;
+ 		  wr_rst_busy : out STD_LOGIC;
+		  rd_rst_busy : out STD_LOGIC
          );
    END COMPONENT; 
    
@@ -85,7 +87,9 @@ architecture rtl of t_axi4_stream_wr64_rd32_fifo is
           dout : out STD_LOGIC_VECTOR ( 33 downto 0 );
           full : out STD_LOGIC;
           empty : out STD_LOGIC;
-          valid : out STD_LOGIC
+          valid : out STD_LOGIC;
+		  wr_rst_busy : out STD_LOGIC;
+		  rd_rst_busy : out STD_LOGIC
          );
    END COMPONENT;
    
@@ -201,7 +205,9 @@ begin
           dout => fifo_dout,
           full => fifo_full,
           empty => fifo_empty,
-          valid => fifo_valid
+          valid => fifo_valid,
+		  wr_rst_busy => open,
+		  rd_rst_busy => open
          );
    end generate;
    
@@ -229,7 +235,9 @@ begin
           dout => fifo_dout,
           full => fifo_full,
           empty => fifo_empty,
-          valid => fifo_valid
+          valid => fifo_valid,
+		  wr_rst_busy => open,
+		  rd_rst_busy => open
          );
    end generate;
 

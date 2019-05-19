@@ -56,7 +56,9 @@ architecture rtl of t_axi4_stream_wr64_rd16_fifo is
           dout : out STD_LOGIC_VECTOR ( 17 downto 0 );
           full : out STD_LOGIC;
           empty : out STD_LOGIC;
-          valid : out STD_LOGIC
+          valid : out STD_LOGIC;
+		  wr_rst_busy : out STD_LOGIC;
+		  rd_rst_busy : out STD_LOGIC
          );
    END COMPONENT;
    
@@ -146,7 +148,9 @@ fifo_din(71 downto 0)  <= RX_MOSI.TDATA(15 downto 0)  &  '0'              &   '0
           dout => fifo_dout,
           full => fifo_full,
           empty => fifo_empty,
-          valid => fifo_valid
+          valid => fifo_valid,
+		  wr_rst_busy => open,
+		  rd_rst_busy => open
          );
       end generate;
 	  
