@@ -30,10 +30,10 @@ entity adc_serdes_clk_wrapper is
 end adc_serdes_clk_wrapper;
 
 architecture rtl of adc_serdes_clk_wrapper is
-
-constant CLK_1X_PERIOD_mS : real :=  CLK_1X_PERIOD_nS/1_000_000.0; --  CLK_1X_PERIOD_NS converti en millisecond
-
-
+   
+   constant CLK_1X_PERIOD_mS : real :=  CLK_1X_PERIOD_nS/1_000_000.0; --  CLK_1X_PERIOD_NS converti en millisecond
+   
+   
    component serdes_isc0207A_3k_5_0_MHz_mmcm
       port
          (
@@ -243,6 +243,17 @@ constant CLK_1X_PERIOD_mS : real :=  CLK_1X_PERIOD_nS/1_000_000.0; --  CLK_1X_PE
          );
    end component;
    
+   component serdes_clkin_40_0_MHz_mmcm
+      port
+         (
+         clk_in            : in     std_logic;
+         clk_out           : out    std_logic;
+         clk_out_mult7     : out    std_logic;
+         reset             : in     std_logic;
+         locked            : out    std_logic
+         );
+   end component;
+   
    
 begin
    
@@ -393,6 +404,18 @@ begin
    MCLK_10_75M_Gen : if abs(1.0/CLK_1X_PERIOD_mS - 21_500.0) <= 10.0  generate   
       begin                                             
       U10M :  serdes_clkin_21_5_MHz_mmcm
+      port map (   
+         clk_in         => CLK_IN,
+         clk_out        => CLK_OUT, 
+         clk_out_mult7  => CLK_OUT_MULT7,   
+         reset          => ARESET,
+         locked         => LOCKED            
+         );      
+   end generate;
+   
+   Gen_40M : if abs(1.0/CLK_1X_PERIOD_mS - 40_000.0) <= 10.0  generate   
+      begin                                             
+      U10M :  serdes_clkin_40_0_MHz_mmcm
       port map (   
          clk_in         => CLK_IN,
          clk_out        => CLK_OUT, 
