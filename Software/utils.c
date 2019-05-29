@@ -424,9 +424,12 @@ void PrintArray32(const uint32_t pAry[], uint32_t Length)
 // -----------
 // The value rounded to the given multiple (quantity).
 //---------------------------------------------------------------------------
-float roundMultiple( float value, float quantity )
+float roundMultiple( float value, double quantity )
 {
-   return ( roundf( value / quantity ) * quantity );
+   // Use round (double) instead of roundf (float) to support floating point
+   // powers of ten (0.1, 0.01, etc). Results were incorrect with these numbers
+   // since they do not have exact representation in floating point.
+   return (float)( round( (double)value / quantity ) * quantity );
 }
 
 //---------------------------------------------------------------------------
@@ -442,9 +445,12 @@ float roundMultiple( float value, float quantity )
 // -----------
 // The largest multiple that is not greater than the given value.
 //---------------------------------------------------------------------------
-float floorMultiple( float value, float quantity )
+float floorMultiple( float value, double quantity )
 {
-   return ( floorf( value / quantity ) * quantity );
+   // Use floor (double) instead of floorf (float) to support floating point
+   // powers of ten (0.1, 0.01, etc). Results were incorrect with these numbers
+   // since they do not have exact representation in floating point.
+   return (float)( floor( (double)value / quantity ) * quantity );
 }
 
 //---------------------------------------------------------------------------
@@ -460,9 +466,12 @@ float floorMultiple( float value, float quantity )
 // -----------
 // The smallest multiple that is not less than the given value.
 //---------------------------------------------------------------------------
-float ceilMultiple( float value, float quantity )
+float ceilMultiple( float value, double quantity )
 {
-   return ( ceilf( value / quantity ) * quantity );
+   // Use ceil (double) instead of ceilf (float) to support floating point
+   // powers of ten (0.1, 0.01, etc). Results were incorrect with these numbers
+   // since they do not have exact representation in floating point.
+   return (float)( ceil( (double)value / quantity ) * quantity );
 }
 
 /*
