@@ -154,7 +154,7 @@ IRC_Status_t CircularUART_Init(circularUART_t *cuart,
     * FIFOs enabled.
     */
    if (cuart->uartType == Ns550) {
-   uint16_t uartOptions = XUN_OPTION_DATA_INTR | XUN_OPTION_FIFOS_ENABLE;
+   uint16_t uartOptions = XUN_OPTION_RXLINE_INTR | XUN_OPTION_DATA_INTR | XUN_OPTION_FIFOS_ENABLE;
    XUartNs550_SetOptions(&cuart->uart.Ns550, uartOptions);
    }
    else {
