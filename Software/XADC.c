@@ -13,19 +13,25 @@
  * (c) Copyright 2014 Telops Inc.
  */
 
+#include <string.h>
+#include <math.h>
 #include "XADC.h"
 #include "XADC_Channels.h"
 #include "xstatus.h"
 #include "utils.h"
-#include <math.h>
 #ifdef XADC_EXTERNAL_CHANNELS_ENABLED
 #include "power_ctrl.h"
 #endif
 
+#define FILTER_DEPTH 5  /* depth of the moving average filter */
+
 XSysMon xsm;
 
-void StartXADCSequence();
-void ProcessAdcChannel(xadcChannel_t *xadcCh);
+
+/* Prototypes */
+static void StartXADCSequence();
+static void ProcessAdcChannel(xadcChannel_t *xadcCh);
+static void FilterAdcData(xadcChannel_t *xadcCh);
 
 IRC_Status_t XADC_Init(uint16_t xsmDeviceId)
 {
@@ -124,7 +130,7 @@ void XADC_OGPhyConv(xadcChannel_t *xadcCh)
    }
 }
 
-void StartXADCSequence()
+static void StartXADCSequence()
 {
    // Disable the sequencer
    XSysMon_SetSequencerMode(&xsm, XSM_SEQ_MODE_SAFE);
@@ -136,7 +142,7 @@ void StartXADCSequence()
    XSysMon_GetStatus(&xsm);
 }
 
-void ProcessAdcChannel(xadcChannel_t *xadcCh)
+static void ProcessAdcChannel(xadcChannel_t *xadcCh)
 {
    switch (xadcCh->polarity)
    {
@@ -147,6 +153,8 @@ void ProcessAdcChannel(xadcChannel_t *xadcCh)
          xadcCh->voltage = ((float)(xadcCh->raw.bipolar) * xadcCh->voltGain) + xadcCh->voltOffset;
          break;
    }
+
+   FilterAdcData(xadcCh);
 
    if (xadcCh->phyConverter != NULL)
    {
@@ -261,4 +269,37 @@ void XADC_SM()
          }
          break;
    }
+}
+
+
+/*
+ * Moving average filter
+ */
+static void FilterAdcData(xadcChannel_t *xadcCh)
+{
+   static float intChanSamples[XIC_COUNT][FILTER_DEPTH];
+   static float extChanSamples[XEC_COUNT][FILTER_DEPTH];
+   float sum = 0.0F;
+   int i;
+
+   if (xadcCh->muxAddr == 0xFF)
+   {
+      memmove(&intChanSamples[xadcCh->id][1], &intChanSamples[xadcCh->id][0],
+              sizeof(float) * (FILTER_DEPTH-1));
+      intChanSamples[xadcCh->id][0] = xadcCh->voltage;
+
+      for (i = 0; i < FILTER_DEPTH; i++)
+         sum += intChanSamples[xadcCh->id][i];
+   }
+   else
+   {
+      memmove(&extChanSamples[xadcCh->id][1], &extChanSamples[xadcCh->id][0],
+              sizeof(float) * (FILTER_DEPTH-1));
+      extChanSamples[xadcCh->id][0] = xadcCh->voltage;
+
+      for (i = 0; i < FILTER_DEPTH; i++)
+         sum += extChanSamples[xadcCh->id][i];
+   }
+
+   xadcCh->voltage = sum / FILTER_DEPTH;
 }
