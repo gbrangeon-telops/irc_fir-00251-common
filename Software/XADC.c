@@ -278,7 +278,9 @@ void XADC_SM()
 static void FilterAdcData(xadcChannel_t *xadcCh)
 {
    static float intChanSamples[XIC_COUNT][FILTER_DEPTH];
+#ifdef XADC_EXTERNAL_CHANNELS_ENABLED
    static float extChanSamples[XEC_COUNT][FILTER_DEPTH];
+#endif
    float sum = 0.0F;
    int i;
 
@@ -291,6 +293,7 @@ static void FilterAdcData(xadcChannel_t *xadcCh)
       for (i = 0; i < FILTER_DEPTH; i++)
          sum += intChanSamples[xadcCh->id][i];
    }
+#ifdef XADC_EXTERNAL_CHANNELS_ENABLED
    else
    {
       memmove(&extChanSamples[xadcCh->id][1], &extChanSamples[xadcCh->id][0],
@@ -300,6 +303,7 @@ static void FilterAdcData(xadcChannel_t *xadcCh)
       for (i = 0; i < FILTER_DEPTH; i++)
          sum += extChanSamples[xadcCh->id][i];
    }
+#endif
 
    xadcCh->voltage = sum / FILTER_DEPTH;
 }
