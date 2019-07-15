@@ -286,6 +286,11 @@ static void FilterAdcData(xadcChannel_t *xadcCh)
 
    if (xadcCh->muxAddr == 0xFF)
    {
+      if (!xadcCh->isValid)
+      {
+         for (i = 1; i < FILTER_DEPTH; i++)
+            intChanSamples[xadcCh->id][i] = xadcCh->voltage;
+      }
       memmove(&intChanSamples[xadcCh->id][1], &intChanSamples[xadcCh->id][0],
               sizeof(float) * (FILTER_DEPTH-1));
       intChanSamples[xadcCh->id][0] = xadcCh->voltage;
@@ -296,6 +301,11 @@ static void FilterAdcData(xadcChannel_t *xadcCh)
 #ifdef XADC_EXTERNAL_CHANNELS_ENABLED
    else
    {
+      if (!xadcCh->isValid)
+      {
+         for (i = 1; i < FILTER_DEPTH; i++)
+            extChanSamples[xadcCh->id][i] = xadcCh->voltage;
+      }
       memmove(&extChanSamples[xadcCh->id][1], &extChanSamples[xadcCh->id][0],
               sizeof(float) * (FILTER_DEPTH-1));
       extChanSamples[xadcCh->id][0] = xadcCh->voltage;
