@@ -288,7 +288,7 @@ static void FilterAdcData(xadcChannel_t *xadcCh)
    {
       if (!xadcCh->isValid)
       {
-         for (i = 1; i < FILTER_DEPTH; i++)
+         for (i = 0; i < FILTER_DEPTH-1; i++)
             intChanSamples[xadcCh->id][i] = xadcCh->voltage;
       }
       memmove(&intChanSamples[xadcCh->id][1], &intChanSamples[xadcCh->id][0],
@@ -303,7 +303,7 @@ static void FilterAdcData(xadcChannel_t *xadcCh)
    {
       if (!xadcCh->isValid)
       {
-         for (i = 1; i < FILTER_DEPTH; i++)
+         for (i = 0; i < FILTER_DEPTH-1; i++)
             extChanSamples[xadcCh->id][i] = xadcCh->voltage;
       }
       memmove(&extChanSamples[xadcCh->id][1], &extChanSamples[xadcCh->id][0],
