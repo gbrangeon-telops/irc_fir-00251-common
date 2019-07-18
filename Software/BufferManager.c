@@ -747,7 +747,7 @@ void BufferManager_SM()
                MemoryBufferStatusClr(MemoryBufferRecordingMask);
                BufferManager_HW_DownloadBufferTable(&gBufManager, &gcRegsData); // 2.44ms for 256 sequences : <10ms for 1024 sequences
             }
-            else
+            else if(!MemoryBufferStatusTst(MemoryBufferDefragingMask))
             {
                // Update sequence count
                sequenceCount = gMemoryTable.NbValidSequences + BM_HW_GetLocalSequenceCount(&gBufManager);
