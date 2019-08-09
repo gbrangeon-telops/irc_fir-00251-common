@@ -16,7 +16,7 @@
 
 /* AUTO-CODE BEGIN */
 // Auto-generated GeniCam library.
-// Generated from XML camera definition file version 12.5.1
+// Generated from XML camera definition file version 12.6.0
 // using generateGenICamCommonCLib.m Matlab script.
 
 // GenICam global variables definition
@@ -280,7 +280,7 @@ gcRegister_t gcRegsDef[GC_REG_COUNT] = {
    /* MemoryBufferSequenceSizeInc */               {0x0000EBA4, NULL, NULL, 4, 4, GCRO_Storage_FPGA, REG_UNLOCKED|REG_INT|REG_RO|REG_NOTSHARED|REG_BIGENDIAN},
    /* MemoryBufferSequenceDownloadFrameID */       {0x0000EBA8, NULL, NULL, 4, 4, GCRO_Storage_FPGA, REG_UNLOCKED|REG_INT|REG_RW|REG_NOTSHARED|REG_BIGENDIAN},
    /* MemoryBufferSequenceDownloadFrameCount */    {0x0000EBAC, NULL, NULL, 4, 4, GCRO_Storage_FPGA, REG_UNLOCKED|REG_INT|REG_RW|REG_NOTSHARED|REG_BIGENDIAN},
-   /* MemoryBufferStatus */                        {0x0000EBB0, NULL, NULL, 4, 4, GCRO_Storage_FPGA, REG_UNLOCKED|REG_INT|REG_RO|REG_SHARED|REG_BIGENDIAN},
+   /* MemoryBufferStatus */                        {0x0000EBB0, NULL, NULL, 4, 4, GCRO_Storage_FPGA, REG_UNLOCKED|REG_INT|REG_RW|REG_SHARED|REG_BIGENDIAN},
    /* MemoryBufferLegacyMode */                    {0x0000EBB4, NULL, NULL, 4, 4, GCRO_Storage_FPGA, REG_UNLOCKED|REG_INT|REG_RW|REG_SHARED|REG_BIGENDIAN},
    /* DeviceSerialPortFunction */                  {0x0000EBB8, NULL, NULL, 4, 4, GCRO_Processing_FPGA, REG_UNLOCKED|REG_INT|REG_RW|REG_NOTSHARED|REG_BIGENDIAN},
    /* ImageCorrectionFWAcquisitionFrameRateMin */  {0x0000EBBC, NULL, NULL, 4, 4, GCRO_Processing_FPGA, REG_UNLOCKED|REG_FLOAT|REG_RO|REG_NOTSHARED|REG_BIGENDIAN},
@@ -313,7 +313,10 @@ gcRegister_t gcRegsDef[GC_REG_COUNT] = {
    /* FocusPositionRawSetpoint */                  {0x0000EC28, NULL, NULL, 4, 4, GCRO_Processing_FPGA, REG_UNLOCKED|REG_INT|REG_RW|REG_NOTSHARED|REG_BIGENDIAN},
    /* FocusPositionRaw */                          {0x0000EC2C, NULL, NULL, 4, 4, GCRO_Processing_FPGA, REG_UNLOCKED|REG_INT|REG_RO|REG_NOTSHARED|REG_BIGENDIAN},
    /* LoadSavedConfigurationAtStartup */           {0x0000EC30, NULL, NULL, 4, 4, GCRO_Processing_FPGA, REG_UNLOCKED|REG_INT|REG_RW|REG_NOTSHARED|REG_BIGENDIAN},
-   /* SaveConfiguration */                         {0x0000EC34, NULL, NULL, 4, 4, GCRO_Processing_FPGA, REG_UNLOCKED|REG_INT|REG_WO|REG_NOTSHARED|REG_BIGENDIAN}
+   /* SaveConfiguration */                         {0x0000EC34, NULL, NULL, 4, 4, GCRO_Processing_FPGA, REG_UNLOCKED|REG_INT|REG_WO|REG_NOTSHARED|REG_BIGENDIAN},
+   /* DetectorMode */                              {0x0000EC38, NULL, NULL, 4, 4, GCRO_Processing_FPGA, REG_UNLOCKED|REG_INT|REG_RW|REG_NOTSHARED|REG_BIGENDIAN},
+   /* AcquisitionFrameRateUnrestrictedMin */       {0x0000EC3C, NULL, NULL, 4, 4, GCRO_Processing_FPGA, REG_UNLOCKED|REG_FLOAT|REG_RO|REG_NOTSHARED|REG_BIGENDIAN},
+   /* AcquisitionFrameRateUnrestrictedMax */       {0x0000EC40, NULL, NULL, 4, 4, GCRO_Processing_FPGA, REG_UNLOCKED|REG_FLOAT|REG_RO|REG_NOTSHARED|REG_BIGENDIAN}
 };
 
 /* AUTO-CODE END */

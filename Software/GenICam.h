@@ -97,6 +97,7 @@
 #define AutofocusIsImplementedMask                       0x00020000  /**< TDCFlags register bit mask for AutofocusIsImplemented field */
 #define ClDualBaseIsImplementedMask                      0x00040000  /**< TDCFlags register bit mask for ClDualBaseIsImplementedMask field */
 #define SaveConfigurationIsImplementedMask               0x00080000  /**< TDCFlags register bit mask for SaveConfigurationIsImplementedMask field */
+#define BurstModeIsImplementedMask                       0x00100000  /**< TDCFlags register bit mask for BurstModeIsImplementedMask field */
 #define SensorIsImplementedMask                          0xF8000000  /**< TDCFlags register bit mask for SensorIsImplemented field */
 #define SensorIsImplementedBitPos                        27          /**< TDCFlags register bit position for SensorIsImplemented field */
 
@@ -191,24 +192,6 @@
 #define IsActiveFlagsTstAny(mask) BitMaskTstAny(gcRegsData.IsActiveFlags, mask)  /**< Test if at least one of the masked bits in IsActiveFlags register is set */
 
 /**
- * MemoryBufferStatus register bit field definition
- */
-#define MemoryBufferRecordingMask             0x00000001  /**< MemoryBufferStatus register bit mask for MemoryBufferRecording field */
-#define MemoryBufferTransmittingMask          0x00000002  /**< MemoryBufferStatus register bit mask for MemoryBufferTransmitting field */
-#define MemoryBufferDefragingMask             0x00000004  /**< MemoryBufferStatus register bit mask for MemoryBufferDefraging field */
-#define MemoryBufferUpdatingMask              0x00000008  /**< MemoryBufferStatus register bit mask for MemoryBufferUpdating field */
-#define MemoryBufferHoldingMask               0x00000010  /**< MemoryBufferStatus register bit mask for MemoryBufferHolding field */
-#define MemoryBufferDeactivatedMask           0x00000020  /**< MemoryBufferStatus register bit mask for MemoryBufferDeactivated field */
-
-#define MEMORY_BUFFER_STATUS_INIT             (MemoryBufferDeactivatedMask)
-#define MEMORY_BUFFER_DOWNLOADBITRATEMAX_REGMIN (0.1)
-
-#define MemoryBufferStatusSet(mask) GC_RegisterSetBitsUI32(&gcRegsDef[MemoryBufferStatusIdx], mask)  /**< Set masked bits in MemoryBufferStatus register */
-#define MemoryBufferStatusClr(mask) GC_RegisterClearBitsUI32(&gcRegsDef[MemoryBufferStatusIdx], mask)  /**< Clear masked bits in MemoryBufferStatus register */
-#define MemoryBufferStatusTst(mask) BitMaskTst(gcRegsData.MemoryBufferStatus, mask)  /**< Test if masked bits in MemoryBufferStatus register are all set */
-#define MemoryBufferStatusTstAny(mask) BitMaskTstAny(gcRegsData.MemoryBufferStatus, mask)  /**< Test if at least one of the masked bits in MemoryBufferStatus register is set */
-
-/**
  * Camera Link output clock frequency values
  */
 #define CLINK_OUT_CLK_SLOW    50E+6F   /**< Hz */
@@ -292,15 +275,28 @@ typedef struct gcRegister gcRegister_t;
 
 /* AUTO-CODE BEGIN */
 // Auto-generated GeniCam library.
-// Generated from XML camera definition file version 12.5.1
+// Generated from XML camera definition file version 12.6.0
 // using generateGenICamCommonCLib.m Matlab script.
 
 #define GC_XMLMAJORVERSION    12
-#define GC_XMLMINORVERSION    5
-#define GC_XMLSUBMINORVERSION 1
+#define GC_XMLMINORVERSION    6
+#define GC_XMLSUBMINORVERSION 0
 
 // Enumerations values and data types
 ////////////////////////////////////////////////////////////////////////////////
+
+/**
+ * DetectorMode enumeration values
+ */
+enum DetectorModeEnum {
+   DM_Normal = 0,
+   DM_Burst = 1
+};
+
+/**
+ * DetectorMode enumeration values data type
+ */
+typedef enum DetectorModeEnum DetectorMode_t;
 
 /**
  * ExposureMode enumeration values
@@ -821,6 +817,25 @@ enum MemoryBufferLegacyModeEnum {
  * MemoryBufferLegacyMode enumeration values data type
  */
 typedef enum MemoryBufferLegacyModeEnum MemoryBufferLegacyMode_t;
+
+/**
+ * MemoryBufferStatus enumeration values
+ */
+enum MemoryBufferStatusEnum {
+   MBS_Deactivated = 0,
+   MBS_Idle = 1,
+   MBS_Holding = 2,
+   MBS_Recording = 3,
+   MBS_Updating = 4,
+   MBS_Transmitting = 5,
+   MBS_Defraging = 6,
+   MBS_Refresh = 255
+};
+
+/**
+ * MemoryBufferStatus enumeration values data type
+ */
+typedef enum MemoryBufferStatusEnum MemoryBufferStatus_t;
 
 /**
  * MemoryBufferMOISource enumeration values
@@ -1673,6 +1688,9 @@ typedef enum DeviceLedIndicatorStateEnum DeviceLedIndicatorState_t;
 #define FocusPositionRawAddr                          0x0000EC2C  /**< FocusPositionRaw register address */
 #define LoadSavedConfigurationAtStartupAddr           0x0000EC30  /**< LoadSavedConfigurationAtStartup register address */
 #define SaveConfigurationAddr                         0x0000EC34  /**< SaveConfiguration register address */
+#define DetectorModeAddr                              0x0000EC38  /**< DetectorMode register address */
+#define AcquisitionFrameRateUnrestrictedMinAddr       0x0000EC3C  /**< AcquisitionFrameRateUnrestrictedMin register address */
+#define AcquisitionFrameRateUnrestrictedMaxAddr       0x0000EC40  /**< AcquisitionFrameRateUnrestrictedMax register address */
 
 // Registers definition array indices
 ////////////////////////////////////////////////////////////////////////////////
@@ -1965,11 +1983,14 @@ typedef enum DeviceLedIndicatorStateEnum DeviceLedIndicatorState_t;
 #define FocusPositionRawIdx                           285
 #define LoadSavedConfigurationAtStartupIdx            286
 #define SaveConfigurationIdx                          287
+#define DetectorModeIdx                               288
+#define AcquisitionFrameRateUnrestrictedMinIdx        289
+#define AcquisitionFrameRateUnrestrictedMaxIdx        290
 
 // Registers general macros
 ////////////////////////////////////////////////////////////////////////////////
 
-#define GC_REG_COUNT 288 /**< Number of GenICam registers */
+#define GC_REG_COUNT 291 /**< Number of GenICam registers */
 #define GC_REG_MAX_LENGTH 512 /**< GenICam registers maximum length (in bytes) */
 #define GC_REG_MAX_READ_LENGTH 512 /**< GenICam readable registers maximum length (in bytes) */
 #define GC_REG_MAX_WRITE_LENGTH 4 /**< GenICam writable registers maximum length (in bytes) */

@@ -149,12 +149,12 @@ IRC_Status_t BufferManager_WaitMemReady(t_bufferManager *pBufferCtrl)
  */
 void BufferManager_OnAcquisitionStart(t_bufferManager *pBufferCtrl, gcRegistersData_t *pGCRegs)
 {
-   if(BM_MemoryBufferWrite && (pGCRegs->MemoryBufferMOISource != MBMOIS_None))
+   if(BM_MemoryBufferWrite)
    {
       if(pGCRegs->MemoryBufferNumberOfSequencesMax)
       {
          BufferManager_HW_WriteSequence(pBufferCtrl, pGCRegs);
-         MemoryBufferStatusSet(MemoryBufferRecordingMask);
+         GC_SetMemoryBufferStatus(MBS_Recording);
       }
    }
    else if(BM_MemoryBufferRead)
@@ -171,7 +171,7 @@ void BufferManager_OnAcquisitionStart(t_bufferManager *pBufferCtrl, gcRegistersD
          return;
       }
       gBufferStartDownloadTrigger = 1;
-      MemoryBufferStatusSet(MemoryBufferTransmittingMask);
+      GC_SetMemoryBufferStatus(MBS_Transmitting);
    }
 }
 
@@ -189,7 +189,7 @@ void BufferManager_OnAcquisitionStop(t_bufferManager *pBufferCtrl, gcRegistersDa
 
    BM_HW_SetLocalAcquisitionStop(pBufferCtrl);
 
-   if(GC_MemoryBufferRecording)
+   if (pGCRegs->MemoryBufferStatus == MBS_Recording)
    {
       StartTimer(&timer, BM_WRITE_COMPLETION_TIMEOUT_IN_MS);
 
@@ -205,12 +205,12 @@ void BufferManager_OnAcquisitionStop(t_bufferManager *pBufferCtrl, gcRegistersDa
             return;
          }
       }
-      MemoryBufferStatusClr(MemoryBufferRecordingMask);
+      GC_SetMemoryBufferStatus(MBS_Idle);
       BufferManager_HW_DownloadBufferTable(pBufferCtrl, pGCRegs);
    }
-   else if (GC_MemoryBufferTransmitting)
+   else if (pGCRegs->MemoryBufferStatus == MBS_Transmitting)
    {
-      MemoryBufferStatusClr(MemoryBufferTransmittingMask);
+      GC_SetMemoryBufferStatus(MBS_Idle);
    }
 }
 
@@ -308,7 +308,7 @@ void BufferManager_OnDefrag(t_bufferManager *pBufferCtrl, gcRegistersData_t *pGC
    if(CDMADefrag_StartDefrag(&BufferManager_DefragCompletedCallback, &BufferManager_DefragErrorCallback))
    {
       // Defrag Command Accepted
-      MemoryBufferStatusSet(MemoryBufferDefragingMask);
+      GC_SetMemoryBufferStatus(MBS_Defraging);
       if(!(gMemoryTable.data[pGCRegs->MemoryBufferSequenceSelector].bufferLength))
       {
          // Return selection to first non-empty sequence if current sequence doesn't exist
@@ -642,7 +642,7 @@ static void BufferManager_UpdateFirstOrSelectedSequenceParameters(gcRegistersDat
  */
 static void BufferManager_DefragCompletedCallback()
 {
-   MemoryBufferStatusClr(MemoryBufferDefragingMask);
+   GC_SetMemoryBufferStatus(MBS_Idle);
 }
 
 /**
@@ -744,10 +744,10 @@ void BufferManager_SM()
             {
                // Download completed sequences (and update registers)
                BM_HW_SetLocalAcquisitionStop(&gBufManager);
-               MemoryBufferStatusClr(MemoryBufferRecordingMask);
+               GC_SetMemoryBufferStatus(MBS_Idle);
                BufferManager_HW_DownloadBufferTable(&gBufManager, &gcRegsData); // 2.44ms for 256 sequences : <10ms for 1024 sequences
             }
-            else if(!MemoryBufferStatusTst(MemoryBufferDefragingMask))
+            else if(gcRegsData.MemoryBufferStatus != MBS_Defraging)
             {
                // Update sequence count
                sequenceCount = gMemoryTable.NbValidSequences + BM_HW_GetLocalSequenceCount(&gBufManager);
@@ -793,7 +793,7 @@ void BufferManager_SM()
       case BMS_DONE:
          BM_HW_SetLocalAcquisitionStop(&gBufManager);
          if(!gBufferStartDownloadTrigger) // Do not clear flag if restart is requested !
-            MemoryBufferStatusClr(MemoryBufferTransmittingMask);
+            GC_SetMemoryBufferStatus(MBS_Idle);
          BUFFERING_INF("Buffer download completed or stopped");
          cstate = BMS_IDLE;
          break;
@@ -955,7 +955,7 @@ static void BufferManager_HW_DownloadBufferTable(t_bufferManager *pBufferCtrl, g
    uint32_t i=0, n;
    uint64_t FreeSpace, FragSpace;
 
-   MemoryBufferStatusSet(MemoryBufferUpdatingMask);
+   GC_SetMemoryBufferStatus(MBS_Updating);
    addressOffset = pBufferCtrl->Mem0_base_addr-MEM0_BUFFER_BASEADDR; // Bytes
    sequenceAddrSize = (uint64_t)pBufferCtrl->FrameSize*2*(uint64_t)BM_IMAGE_MEM_IDX(pBufferCtrl->nbImagePerSeq); // Bytes for each DIMM
    sequenceCount = BM_HW_GetLocalSequenceCount(pBufferCtrl);
@@ -985,7 +985,7 @@ static void BufferManager_HW_DownloadBufferTable(t_bufferManager *pBufferCtrl, g
    BufferManager_UpdateSequenceMaxParameters(&gcRegsData);
    if(!sequenceOffset) // Update selected parameters if first sequence was just recorded
       BufferManager_UpdateSelectedSequenceParameters(pGCRegs);
-   MemoryBufferStatusClr(MemoryBufferUpdatingMask);
+   GC_SetMemoryBufferStatus(MBS_Idle);
 }
 
 /**
@@ -1006,7 +1006,7 @@ static void BufferManager_HW_ConfigureMinFrameTime(t_bufferManager *pBufferCtrl,
    if(newDownload)
       frameSize = gcRegsData.Width * (gcRegsData.Height + 2);
 
-   maxBandWidth = MAX(MEMORY_BUFFER_DOWNLOADBITRATEMAX_REGMIN, gcRegsData.MemoryBufferSequenceDownloadBitRateMax); // Mb/s (1.0e6)
+   maxBandWidth = gcRegsData.MemoryBufferSequenceDownloadBitRateMax; // Mb/s (1.0e6)
    timeout_delay_us = frameSize * BM_BITS_PER_PIXEL / maxBandWidth;
    timeout_delay_us = MIN(timeout_delay_us, BM_MAX_FRAME_PERIOD_US);
    cnt = timeout_delay_us * clk_freq_MHz;
