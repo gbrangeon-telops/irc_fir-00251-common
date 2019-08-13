@@ -369,6 +369,9 @@ void CtrlIntf_Process(ctrlIntf_t *ctrlIntf)
                   case F1F2_CMD_FILE_CHECK_REQ:
                   case F1F2_CMD_FILE_DELETE:
                   case F1F2_CMD_FILE_FORMAT:
+                  case F1F2_CMD_FILE_USED_SPACE_REQ:
+                  case F1F2_CMD_FILE_FREE_SPACE_REQ:
+                  case F1F2_CMD_FILE_TOTAL_SPACE_REQ:
                      netCmd.f1f2.destAddr = ctrlIntf->port.netIntf->address;
                      netCmd.f1f2.destPort = NIP_FILE_MANAGER;
                      break;

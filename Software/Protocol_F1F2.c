@@ -237,6 +237,9 @@ IRC_Status_t F1F2_PayloadDataCountValidator(uint8_t cmd, uint16_t pdc)
 
       case F1F2_CMD_FILE_COUNT_REQ:
       case F1F2_CMD_FILE_FORMAT:
+      case F1F2_CMD_FILE_USED_SPACE_REQ:
+      case F1F2_CMD_FILE_FREE_SPACE_REQ:
+      case F1F2_CMD_FILE_TOTAL_SPACE_REQ:
       case F1F2_CMD_PING:
          pdcMin = 0;
          pdcMax = pdcMin;
@@ -312,6 +315,13 @@ IRC_Status_t F1F2_PayloadDataCountValidator(uint8_t cmd, uint16_t pdc)
       case F1F2_CMD_DEBUG_CMD:
          pdcMin = 0;
          pdcMax = F1F2_MAX_DEBUG_DATA_SIZE;
+         break;
+
+      case F1F2_CMD_FILE_USED_SPACE_RSP:
+      case F1F2_CMD_FILE_FREE_SPACE_RSP:
+      case F1F2_CMD_FILE_TOTAL_SPACE_RSP:
+         pdcMin = F1F2_FILE_SPACE_SIZE;
+         pdcMax = pdcMin;
          break;
 
       case F1F2_CMD_NETWORK:
@@ -541,11 +551,25 @@ IRC_Status_t F1F2_PayloadParser(uint8_t *p_payload, uint16_t pdc, F1F2Command_t 
 
       case F1F2_CMD_PING:
       case F1F2_CMD_FILE_FORMAT:
+      case F1F2_CMD_FILE_USED_SPACE_REQ:
+      case F1F2_CMD_FILE_FREE_SPACE_REQ:
+      case F1F2_CMD_FILE_TOTAL_SPACE_REQ:
          if (pdc != 0)
          {
             F1F2_ERR("Invalid Payload Data Count (cmd = %d).", f1f2Cmd->cmd);
             return IRC_FAILURE;
          }
+         break;
+
+      case F1F2_CMD_FILE_USED_SPACE_RSP:
+      case F1F2_CMD_FILE_FREE_SPACE_RSP:
+      case F1F2_CMD_FILE_TOTAL_SPACE_RSP:
+         if (pdc != F1F2_FILE_SPACE_SIZE)
+         {
+            F1F2_ERR("Invalid Payload Data Count (cmd = %d).", f1f2Cmd->cmd);
+            return IRC_FAILURE;
+         }
+         memcpy(&f1f2Cmd->payload.fileSpace.space, &p_payload[F1F2_PD_OFFSET_FILE_SPACE], F1F2_FILE_SPACE_SIZE);
          break;
 
       case F1F2_CMD_DEBUG_TEXT:
@@ -618,6 +642,9 @@ IRC_Status_t F1F2_CircPayloadParser(circByteBuffer_t *circByteBuffer, uint16_t o
          break;
 
       case F1F2_CMD_FILE_COUNT_REQ:
+      case F1F2_CMD_FILE_USED_SPACE_REQ:
+      case F1F2_CMD_FILE_FREE_SPACE_REQ:
+      case F1F2_CMD_FILE_TOTAL_SPACE_REQ:
       case F1F2_CMD_FILE_FORMAT:
       case F1F2_CMD_PING:
          // Nothing to do
@@ -718,6 +745,13 @@ IRC_Status_t F1F2_CircPayloadParser(circByteBuffer_t *circByteBuffer, uint16_t o
          CBB_Peekn(circByteBuffer, offset + F1F2_PD_OFFSET_DEBUG_DATA, pdc, (uint8_t *)f1f2Cmd->payload.debug.text);
          f1f2Cmd->payload.debug.text[pdc] = 0;
          break;
+
+      case F1F2_CMD_FILE_USED_SPACE_RSP:
+      case F1F2_CMD_FILE_FREE_SPACE_RSP:
+      case F1F2_CMD_FILE_TOTAL_SPACE_RSP:
+         CBB_Peekn(circByteBuffer, offset + F1F2_PD_OFFSET_FILE_SPACE, pdc, (uint8_t *)&f1f2Cmd->payload.fileSpace.space);
+         break;
+
 
       case F1F2_CMD_NETWORK:
          f1f2Cmd->isNetwork = 1;
@@ -1164,6 +1198,9 @@ IRC_Status_t F1F2_CommandPayloadBuilder(F1F2Command_t *f1f2Cmd, F1F2PayloadData_
 
       case F1F2_CMD_PING:
       case F1F2_CMD_FILE_FORMAT:
+      case F1F2_CMD_FILE_USED_SPACE_REQ:
+      case F1F2_CMD_FILE_FREE_SPACE_REQ:
+      case F1F2_CMD_FILE_TOTAL_SPACE_REQ:
          break;
 
       case F1F2_CMD_DEBUG_TEXT:
@@ -1172,6 +1209,17 @@ IRC_Status_t F1F2_CommandPayloadBuilder(F1F2Command_t *f1f2Cmd, F1F2PayloadData_
 
          payloadData[*payloadDataCount].p_data = f1f2Cmd->payload.debug.text;
          payloadData[*payloadDataCount].dataLength = strlen(f1f2Cmd->payload.debug.text);
+         payloadData[*payloadDataCount].padLength = 0;
+         (*payloadDataCount)++;
+         break;
+
+      case F1F2_CMD_FILE_USED_SPACE_RSP:
+      case F1F2_CMD_FILE_FREE_SPACE_RSP:
+      case F1F2_CMD_FILE_TOTAL_SPACE_RSP:
+         if (*payloadDataCount + 1 > payloadDataSize) return IRC_FAILURE;
+
+         payloadData[*payloadDataCount].p_data = &f1f2Cmd->payload.fileSpace.space;
+         payloadData[*payloadDataCount].dataLength = F1F2_FILE_SPACE_SIZE;
          payloadData[*payloadDataCount].padLength = 0;
          (*payloadDataCount)++;
          break;
@@ -1318,6 +1366,12 @@ char *F1F2_CommandNameToString(uint8_t cmd)
       case F1F2_CMD_PING: return "PING";
       case F1F2_CMD_DEBUG_TEXT: return "DEBUG_TEXT";
       case F1F2_CMD_DEBUG_CMD: return "DEBUG_CMD";
+      case F1F2_CMD_FILE_USED_SPACE_REQ: return "FILE_USED_SPACE_REQ";
+      case F1F2_CMD_FILE_USED_SPACE_RSP: return "FILE_USED_SPACE_RSP";
+      case F1F2_CMD_FILE_FREE_SPACE_REQ: return "FILE_FREE_SPACE_REQ";
+      case F1F2_CMD_FILE_FREE_SPACE_RSP: return "FILE_FREE_SPACE_RSP";
+      case F1F2_CMD_FILE_TOTAL_SPACE_REQ: return "FILE_TOTAL_SPACE_REQ";
+      case F1F2_CMD_FILE_TOTAL_SPACE_RSP: return "FILE_TOTAL_SPACE_RSP";
       case F1F2_CMD_NETWORK: return "NETWORK";
       case F1F2_CMD_ERROR: return "ERROR";
       default: return "UNKNOWN";

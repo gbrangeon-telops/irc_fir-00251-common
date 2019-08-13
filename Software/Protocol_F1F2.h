@@ -65,6 +65,12 @@
 #define F1F2_CMD_PING               0x50     /**< F1F2 Ping command code */
 #define F1F2_CMD_DEBUG_TEXT         0x60     /**< F1F2 Debug Text Request command code */
 #define F1F2_CMD_DEBUG_CMD          0x61     /**< F1F2 Debug Command Request command code */
+#define F1F2_CMD_FILE_USED_SPACE_REQ 0x70    /**< F1F2 File Used Space Request command code */
+#define F1F2_CMD_FILE_USED_SPACE_RSP 0x71    /**< F1F2 File Used Space Response command code */
+#define F1F2_CMD_FILE_FREE_SPACE_REQ 0x72    /**< F1F2 File Free Space Request command code */
+#define F1F2_CMD_FILE_FREE_SPACE_RSP 0x73    /**< F1F2 File Free Space Response command code */
+#define F1F2_CMD_FILE_TOTAL_SPACE_REQ 0x74   /**< F1F2 File Total Space Request command code */
+#define F1F2_CMD_FILE_TOTAL_SPACE_RSP 0x75   /**< F1F2 File Total Space Response command code */
 #define F1F2_CMD_NETWORK            0x80     /**< F1F2 Network command code */
 #define F1F2_CMD_ERROR              0xFF     /**< F1F2 command value returned on parsing error */
 
@@ -87,6 +93,7 @@
 #define F1F2_FILE_INFO_SIZE         (F1F2_FILE_INDEX_SIZE + F1F2_FILE_NAME_SIZE + F1F2_FILE_SIZE_SIZE + F1F2_FILE_ATTR_SIZE + F1F2_FILE_ID_SIZE + F1F2_FILE_TYPE_SIZE)  /**< F1F2 file info field size in bytes */
 #define F1F2_FILE_OFFSET_SIZE       4        /**< F1F2 file data offset field size in bytes */
 #define F1F2_FILE_LENGTH_SIZE       2        /**< F1F2 file data length field size in bytes */
+#define F1F2_FILE_SPACE_SIZE        8        /**< F1F2 file space field size in bytes */
 #define F1F2_PROM_DEVICE_SIZE       1        /**< F1F2 PROM device number field size in bytes */
 #define F1F2_PROM_OFFSET_SIZE       4        /**< F1F2 PROM data offset field size in bytes */
 #define F1F2_PROM_LENGTH_SIZE       4        /**< F1F2 PROM data length field size in bytes */
@@ -135,6 +142,8 @@
 #define F1F2_PD_OFFSET_PROM_CRC16      (F1F2_PD_OFFSET_PROM_LENGTH + F1F2_PROM_LENGTH_SIZE)     /**< F1F2 Payload Data PROM CRC-16 offset */
 // Debug payload data bytes offset
 #define F1F2_PD_OFFSET_DEBUG_DATA      0                                                        /**< F1F2 Payload Data Debug Text offset */
+// Flash filesystem payload data bytes offset
+#define F1F2_PD_OFFSET_FILE_SPACE      0                                                        /**< F1F2 Payload Data File Space offset */
 
 // F1F2 size limits definition
 #define F1F2_MIN_PACKET_SIZE        (1 + F1F2_CMD_CODE_SIZE + F1F2_PAYLOADDATACOUNT_SIZE + F1F2_CRC16_SIZE + 1)   /**< Minimum F1F2 packet size in bytes */
@@ -248,6 +257,10 @@ struct F1F2CommandStruct {
       struct {
          char text[F1F2_MAX_DEBUG_DATA_SIZE + 1]; /**< Text data */
       } debug;                /**< F1F2 payload data for DEBUG_TEXT command code */
+
+      struct {
+         uint64_t space;      /**< Flash filesystem space in bytes */
+      } fileSpace;            /**< F1F2 payload data for FILE_USED_SPACE_RSP, FILE_FREE_SPACE_RSP and FILE_TOTAL_SPACE_RSP command codes */
 
    } payload;                 /**< F1F2 payload data */
 };
