@@ -173,6 +173,10 @@ void BufferManager_OnAcquisitionStart(t_bufferManager *pBufferCtrl, gcRegistersD
       gBufferStartDownloadTrigger = 1;
       GC_SetMemoryBufferStatus(MBS_Transmitting);
    }
+   else if(gcRegsData.MemoryBufferMode == MBM_On && gcRegsData.MemoryBufferSequenceDownloadMode == MBSDM_Off && gcRegsData.MemoryBufferMOISource == MBMOIS_None){
+      BufferManager_OnAcquisitionStop(&pBufferCtrl, &pGCRegs);
+      GC_SetMemoryBufferStatus(MBS_Holding);
+   }
 }
 
 /**
@@ -209,6 +213,10 @@ void BufferManager_OnAcquisitionStop(t_bufferManager *pBufferCtrl, gcRegistersDa
       BufferManager_HW_DownloadBufferTable(pBufferCtrl, pGCRegs);
    }
    else if (pGCRegs->MemoryBufferStatus == MBS_Transmitting)
+   {
+      GC_SetMemoryBufferStatus(MBS_Idle);
+   }
+   else if (pGCRegs->MemoryBufferStatus == MBS_Holding)
    {
       GC_SetMemoryBufferStatus(MBS_Idle);
    }
