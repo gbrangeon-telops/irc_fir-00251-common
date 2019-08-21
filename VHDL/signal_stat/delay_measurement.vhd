@@ -67,8 +67,9 @@ architecture rtl of delay_measurement is
   signal ext_trig_re : std_logic := '0'; 
   signal ext_trig_fe : std_logic := '0';
   signal acq_int_re : std_logic := '0';
-  signal acq_int_fe : std_logic := '0';  
-  signal delay_o    : std_logic := '0'; 
+  signal acq_int_fe : std_logic := '0';    
+  signal rst_delay_last    : std_logic := '0';  
+  signal rst_delay    : std_logic := '0'; 
   signal delay_re    : std_logic := '0';
   signal delay_fe    : std_logic := '0';
   signal done_i    : std_logic := '0';
@@ -90,7 +91,7 @@ begin
    U2 : gh_edge_det port map(clk => CLK, rst => sreset, D => EXT_TRIG, sre => open, re => ext_trig_re, fe => ext_trig_fe, sfe => open);      
    U3 : gh_edge_det port map(clk => CLK, rst => sreset, D => ACQ_INT, sre => open, re => acq_int_re, fe => acq_int_fe, sfe => open);   
    
-     
+   
    U4: process(CLK)
    begin		
       
@@ -98,56 +99,50 @@ begin
          
          if sreset = '1' then  
             
-           delay_o <= '0';
-           meas_count <= (others => '0');
+           rst_delay <= '0'; 
+           rst_delay_last <= '0';
            done_i <= '0';  
            PERIOD_LENGTH <= (others => '0');
          else
 
             if ENABLE = '1' then 
                
-                done_i <= '0';
+               done_i <= '0'; 
+               rst_delay <= '0'; 
+               
 
                 case TRIG_CFG.trig_activ is
                      
                      when RisingEdge =>    
                    
                         if ext_trig_re = '1' then 
-                            delay_o <= '1';
-                            meas_count <= to_unsigned(3, meas_count'length);   -- +2 for the double sync on EXT_TRIG
+                            rst_delay <= '1';
                         elsif acq_int_re = '1' then
-                            delay_o <= '0';
                             done_i <= '1'; 
                             PERIOD_LENGTH <= std_logic_vector(meas_count);
                         end if;  
                          
                      when FallingEdge =>  
                         if ext_trig_fe = '1' then  
-                            delay_o <= '1';
-                            meas_count <= to_unsigned(3, meas_count'length);   -- +2 for the double sync on EXT_TRIG
+                            rst_delay <= '1';
                         elsif acq_int_re = '1' then
-                            delay_o <= '0';
                             done_i <= '1'; 
                             PERIOD_LENGTH <= std_logic_vector(meas_count);
                          end if;   
                          
                      when AnyEdge =>  
                         if (ext_trig_re or ext_trig_fe) = '1' then
-                            delay_o <= '1';
-                            meas_count <= to_unsigned(3, meas_count'length);  -- +2 for the double sync on EXT_TRIG
+                            rst_delay <= '1';
                         elsif acq_int_re = '1'  then
-                            delay_o <= '0';
                             done_i <= '1';
                             PERIOD_LENGTH <= std_logic_vector(meas_count);
                         end if;
                         
                      when others =>
    
-                end case;
+                end case; 
                 
-               if delay_o = '1' and acq_int_re = '0' then             
-                  meas_count <= meas_count + 1;
-               end if;
+                rst_delay_last <= rst_delay;
 
             else
                PERIOD_LENGTH <= (others => '0');
@@ -157,5 +152,22 @@ begin
       end if;
    end process; 
     
-   
+   U5: process(CLK)
+   begin		
+      
+      if rising_edge(CLK) then
+         
+         if sreset = '1' then  
+            meas_count <= (others => '0');
+         else   
+
+            if rst_delay = '1' and rst_delay_last = '0' then
+               meas_count <= to_unsigned(3, meas_count'length);   -- +2 for the double sync on EXT_TRIG, +1 for gh_edge_det  
+            else     
+               meas_count <= meas_count + 1;       
+            end if;
+            
+         end if;      
+      end if;
+   end process;   
 end rtl;
