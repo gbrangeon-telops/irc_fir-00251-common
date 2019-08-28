@@ -174,7 +174,7 @@ void BufferManager_OnAcquisitionStart(t_bufferManager *pBufferCtrl, gcRegistersD
       GC_SetMemoryBufferStatus(MBS_Transmitting);
    }
    else if(gcRegsData.MemoryBufferMode == MBM_On && gcRegsData.MemoryBufferSequenceDownloadMode == MBSDM_Off && gcRegsData.MemoryBufferMOISource == MBMOIS_None){
-      BufferManager_OnAcquisitionStop(&pBufferCtrl, &pGCRegs);
+      BufferManager_OnAcquisitionStop(pBufferCtrl, pGCRegs);
       GC_SetMemoryBufferStatus(MBS_Holding);
    }
 }
