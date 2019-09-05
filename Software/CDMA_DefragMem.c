@@ -173,10 +173,10 @@ void CDMADefrag_SM()
       case CDM_PARSE:
          BUFFERING_DBG("State CDM_PARSE");
          cdmState = CDM_COPY;
+         BUFFERING_DBG("State CDM_COPY");
          // break; NO! Continue to CDM_COPY and start Defrag immediately !
 
       case CDM_COPY:
-         BUFFERING_DBG("State CDM_COPY");
          if(!DefragFullLength)
          {
             if(parsingStatus == CDM_SEARCH_COMPLETED)
