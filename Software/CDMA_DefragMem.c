@@ -53,6 +53,7 @@ IRC_Status_t CDMADefrag_Init(t_memoryTable *pMemoryTable)
    if(!cfgPtr0 || !cfgPtr1)
    {
       // TOTO generate ERROR
+      BUFFERING_ERR("CDMA config lookup failure.");
       return IRC_FAILURE;
    }
    status0 = XAxiCdma_CfgInitialize(&axiCDMA0, cfgPtr0, cfgPtr0->BaseAddress);
@@ -60,6 +61,7 @@ IRC_Status_t CDMADefrag_Init(t_memoryTable *pMemoryTable)
    if(status0 != XST_SUCCESS || status1 != XST_SUCCESS)
    {
       // TOTO generate ERROR
+      BUFFERING_ERR("CDMA initialization failure.");
       return IRC_FAILURE;
    }
    XAxiCdma_IntrDisable(&axiCDMA0, XAXICDMA_XR_IRQ_ALL_MASK);
@@ -80,7 +82,10 @@ IRC_Status_t CDMADefrag_Init(t_memoryTable *pMemoryTable)
 bool CDMADefrag_StartDefrag(t_CDM_functionPtr doneFuncPtr, t_CDM_functionPtr errFuncPtr)
 {
    if(gDefragRequest || XAxiCdma_IsBusy(&axiCDMA0) || XAxiCdma_IsBusy(&axiCDMA1))
+   {
+      BUFFERING_DBG("Defragger busy.");
       return false;
+   }
    XAxiCdma_Reset(&axiCDMA0);
    XAxiCdma_Reset(&axiCDMA1);
 
@@ -166,14 +171,19 @@ void CDMADefrag_SM()
          break;
 
       case CDM_PARSE:
+         BUFFERING_DBG("State CDM_PARSE");
          cdmState = CDM_COPY;
          // break; NO! Continue to CDM_COPY and start Defrag immediately !
 
       case CDM_COPY:
+         BUFFERING_DBG("State CDM_COPY");
          if(!DefragFullLength)
          {
             if(parsingStatus == CDM_SEARCH_COMPLETED)
+            {
                cdmState = CDM_WAIT;
+               BUFFERING_DBG("State CDM_WAIT");
+            }
             else
                cdmState = CDM_PARSE;
          }
@@ -185,7 +195,9 @@ void CDMADefrag_SM()
          break;
 
       case CDM_DONE:
+         BUFFERING_DBG("State CDM_DONE");
          cdmState = CDM_IDLE;
+         BUFFERING_DBG("State CDM_IDLE");
          break;
 
       default:
@@ -391,13 +403,18 @@ void CDMADefrag_SM()
          CDMAerr1 = XAxiCdma_GetError(&axiCDMA0);
          CDMAerr2 = XAxiCdma_GetError(&axiCDMA1);
          if(CDMAerr1 || CDMAerr2)
+         {
+            BUFFERING_ERR("CDMA error: CDMAerr1 = 0x%08x, CDMAerr2 = 0x%08x.",
+                          CDMAerr1, CDMAerr2);
             (*gErrFunctionPtr)();
+         }
          if(!CDMADefrag_StartCopy(&DefragDstAddr, &DefragSrcAddr, &DefragFullLength))
          {
             (*gErrFunctionPtr)();
          }
          if(DefragFullLength && (DefragFullLength < BM_BYTES_ALIGN))
          {
+            BUFFERING_ERR("Defrag full length misaligned.");
             (*gErrFunctionPtr)();
             DefragFullLength = 0;
          }
@@ -427,7 +444,11 @@ void CDMADefrag_SM()
 
       case CDM_DONE:
          if(XAxiCdma_GetError(&axiCDMA0) || XAxiCdma_GetError(&axiCDMA1))
+         {
+            BUFFERING_ERR("CDMA error: CDMAerr1 = 0x%08x, CDMAerr2 = 0x%08x.",
+                          CDMAerr1, CDMAerr2);
             (*gErrFunctionPtr)();
+         }
          for(i=NextFreeSequence; i<gMemoryTablePtr->NbValidSequences; i++)
          {
             gMemoryTablePtr->data[i].bufferLength = 0;
@@ -495,7 +516,11 @@ bool CDMADefrag_StartCopy(uint64_t *DstAddr, uint64_t *SrcAddr, uint64_t *FullLe
    *SrcAddr += Length;
    *FullLength -= Length;
    if(status0 != XST_SUCCESS || status1 != XST_SUCCESS)
+   {
+      BUFFERING_ERR("CDMA transfer failure: status0=0x%08x, status1=0x%08x.",
+                    status0, status1);
       return false;
+   }
 
    return true;
 }

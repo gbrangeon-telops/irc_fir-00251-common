@@ -101,12 +101,14 @@ IRC_Status_t BufferManager_Init(t_bufferManager *pBufferCtrl, gcRegistersData_t 
 
    if(BufferManager_WaitMemReady(pBufferCtrl) != IRC_SUCCESS)
    {
+      BUFFERING_ERR("DDR memory error.");
       GC_GenerateEventError(EECD_MemoryBufferDDRError);
       status = IRC_FAILURE;
    }
    #ifdef BM_USE_CDMA
       if(CDMADefrag_Init(&gMemoryTable) != IRC_SUCCESS)
       {
+         BUFFERING_ERR("CDMA initialization error.");
          GC_GenerateEventError(EECD_MemoryBufferInitialisationError);
          status = IRC_FAILURE;
       }
@@ -149,6 +151,8 @@ IRC_Status_t BufferManager_WaitMemReady(t_bufferManager *pBufferCtrl)
  */
 void BufferManager_OnAcquisitionStart(t_bufferManager *pBufferCtrl, gcRegistersData_t *pGCRegs)
 {
+   BUFFERING_DBG("OnAcquisitionStart callback");
+
    if(BM_MemoryBufferWrite)
    {
       if(pGCRegs->MemoryBufferNumberOfSequencesMax)
@@ -161,12 +165,14 @@ void BufferManager_OnAcquisitionStart(t_bufferManager *pBufferCtrl, gcRegistersD
    {
       if(!gMemoryTable.data[pGCRegs->MemoryBufferSequenceSelector].bufferLength || (pGCRegs->MemoryBufferSequenceSelector>=gMemoryTable.NbValidSequences))
       {
+         BUFFERING_ERR("Download of a cleared sequence.");
          GC_GenerateEventError(EECD_MemoryBufferDownloadClearedSequence);
          return;
       }
       if((pGCRegs->Width != gMemoryTable.data[pGCRegs->MemoryBufferSequenceSelector].imageWidth) ||
          (pGCRegs->Height != gMemoryTable.data[pGCRegs->MemoryBufferSequenceSelector].imageHeight))
       {
+         BUFFERING_ERR("Download frame size mismatch.");
          GC_GenerateEventError(EECD_MemoryBufferDownloadFrameSizeMissmatch);
          return;
       }
@@ -190,6 +196,8 @@ void BufferManager_OnAcquisitionStart(t_bufferManager *pBufferCtrl, gcRegistersD
 void BufferManager_OnAcquisitionStop(t_bufferManager *pBufferCtrl, gcRegistersData_t *pGCRegs)
 {
    timerData_t timer;
+
+   BUFFERING_DBG("OnAcquisitionStop callback");
 
    BM_HW_SetLocalAcquisitionStop(pBufferCtrl);
 
@@ -234,6 +242,8 @@ void BufferManager_OnSequenceClearAll(t_bufferManager *pBufferCtrl, gcRegistersD
 {
    int32_t i=0;
 
+   BUFFERING_DBG("OnSequenceClearAll callback");
+
    for(; i<gMemoryTable.NbValidSequences; i++)
       gMemoryTable.data[i].bufferLength = 0;
 
@@ -260,6 +270,8 @@ void BufferManager_OnSequenceClearSelected(gcRegistersData_t *pGCRegs)
 {
    int32_t i;
    uint64_t FreeSpace, FragSpace;
+
+   BUFFERING_DBG("OnSequenceClearSelected callback");
 
    FragSpace = ((uint64_t)pGCRegs->MemoryBufferFragmentedFreeSpaceHigh << 32) + (uint64_t)pGCRegs->MemoryBufferFragmentedFreeSpaceLow;
 
@@ -313,6 +325,8 @@ void BufferManager_OnDefrag(t_bufferManager *pBufferCtrl, gcRegistersData_t *pGC
    uint32_t nbDefragFreeSequences = 0;
    uint64_t FreeSpace;
 
+   BUFFERING_DBG("OnDefrag callback");
+
    if(CDMADefrag_StartDefrag(&BufferManager_DefragCompletedCallback, &BufferManager_DefragErrorCallback))
    {
       // Defrag Command Accepted
@@ -359,9 +373,11 @@ void BufferManager_OnDefrag(t_bufferManager *pBufferCtrl, gcRegistersData_t *pGC
    else
    {
       // Defrag Command Refused
+      BUFFERING_ERR("Defrag command refused.");
       BufferManager_DefragErrorCallback(pGCRegs);
    }
 #else
+   BUFFERING_ERR("Defragging not supported.");
    BufferManager_DefragErrorCallback(pGCRegs);
 #endif
 }
@@ -375,6 +391,8 @@ void BufferManager_OnDefrag(t_bufferManager *pBufferCtrl, gcRegistersData_t *pGC
  */
 void BufferManager_OnWindowSizeInit(gcRegistersData_t *pGCRegs)
 {
+   BUFFERING_DBG("OnWindowSizeInit callback");
+
    pGCRegs->MemoryBufferSequenceSize = pGCRegs->MemoryBufferSequenceSizeMax;
    // Set NumberOfSequences to max with callback to reduce SequenceSize accordingly
    GC_SetMemoryBufferNumberOfSequences(pGCRegs->MemoryBufferNumberOfSequencesMax);
@@ -651,6 +669,7 @@ static void BufferManager_UpdateFirstOrSelectedSequenceParameters(gcRegistersDat
 static void BufferManager_DefragCompletedCallback()
 {
    GC_SetMemoryBufferStatus(MBS_Idle);
+   BUFFERING_INF("Defrag completed!");
 }
 
 /**
@@ -662,6 +681,7 @@ static void BufferManager_DefragCompletedCallback()
  */
 static void BufferManager_DefragErrorCallback()
 {
+   BUFFERING_ERR("Defrag error.");
    GC_GenerateEventError(EECD_MemoryBufferDefragError);
 }
 
@@ -791,6 +811,7 @@ void BufferManager_SM()
          break;
 
       case BMS_READ:
+         BUFFERING_DBG("State BMS_READ");
          // Live throttling of the average bit rate
          BufferManager_HW_ConfigureMinFrameTime(&gBufManager, false);
          // Wait completion flag. Read completion flag is also set when acquisition is stopped
@@ -799,11 +820,13 @@ void BufferManager_SM()
 
          cstate = BMS_DONE;
       case BMS_DONE:
+         BUFFERING_DBG("State BMS_DONE");
          BM_HW_SetLocalAcquisitionStop(&gBufManager);
          if(!gBufferStartDownloadTrigger) // Do not clear flag if restart is requested !
             GC_SetMemoryBufferStatus(MBS_Idle);
          BUFFERING_INF("Buffer download completed or stopped");
          cstate = BMS_IDLE;
+         BUFFERING_DBG("State BMS_IDLE");
          break;
 
       default:
