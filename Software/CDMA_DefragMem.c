@@ -504,9 +504,9 @@ bool CDMADefrag_StartCopy(uint64_t *DstAddr, uint64_t *SrcAddr, uint64_t *FullLe
    uint32_t Length, status0, status1;
 
    BUFFERING_DBG("CDMADefrag_StartCopy: DstAddr=0x%08x%08x, SrcAddr=0x%08x%08x, FullLength=0x%08x%08x.",
-                 *DstAddr >> 32, *DstAddr & 0x00000000ffffffffull,
-                 *SrcAddr >> 32, *SrcAddr & 0x00000000ffffffffull,
-                 *FullLength >> 32, *FullLength & 0x00000000ffffffffull);
+                 (uint32_t)(*DstAddr >> 32), (uint32_t)(*DstAddr & 0x00000000ffffffffull),
+                 (uint32_t)(*SrcAddr >> 32), (uint32_t)(*SrcAddr & 0x00000000ffffffffull),
+                 (uint32_t)(*FullLength >> 32), (uint32_t)(*FullLength & 0x00000000ffffffffull));
 
    // Align to MEM_BUFFER_BYTES_ALIGN bytes
    if(*FullLength > XAXICDMA_MAX_TRANSFER_LEN) // Limit transfer length to maximal DMA transfer length
