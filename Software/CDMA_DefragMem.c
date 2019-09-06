@@ -227,9 +227,21 @@ void CDMADefrag_SM()
             }
             // Check if sequence contains free space
             seqType = CDMADefrag_SequenceType(seqInfo);
+            #ifdef BUFFERING_VERBOSE
+            switch(seqType)
+            {
+               case CDM_FULL: BUFFERING_DBG("Sequence type CDM_FULL"); break;
+               case CDM_FREESPACE_BEFORE: BUFFERING_DBG("Sequence type CDM_FREESPACE_BEFORE"); break;
+               case CDM_FREESPACE_AFTER: BUFFERING_DBG("Sequence type CDM_FREESPACE_AFTER"); break;
+               case CDM_FREESPACE_BOTHENDS: BUFFERING_DBG("Sequence type CDM_FREESPACE_BOTHENDS"); break;
+               case CDM_FREESPACE_WITHIN: BUFFERING_DBG("Sequence type CDM_FREESPACE_WITHIN"); break;
+               case CDM_EMPTY: BUFFERING_DBG("Sequence type CDM_EMPTY"); break;
+            }
+            #endif
             switch(parsingStatus)
             {
                case CDM_SEARCH_HOLE: // CDM_SEARCH_HOLE is the first search state so NextDefragSequence==NextFreeSequence, except when ReprocessAfterCopy
+                  BUFFERING_DBG("Parsing substate CDM_SEARCH_HOLE");
                   switch(seqType)
                   {
                      case CDM_FULL:
@@ -287,6 +299,7 @@ void CDMADefrag_SM()
                   }
                   break;
                case CDM_SEARCH_DATA:
+                  BUFFERING_DBG("Parsing substate CDM_SEARCH_DATA");
                   switch(seqType)
                   {
                      case CDM_FULL:
@@ -341,6 +354,7 @@ void CDMADefrag_SM()
                   }
                   break;
                case CDM_SEARCH_LENGTH:
+                  BUFFERING_DBG("Parsing substate CDM_SEARCH_LENGTH");
                   switch(seqType)
                   {
                      case CDM_FULL:
@@ -373,6 +387,7 @@ void CDMADefrag_SM()
             }
             if(parsingStatus==CDM_SEARCH_DONE)
             {
+               BUFFERING_DBG("Parsing substate CDM_SEARCH_DONE");
                if(!ReprocessAfterCopy) NextDefragSequence++;
                break;
             }
@@ -387,6 +402,7 @@ void CDMADefrag_SM()
          {
             // Defrag completed, inform main state machine
             parsingStatus = CDM_SEARCH_COMPLETED;
+            BUFFERING_DBG("Parsing substate CDM_SEARCH_COMPLETED");
             break;
          }
          DefragDstAddr = DstAddr;
