@@ -441,6 +441,8 @@ void CDMADefrag_SM()
             DefragFullLength = 0;
          }
 
+         if(DefragFullLength) break;
+
          // Set state for next defrag loop
          if(ReprocessAfterCopy)
          {
