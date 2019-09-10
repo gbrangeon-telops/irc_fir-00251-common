@@ -217,6 +217,10 @@ void CDMADefrag_SM()
       case CDM_PARSE:
          for(; NextDefragSequence<gMemoryTablePtr->NbValidSequences; NextDefragSequence++)
          {
+            #ifdef BUFFERING_VERBOSE
+            char *typeStr;
+            #endif
+
             seqInfo = &(gMemoryTablePtr->data[NextDefragSequence]);
             // Check if sequence is valid (or deleted)
             if(seqInfo->bufferLength)
@@ -230,14 +234,16 @@ void CDMADefrag_SM()
             #ifdef BUFFERING_VERBOSE
             switch(seqType)
             {
-               case CDM_FULL: BUFFERING_DBG("Sequence type CDM_FULL"); break;
-               case CDM_FREESPACE_BEFORE: BUFFERING_DBG("Sequence type CDM_FREESPACE_BEFORE"); break;
-               case CDM_FREESPACE_AFTER: BUFFERING_DBG("Sequence type CDM_FREESPACE_AFTER"); break;
-               case CDM_FREESPACE_BOTHENDS: BUFFERING_DBG("Sequence type CDM_FREESPACE_BOTHENDS"); break;
-               case CDM_FREESPACE_WITHIN: BUFFERING_DBG("Sequence type CDM_FREESPACE_WITHIN"); break;
-               case CDM_EMPTY: BUFFERING_DBG("Sequence type CDM_EMPTY"); break;
+               case CDM_FULL: typeStr = "CDM_FULL"; break;
+               case CDM_FREESPACE_BEFORE: typeStr = "CDM_FREESPACE_BEFORE"; break;
+               case CDM_FREESPACE_AFTER: typeStr = "CDM_FREESPACE_AFTER"; break;
+               case CDM_FREESPACE_BOTHENDS: typeStr = "CDM_FREESPACE_BOTHENDS"; break;
+               case CDM_FREESPACE_WITHIN: typeStr = "CDM_FREESPACE_WITHIN"; break;
+               case CDM_EMPTY: typeStr = "CDM_EMPTY"; break;
             }
+            BUFFERING_DBG("Parsing sequence %u of type %s.", NextDefragSequence, typeStr);
             #endif
+
             switch(parsingStatus)
             {
                case CDM_SEARCH_HOLE: // CDM_SEARCH_HOLE is the first search state so NextDefragSequence==NextFreeSequence, except when ReprocessAfterCopy
