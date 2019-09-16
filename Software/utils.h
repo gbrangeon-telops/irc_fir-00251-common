@@ -124,6 +124,7 @@ typedef struct {
    uint32_t blockIdx;            // current block being processed
    uint32_t blockLength;         // number of elements to process in the next pass
    uint32_t totalLength;         // total number of elements to process
+   uint32_t totalBlocks;         // total number of blocks to process (last one counted even if incomplete)
 } context_t;
 
 void ctxtInit(context_t* ctxt, uint32_t i0, uint32_t totalLength, uint32_t blockLength);

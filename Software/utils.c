@@ -1134,6 +1134,7 @@ void ctxtInit(context_t* ctxt, uint32_t i0, uint32_t totalLength, uint32_t block
    ctxt->totalLength = totalLength;
    ctxt->blockIdx = 0;
    ctxt->blockLength = blockLength;
+   ctxt->totalBlocks = ((totalLength-1) / blockLength) + 1;
 }
 
 /**
