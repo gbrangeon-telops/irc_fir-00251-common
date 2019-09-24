@@ -115,5 +115,7 @@ struct xadcChannelStruct {
 IRC_Status_t XADC_Init(uint16_t xsmDeviceId);
 void XADC_SM();
 void XADC_OGPhyConv(xadcChannel_t *xadcCh);
+void StartXADCSequence();
+void ProcessAdcChannel(xadcChannel_t *xadcCh);
 
 #endif // XADC_H

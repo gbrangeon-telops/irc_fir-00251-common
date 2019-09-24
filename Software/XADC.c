@@ -29,8 +29,6 @@ XSysMon xsm;
 
 
 /* Prototypes */
-static void StartXADCSequence();
-static void ProcessAdcChannel(xadcChannel_t *xadcCh);
 static void FilterAdcData(xadcChannel_t *xadcCh);
 
 IRC_Status_t XADC_Init(uint16_t xsmDeviceId)
@@ -130,7 +128,7 @@ void XADC_OGPhyConv(xadcChannel_t *xadcCh)
    }
 }
 
-static void StartXADCSequence()
+void StartXADCSequence()
 {
    // Disable the sequencer
    XSysMon_SetSequencerMode(&xsm, XSM_SEQ_MODE_SAFE);
@@ -142,7 +140,7 @@ static void StartXADCSequence()
    XSysMon_GetStatus(&xsm);
 }
 
-static void ProcessAdcChannel(xadcChannel_t *xadcCh)
+void ProcessAdcChannel(xadcChannel_t *xadcCh)
 {
    switch (xadcCh->polarity)
    {
