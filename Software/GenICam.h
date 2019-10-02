@@ -1150,7 +1150,8 @@ enum EventErrorCodeDescEnum {
    EECD_MemoryBufferHardwareCompletionTimeout = 38,
    EECD_MotorizedLensError = 39,
    EECD_AutofocusModuleError = 40,
-   EECD_AutofocusTimeout = 41
+   EECD_AutofocusTimeout = 41,
+   EECD_FilterWheelInvalidSpeedSetpoint = 42
 };
 
 /**
