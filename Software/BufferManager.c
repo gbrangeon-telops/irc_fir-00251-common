@@ -757,7 +757,6 @@ void BufferManager_GetStatus(t_bufferManager *pBufferCtrl, t_bufferStatus *pStat
 void BufferManager_SM()
 {
    extern t_bufferManager gBufManager;
-   extern gcRegistersData_t gcRegsData;
    static bmState_t cstate = BMS_IDLE;
    uint32_t sequenceCount, sequenceCountDiff;
    uint64_t FreeSpace;
