@@ -467,7 +467,9 @@ void CDMADefrag_SM()
          break;
 
       case CDM_DONE:
-         if(XAxiCdma_GetError(&axiCDMA0) || XAxiCdma_GetError(&axiCDMA1))
+         CDMAerr1 = XAxiCdma_GetError(&axiCDMA0);
+         CDMAerr2 = XAxiCdma_GetError(&axiCDMA1);
+         if(CDMAerr1 || CDMAerr2)
          {
             BUFFERING_ERR("CDMA error: CDMAerr1 = 0x%08x, CDMAerr2 = 0x%08x.",
                           CDMAerr1, CDMAerr2);
