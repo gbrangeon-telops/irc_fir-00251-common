@@ -16,7 +16,7 @@
 
 /* AUTO-CODE BEGIN */
 // Auto-generated IRCam header library.
-// Generated from the IRCam header definition XLS file version 12.6
+// Generated from the IRCam header definition XLS file version 12.7
 // using generateIRCamHeaderCLib.m Matlab script.
 
 #define SignatureHdrAddr                              0x00  /**< Signature header field address */
@@ -103,6 +103,7 @@
 #define DeviceFirmwareBuildVersionHdrAddr             0xF3  /**< DeviceFirmwareBuildVersion header field address */
 #define ImageCorrectionPOSIXTimeHdrAddr               0xF4  /**< ImageCorrectionPOSIXTime header field address */
 #define DeviceSerialNumberHdrAddr                     0xF8  /**< DeviceSerialNumber header field address */
+#define CalibrationCollectionPOSIXTimeHdrAddr         0xFC  /**< CalibrationCollectionPOSIXTime header field address */
 
 /* AUTO-CODE END */
 

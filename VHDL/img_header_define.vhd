@@ -22,7 +22,7 @@ use ieee.numeric_std.all;
 
 -- AUTO-CODE BEGIN
 -- Auto-generated IRCam image header definition package.
--- Generated from the IRCam header definition XLS file version 12.6
+-- Generated from the IRCam header definition XLS file version 12.7
 -- using generateIRCamHeaderVHDLLib.m Matlab script.
 
 package img_header_define is
@@ -443,6 +443,11 @@ package img_header_define is
    constant DeviceSerialNumberAdd32                      : std_logic_vector(5 downto 0) := std_logic_vector(to_unsigned(62,6));  --! DeviceSerialNumber field's 32-bit address
    constant DeviceSerialNumberBWE                        : std_logic_vector(3 downto 0) := "1111";                               --! DeviceSerialNumber field's word mask
    constant DeviceSerialNumberShift                      : natural := 0;                                                         --! DeviceSerialNumber field's shift value
+
+   constant CalibrationCollectionPOSIXTimeAdd8           : std_logic_vector(7 downto 0) := x"FC";                                --! CalibrationCollectionPOSIXTime field's 8-bit address
+   constant CalibrationCollectionPOSIXTimeAdd32          : std_logic_vector(5 downto 0) := std_logic_vector(to_unsigned(63,6));  --! CalibrationCollectionPOSIXTime field's 32-bit address
+   constant CalibrationCollectionPOSIXTimeBWE            : std_logic_vector(3 downto 0) := "1111";                               --! CalibrationCollectionPOSIXTime field's word mask
+   constant CalibrationCollectionPOSIXTimeShift          : natural := 0;                                                         --! CalibrationCollectionPOSIXTime field's shift value
 
 end img_header_define;
 
