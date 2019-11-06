@@ -166,6 +166,17 @@ architecture rtl of adc_serdes_clk_wrapper is
          );
    end component;
    
+   component serdes_clkin_20_0_MHz_mmcm
+      port
+         (
+         clk_in            : in     std_logic;
+         clk_out           : out    std_logic;
+         clk_out_mult7     : out    std_logic;
+         reset             : in     std_logic;
+         locked            : out    std_logic
+         );
+   end component;
+   
    component serdes_clkin_23_7_MHz_mmcm
       port
          (
@@ -254,12 +265,23 @@ architecture rtl of adc_serdes_clk_wrapper is
          );
    end component;
    
+   component serdes_clkin_18_0_MHz_mmcm
+      port
+         (
+         clk_in            : in     std_logic;
+         clk_out           : out    std_logic;
+         clk_out_mult7     : out    std_logic;
+         reset             : in     std_logic;
+         locked            : out    std_logic
+         );
+   end component;
+   
    
 begin
    
-   MCLK_5_0M_Gen : if abs(1.0/CLK_1X_PERIOD_mS - 10_000.0) <= 10.0  generate   
+   Gen_10_0M : if abs(1.0/CLK_1X_PERIOD_mS - 10_000.0) <= 10.0  generate   
       begin                                             
-      U10M :  serdes_clkin_10_0_MHz_mmcm
+      Ux :  serdes_clkin_10_0_MHz_mmcm
       port map (   
          clk_in         => CLK_IN,
          clk_out        => CLK_OUT, 
@@ -269,9 +291,9 @@ begin
          );      
    end generate;
    
-   MCLK_5_5M_Gen : if abs(1.0/CLK_1X_PERIOD_mS - 11_000.0) <= 10.0  generate   
+   Gen_11_0M : if abs(1.0/CLK_1X_PERIOD_mS - 11_000.0) <= 10.0  generate   
       begin                                             
-      U10M :  serdes_clkin_11_0_MHz_mmcm
+      Ux :  serdes_clkin_11_0_MHz_mmcm
       port map (   
          clk_in         => CLK_IN,
          clk_out        => CLK_OUT, 
@@ -281,9 +303,9 @@ begin
          );      
    end generate;
    
-   MCLK_8_3M_Gen : if abs(1.0/CLK_1X_PERIOD_mS - 16_666.75) <= 10.0 generate   
+   Gen_16_6M : if abs(1.0/CLK_1X_PERIOD_mS - 16_666.75) <= 10.0 generate   
       begin                                             
-      U10M :  serdes_clkin_16_6_MHz_mmcm
+      Ux :  serdes_clkin_16_6_MHz_mmcm
       port map (   
          clk_in         => CLK_IN,
          clk_out        => CLK_OUT, 
@@ -293,9 +315,9 @@ begin
          );      
    end generate;
    
-   MCLK_8_4M_Gen : if abs(1.0/CLK_1X_PERIOD_mS - 16_875.0) <= 10.0 generate   
+   Gen_16_8M : if abs(1.0/CLK_1X_PERIOD_mS - 16_875.0) <= 10.0 generate   
       begin                                             
-      U10M :  serdes_clkin_16_8_MHz_mmcm
+      Ux :  serdes_clkin_16_8_MHz_mmcm
       port map (   
          clk_in         => CLK_IN,
          clk_out        => CLK_OUT, 
@@ -305,93 +327,9 @@ begin
          );      
    end generate;
    
-   MCLK_8_5M_Gen : if abs(1.0/CLK_1X_PERIOD_mS - 17_000.0) <= 10.0 generate   
+   Gen_17_0M : if abs(1.0/CLK_1X_PERIOD_mS - 17_000.0) <= 10.0 generate   
       begin                                             
-      U10M :  serdes_clkin_17_0_MHz_mmcm
-      port map (   
-         clk_in         => CLK_IN,
-         clk_out        => CLK_OUT, 
-         clk_out_mult7  => CLK_OUT_MULT7,   
-         reset          => ARESET,
-         locked         => LOCKED            
-         );      
-   end generate;
-   
-   MCLK_11_1M_Gen : if abs(1.0/CLK_1X_PERIOD_mS - 22_222.0) <= 10.0  generate   
-      begin                                             
-      U10M :  serdes_clkin_22_2_MHz_mmcm
-      port map (   
-         clk_in         => CLK_IN,
-         clk_out        => CLK_OUT, 
-         clk_out_mult7  => CLK_OUT_MULT7,   
-         reset          => ARESET,
-         locked         => LOCKED            
-         );      
-   end generate;
-   
-   MCLK_11_8M_Gen : if abs(1.0/CLK_1X_PERIOD_mS - 23_760.0) <= 10.0  generate   
-      begin                                             
-      U10M :  serdes_clkin_23_7_MHz_mmcm
-      port map (   
-         clk_in         => CLK_IN,
-         clk_out        => CLK_OUT, 
-         clk_out_mult7  => CLK_OUT_MULT7,   
-         reset          => ARESET,
-         locked         => LOCKED            
-         );      
-   end generate;
-   
-   MCLK_12_0M_Gen : if abs(1.0/CLK_1X_PERIOD_mS - 24_000.0) <= 10.0  generate   
-      begin                                             
-      U10M :  serdes_clkin_24_0_MHz_mmcm
-      port map (   
-         clk_in         => CLK_IN,
-         clk_out        => CLK_OUT, 
-         clk_out_mult7  => CLK_OUT_MULT7,   
-         reset          => ARESET,
-         locked         => LOCKED            
-         );      
-   end generate;
-   
-   MCLK_12_1M_Gen : if abs(1.0/CLK_1X_PERIOD_mS - 24_250.0) <= 10.0  generate   
-      begin                                             
-      U10M :  serdes_clkin_24_2_MHz_mmcm
-      port map (   
-         clk_in         => CLK_IN,
-         clk_out        => CLK_OUT, 
-         clk_out_mult7  => CLK_OUT_MULT7,   
-         reset          => ARESET,
-         locked         => LOCKED            
-         );      
-   end generate;
-   
-   MCLK_5_7M_Gen : if abs(1.0/CLK_1X_PERIOD_mS - 11_400.0) <= 10.0  generate   
-      begin                                             
-      U10M :  serdes_clkin_11_4_MHz_mmcm
-      port map (   
-         clk_in         => CLK_IN,
-         clk_out        => CLK_OUT, 
-         clk_out_mult7  => CLK_OUT_MULT7,   
-         reset          => ARESET,
-         locked         => LOCKED            
-         );      
-   end generate;
-   
-   MCLK_13_5M_Gen : if abs(1.0/CLK_1X_PERIOD_mS - 27_000.0) <= 10.0  generate   
-      begin                                             
-      U10M :  serdes_clkin_27_0_MHz_mmcm
-      port map (   
-         clk_in         => CLK_IN,
-         clk_out        => CLK_OUT, 
-         clk_out_mult7  => CLK_OUT_MULT7,   
-         reset          => ARESET,
-         locked         => LOCKED            
-         );      
-   end generate;
-   
-   MCLK_12_5M_Gen : if abs(1.0/CLK_1X_PERIOD_mS - 25_000.0) <= 10.0  generate   
-      begin                                             
-      U10M :  serdes_clkin_25_0_MHz_mmcm
+      Ux :  serdes_clkin_17_0_MHz_mmcm
       port map (   
          clk_in         => CLK_IN,
          clk_out        => CLK_OUT, 
@@ -401,9 +339,9 @@ begin
          );      
    end generate; 
    
-   MCLK_10_75M_Gen : if abs(1.0/CLK_1X_PERIOD_mS - 21_500.0) <= 10.0  generate   
+   Gen_18_0M : if abs(1.0/CLK_1X_PERIOD_mS - 18_000.0) <= 10.0 generate   
       begin                                             
-      U10M :  serdes_clkin_21_5_MHz_mmcm
+      Ux :  serdes_clkin_18_0_MHz_mmcm
       port map (   
          clk_in         => CLK_IN,
          clk_out        => CLK_OUT, 
@@ -413,9 +351,117 @@ begin
          );      
    end generate;
    
-   Gen_40M : if abs(1.0/CLK_1X_PERIOD_mS - 40_000.0) <= 10.0  generate   
+   Gen_20_0M : if abs(1.0/CLK_1X_PERIOD_mS - 20_000.0) <= 10.0  generate   
       begin                                             
-      U10M :  serdes_clkin_40_0_MHz_mmcm
+      Ux :  serdes_clkin_20_0_MHz_mmcm
+      port map (   
+         clk_in         => CLK_IN,
+         clk_out        => CLK_OUT, 
+         clk_out_mult7  => CLK_OUT_MULT7,   
+         reset          => ARESET,
+         locked         => LOCKED            
+         );
+   end generate;
+   
+   Gen_22_2M : if abs(1.0/CLK_1X_PERIOD_mS - 22_222.0) <= 10.0  generate   
+      begin                                             
+      Ux :  serdes_clkin_22_2_MHz_mmcm
+      port map (   
+         clk_in         => CLK_IN,
+         clk_out        => CLK_OUT, 
+         clk_out_mult7  => CLK_OUT_MULT7,   
+         reset          => ARESET,
+         locked         => LOCKED            
+         );      
+   end generate;
+   
+   Gen_23_7M : if abs(1.0/CLK_1X_PERIOD_mS - 23_760.0) <= 10.0  generate   
+      begin                                             
+      Ux :  serdes_clkin_23_7_MHz_mmcm
+      port map (   
+         clk_in         => CLK_IN,
+         clk_out        => CLK_OUT, 
+         clk_out_mult7  => CLK_OUT_MULT7,   
+         reset          => ARESET,
+         locked         => LOCKED            
+         );      
+   end generate;
+   
+   Gen_24_0M : if abs(1.0/CLK_1X_PERIOD_mS - 24_000.0) <= 10.0  generate   
+      begin                                             
+      Ux :  serdes_clkin_24_0_MHz_mmcm
+      port map (   
+         clk_in         => CLK_IN,
+         clk_out        => CLK_OUT, 
+         clk_out_mult7  => CLK_OUT_MULT7,   
+         reset          => ARESET,
+         locked         => LOCKED            
+         );      
+   end generate;
+   
+   Gen_24_2M : if abs(1.0/CLK_1X_PERIOD_mS - 24_250.0) <= 10.0  generate   
+      begin                                             
+      Ux :  serdes_clkin_24_2_MHz_mmcm
+      port map (   
+         clk_in         => CLK_IN,
+         clk_out        => CLK_OUT, 
+         clk_out_mult7  => CLK_OUT_MULT7,   
+         reset          => ARESET,
+         locked         => LOCKED            
+         );      
+   end generate;
+   
+   Gen_11_4M : if abs(1.0/CLK_1X_PERIOD_mS - 11_400.0) <= 10.0  generate   
+      begin                                             
+      Ux :  serdes_clkin_11_4_MHz_mmcm
+      port map (   
+         clk_in         => CLK_IN,
+         clk_out        => CLK_OUT, 
+         clk_out_mult7  => CLK_OUT_MULT7,   
+         reset          => ARESET,
+         locked         => LOCKED            
+         );      
+   end generate;
+   
+   Gen_27_0M : if abs(1.0/CLK_1X_PERIOD_mS - 27_000.0) <= 10.0  generate   
+      begin                                             
+      Ux :  serdes_clkin_27_0_MHz_mmcm
+      port map (   
+         clk_in         => CLK_IN,
+         clk_out        => CLK_OUT, 
+         clk_out_mult7  => CLK_OUT_MULT7,   
+         reset          => ARESET,
+         locked         => LOCKED            
+         );      
+   end generate;
+   
+   Gen_25_0M : if abs(1.0/CLK_1X_PERIOD_mS - 25_000.0) <= 10.0  generate   
+      begin                                             
+      Ux :  serdes_clkin_25_0_MHz_mmcm
+      port map (   
+         clk_in         => CLK_IN,
+         clk_out        => CLK_OUT, 
+         clk_out_mult7  => CLK_OUT_MULT7,   
+         reset          => ARESET,
+         locked         => LOCKED            
+         );      
+   end generate; 
+   
+   Gen_21_5M : if abs(1.0/CLK_1X_PERIOD_mS - 21_500.0) <= 10.0  generate   
+      begin                                             
+      Ux :  serdes_clkin_21_5_MHz_mmcm
+      port map (   
+         clk_in         => CLK_IN,
+         clk_out        => CLK_OUT, 
+         clk_out_mult7  => CLK_OUT_MULT7,   
+         reset          => ARESET,
+         locked         => LOCKED            
+         );      
+   end generate;
+   
+   Gen_40_0M : if abs(1.0/CLK_1X_PERIOD_mS - 40_000.0) <= 10.0  generate   
+      begin                                             
+      Ux :  serdes_clkin_40_0_MHz_mmcm
       port map (   
          clk_in         => CLK_IN,
          clk_out        => CLK_OUT, 
