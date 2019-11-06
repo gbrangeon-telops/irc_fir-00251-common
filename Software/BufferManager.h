@@ -46,6 +46,11 @@
 #define BM_BITS_PER_PIXEL                    16       // 2 bytes
 #define BM_MAX_FRAME_PERIOD_US               (20e6)   // 0.05 Hz min
 
+
+
+// NTx-mini on board memory is configured for 28 Mb (32Mb*0.875) 
+#define BM_FRAME_IMG_COUNT_PAYLOAD_SIZE_MIN 990720 // = 12 frames x 320x258 (15.11719 Mb), 3 frames in 640x514, 1 frame in 1280x1026
+
 /**
  * Memory address map.
  */
@@ -312,5 +317,7 @@ uint32_t BufferManager_HW_GetDirectInternalBufferSequenceRecordedSize(t_bufferMa
 void     BufferManager_HW_ForceLoadInternalBufferTable(t_bufferManager *pBufferCtrl, gcRegistersData_t *pGCRegs);
 void     BufferManager_HW_ForceDirectInternalBufferWriteConfig(t_bufferManager *pBufferCtrl, gcRegistersData_t *pGCRegs, \
                                                            uint32_t nbSeq, uint32_t seqSize, uint32_t preMOISize);
+
+void BufferManager_UpdateSuggestedFrameImageCount(gcRegistersData_t *pGCRegs);
 
 #endif // BUFFERMANAGER_H

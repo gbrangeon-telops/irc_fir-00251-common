@@ -485,7 +485,7 @@ bool BufferManager_SequenceDownloadLimits(gcRegistersData_t *pGCRegs)
    {
       pGCRegs->MemoryBufferSequenceDownloadImageFrameID = 0;
       pGCRegs->MemoryBufferSequenceDownloadFrameID = 0;
-      pGCRegs->MemoryBufferSequenceDownloadFrameCount = 0;
+      pGCRegs->MemoryBufferSequenceDownloadFrameCount = gcRegsDataFactory.MemoryBufferSequenceDownloadFrameCount;
       return false;
    }
 
@@ -619,7 +619,7 @@ static void BufferManager_UpdateFirstOrSelectedSequenceParameters(gcRegistersDat
       pGCRegs->MemoryBufferSequenceOffsetX = pGCRegs->OffsetX;
       pGCRegs->MemoryBufferSequenceOffsetY = pGCRegs->OffsetY;
       pGCRegs->MemoryBufferSequenceWidth = pGCRegs->Width;
-      pGCRegs->MemoryBufferSequenceHeight = pGCRegs->Height;
+      GC_SetMemoryBufferSequenceHeight(pGCRegs->Height);
    }
    else
    {
@@ -629,7 +629,7 @@ static void BufferManager_UpdateFirstOrSelectedSequenceParameters(gcRegistersDat
       pGCRegs->MemoryBufferSequenceOffsetX = gMemoryTable.data[pGCRegs->MemoryBufferSequenceSelector].OffsetX;
       pGCRegs->MemoryBufferSequenceOffsetY = gMemoryTable.data[pGCRegs->MemoryBufferSequenceSelector].OffsetY;
       pGCRegs->MemoryBufferSequenceWidth = gMemoryTable.data[pGCRegs->MemoryBufferSequenceSelector].imageWidth;
-      pGCRegs->MemoryBufferSequenceHeight = gMemoryTable.data[pGCRegs->MemoryBufferSequenceSelector].imageHeight;
+      GC_SetMemoryBufferSequenceHeight(gMemoryTable.data[pGCRegs->MemoryBufferSequenceSelector].imageHeight);
    }
 
    if(!bufferLength)
@@ -640,10 +640,10 @@ static void BufferManager_UpdateFirstOrSelectedSequenceParameters(gcRegistersDat
       pGCRegs->MemoryBufferSequenceOffsetX = 0;
       pGCRegs->MemoryBufferSequenceOffsetY = 0;
       pGCRegs->MemoryBufferSequenceWidth = 0;
-      pGCRegs->MemoryBufferSequenceHeight = 0;
+      GC_SetMemoryBufferSequenceHeight(0);
       pGCRegs->MemoryBufferSequenceDownloadImageFrameID = 0;
       pGCRegs->MemoryBufferSequenceDownloadFrameID = 0;
-      pGCRegs->MemoryBufferSequenceDownloadFrameCount = 0;
+      pGCRegs->MemoryBufferSequenceDownloadFrameCount = gcRegsDataFactory.MemoryBufferSequenceDownloadFrameCount;
       return;
    }
 
@@ -1263,4 +1263,23 @@ void BufferManager_HW_ForceDirectInternalBufferWriteConfig(t_bufferManager *pBuf
 
       BM_HW_SetLocalEnableBuffer(pBufferCtrl);
    }
+}
+
+void BufferManager_UpdateSuggestedFrameImageCount(gcRegistersData_t *pGCRegs)
+{
+   uint32_t NbPixPerSubFrame;
+   uint32_t suggestedFrameImageCount;
+
+   if (BM_MemoryBufferSequence)
+   {
+      NbPixPerSubFrame = (pGCRegs->MemoryBufferSequenceHeight + 2)*pGCRegs->MemoryBufferSequenceWidth;
+      suggestedFrameImageCount = MIN(BM_FRAME_IMG_COUNT_PAYLOAD_SIZE_MIN/NbPixPerSubFrame, pGCRegs->MemoryBufferSequenceDownloadFrameCount);
+   }
+   else
+   {
+      suggestedFrameImageCount = 1;
+   }
+
+   GC_SetMemoryBufferSequenceDownloadSuggestedFrameImageCount(suggestedFrameImageCount);
+   BUFFERING_INF("BufferManager_UpdateSuggestedFrameImageCount() (SequenceHeight = %d, DownloadFrameCount = %d, PayloadSize = %d)\n", pGCRegs->MemoryBufferSequenceHeight, pGCRegs->MemoryBufferSequenceDownloadFrameCount, BM_FRAME_IMG_COUNT_PAYLOAD_SIZE_MIN);
 }
