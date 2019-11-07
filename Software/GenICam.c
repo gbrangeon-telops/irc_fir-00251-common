@@ -318,7 +318,8 @@ gcRegister_t gcRegsDef[GC_REG_COUNT] = {
    /* AcquisitionFrameRateUnrestrictedMin */                   {0x0000EC3C, NULL, NULL, 4, 4, GCRO_Processing_FPGA, REG_UNLOCKED|REG_FLOAT|REG_RO|REG_NOTSHARED|REG_BIGENDIAN},
    /* AcquisitionFrameRateUnrestrictedMax */                   {0x0000EC40, NULL, NULL, 4, 4, GCRO_Processing_FPGA, REG_UNLOCKED|REG_FLOAT|REG_RO|REG_NOTSHARED|REG_BIGENDIAN},
    /* MemoryBufferSequenceDownloadSuggestedFrameImageCount */  {0x0000EC44, NULL, NULL, 4, 4, GCRO_Storage_FPGA, REG_UNLOCKED|REG_INT|REG_RO|REG_SHARED|REG_BIGENDIAN},
-   /* MemoryBufferSequenceDownloadFrameImageCount */           {0x0000EC48, NULL, NULL, 4, 4, GCRO_Processing_FPGA, REG_UNLOCKED|REG_INT|REG_RO|REG_SHARED|REG_BIGENDIAN}
+   /* MemoryBufferSequenceDownloadFrameImageCount */           {0x0000EC48, NULL, NULL, 4, 4, GCRO_Processing_FPGA, REG_UNLOCKED|REG_INT|REG_RO|REG_SHARED|REG_BIGENDIAN},
+   /* MemoryBufferNumberOfSequencesMin */                      {0x0000EC4C, NULL, NULL, 4, 4, GCRO_Storage_FPGA, REG_UNLOCKED|REG_INT|REG_RO|REG_NOTSHARED|REG_BIGENDIAN}
 };
 
 /* AUTO-CODE END */

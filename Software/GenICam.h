@@ -1694,6 +1694,7 @@ typedef enum DeviceLedIndicatorStateEnum DeviceLedIndicatorState_t;
 #define AcquisitionFrameRateUnrestrictedMaxAddr                   0x0000EC40  /**< AcquisitionFrameRateUnrestrictedMax register address */
 #define MemoryBufferSequenceDownloadSuggestedFrameImageCountAddr  0x0000EC44  /**< MemoryBufferSequenceDownloadSuggestedFrameImageCount register address */
 #define MemoryBufferSequenceDownloadFrameImageCountAddr           0x0000EC48  /**< MemoryBufferSequenceDownloadFrameImageCount register address */
+#define MemoryBufferNumberOfSequencesMinAddr                      0x0000EC4C  /**< MemoryBufferNumberOfSequencesMin register address */
 
 // Registers definition array indices
 ////////////////////////////////////////////////////////////////////////////////
@@ -1991,11 +1992,12 @@ typedef enum DeviceLedIndicatorStateEnum DeviceLedIndicatorState_t;
 #define AcquisitionFrameRateUnrestrictedMaxIdx                    290
 #define MemoryBufferSequenceDownloadSuggestedFrameImageCountIdx   291
 #define MemoryBufferSequenceDownloadFrameImageCountIdx            292
+#define MemoryBufferNumberOfSequencesMinIdx                       293
 
 // Registers general macros
 ////////////////////////////////////////////////////////////////////////////////
 
-#define GC_REG_COUNT 293 /**< Number of GenICam registers */
+#define GC_REG_COUNT 294 /**< Number of GenICam registers */
 #define GC_REG_MAX_LENGTH 512 /**< GenICam registers maximum length (in bytes) */
 #define GC_REG_MAX_READ_LENGTH 512 /**< GenICam readable registers maximum length (in bytes) */
 #define GC_REG_MAX_WRITE_LENGTH 4 /**< GenICam writable registers maximum length (in bytes) */
