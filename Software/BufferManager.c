@@ -77,6 +77,7 @@ IRC_Status_t BufferManager_Init(t_bufferManager *pBufferCtrl, gcRegistersData_t 
 
    // Initialize memory registers
    pGCRegs->MemoryBufferSequenceSizeMin = BM_SEQ_SIZE_MIN;
+   pGCRegs->MemoryBufferNumberOfSequencesMin = BM_NB_SEQ_MIN;
    pGCRegs->MemoryBufferSequenceSizeInc = BM_SEQ_SIZE_INC;
    totalSpace = BM_TOTAL_SPACE_BYTES;
    pGCRegs->MemoryBufferTotalSpaceHigh = totalSpace >> 32;
@@ -444,17 +445,17 @@ void BufferManager_NumberOfSequencesLimits(gcRegistersData_t *pGCRegs)
     uint32_t maxSeqSize;
 
     if(pGCRegs->MemoryBufferNumberOfSequences > pGCRegs->MemoryBufferNumberOfSequencesMax)
-    {
+   {
        pGCRegs->MemoryBufferNumberOfSequences = pGCRegs->MemoryBufferNumberOfSequencesMax;
-    }
+   }
 
     maxSeqSize = pGCRegs->MemoryBufferSequenceSizeMax/pGCRegs->MemoryBufferNumberOfSequences;
     if(pGCRegs->MemoryBufferSequenceSize > maxSeqSize)
-    {
+   {
        pGCRegs->MemoryBufferSequenceSize = roundDown(maxSeqSize,pGCRegs->MemoryBufferSequenceSizeInc);
        BufferManager_SequencePreMOISizeLimits(pGCRegs);
-    }
-}
+   }
+   }
 
 /**
  * Checks limits on NumberOfSequences change.
@@ -558,15 +559,33 @@ void BufferManager_UpdateSequenceMaxParameters(gcRegistersData_t *pGCRegs)
    else
    {
       pGCRegs->MemoryBufferSequenceSizeMin = BM_SEQ_SIZE_MIN;
+      pGCRegs->MemoryBufferNumberOfSequencesMin = BM_NB_SEQ_MIN;
+
       if(pGCRegs->MemoryBufferNumberOfSequencesMax > (pGCRegs->MemoryBufferSequenceSizeMax / BM_SEQ_SIZE_MIN))
          pGCRegs->MemoryBufferNumberOfSequencesMax = pGCRegs->MemoryBufferSequenceSizeMax / BM_SEQ_SIZE_MIN;
+
       if(!pGCRegs->MemoryBufferSequenceSizeMax) //Ensure minimal sequence size is respected
+      {
+         pGCRegs->MemoryBufferSequenceSize = 0;
+         pGCRegs->MemoryBufferSequenceSizeMin = 0;
+      }
+      else if(pGCRegs->MemoryBufferSequenceSize < pGCRegs->MemoryBufferSequenceSizeMin)
+      {
          pGCRegs->MemoryBufferSequenceSize = pGCRegs->MemoryBufferSequenceSizeMin;
+      }
       else if(pGCRegs->MemoryBufferSequenceSize > pGCRegs->MemoryBufferSequenceSizeMax)
+      {
          pGCRegs->MemoryBufferSequenceSize = pGCRegs->MemoryBufferSequenceSizeMax;
+      }
+
       if(!pGCRegs->MemoryBufferNumberOfSequencesMax)
       {
-         pGCRegs->MemoryBufferNumberOfSequences = 1;
+         pGCRegs->MemoryBufferNumberOfSequences = 0;
+         pGCRegs->MemoryBufferNumberOfSequencesMin = 0;
+      }
+      else if(pGCRegs->MemoryBufferNumberOfSequences < pGCRegs->MemoryBufferNumberOfSequencesMin)
+      {
+            pGCRegs->MemoryBufferNumberOfSequences = pGCRegs->MemoryBufferNumberOfSequencesMin;
       }
       else
       {
@@ -1281,5 +1300,4 @@ void BufferManager_UpdateSuggestedFrameImageCount(gcRegistersData_t *pGCRegs)
    }
 
    GC_SetMemoryBufferSequenceDownloadSuggestedFrameImageCount(suggestedFrameImageCount);
-   BUFFERING_INF("BufferManager_UpdateSuggestedFrameImageCount() (SequenceHeight = %d, DownloadFrameCount = %d, PayloadSize = %d)\n", pGCRegs->MemoryBufferSequenceHeight, pGCRegs->MemoryBufferSequenceDownloadFrameCount, BM_FRAME_IMG_COUNT_PAYLOAD_SIZE_MIN);
 }

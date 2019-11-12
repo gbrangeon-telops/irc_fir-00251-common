@@ -45,6 +45,7 @@
 #define BM_WRITE_COMPLETION_TIMEOUT_IN_MS    1000     // ms
 #define BM_BITS_PER_PIXEL                    16       // 2 bytes
 #define BM_MAX_FRAME_PERIOD_US               (20e6)   // 0.05 Hz min
+#define BM_NB_SEQ_MIN                        1
 
 
 
