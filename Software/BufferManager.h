@@ -39,7 +39,7 @@
 #define BUFFERING_DBG(fmt, ...)          BUFFERING_PRINTF("Debug: " fmt "\n", ##__VA_ARGS__)
 
 /************************** Constant Definitions ****************************/
-#define BM_SEQ_SIZE_MIN                      BM_NB_MEMORY_ADDR_SPACES
+#define BM_SEQ_SIZE_MIN                      2
 #define BM_SEQ_SIZE_INC                      BM_NB_MEMORY_ADDR_SPACES
 #define BM_READY_TIMEOUT_IN_S                10       // seconds
 #define BM_WRITE_COMPLETION_TIMEOUT_IN_MS    1000     // ms
