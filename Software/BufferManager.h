@@ -236,6 +236,7 @@ typedef struct s_memoryTable t_memoryTable;
 typedef enum
 {
    BMS_IDLE = 0,
+   BMS_WAIT,
    BMS_READ,
    BMS_DONE
 } bmState_t;

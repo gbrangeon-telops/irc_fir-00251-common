@@ -779,6 +779,7 @@ void BufferManager_SM()
    static bmState_t cstate = BMS_IDLE;
    uint32_t sequenceCount, sequenceCountDiff;
    uint64_t FreeSpace;
+   static timerData_t timer;
 
    switch (cstate)
    {
@@ -816,9 +817,19 @@ void BufferManager_SM()
                }
             }
          }
+
          if(BM_MemoryBufferRead && gBufferStartDownloadTrigger)
          {
             gBufferStartDownloadTrigger = 0;
+            StartTimer(&timer, 10);
+            cstate = BMS_WAIT;
+         }
+         break;
+
+      case BMS_WAIT:
+         BUFFERING_DBG("State BMS_WAIT");
+         if(TimedOut(&timer))
+         {
             BufferManager_HW_ConfigureMinFrameTime(&gBufManager, true);
             if(gcRegsData.MemoryBufferSequenceDownloadMode == MBSDM_Sequence)
                BufferManager_HW_ReadSequence(&gBufManager, &gcRegsData);
