@@ -912,6 +912,9 @@ static void BufferManager_HW_WriteSequence(t_bufferManager *pBufferCtrl, const g
    pBufferCtrl->clear_memory     = 0;
    pBufferCtrl->acq_stop         = 0;
    // Write values
+
+
+
    WriteStruct(pBufferCtrl);
 
    BM_HW_SetLocalEnableBuffer(pBufferCtrl);
@@ -1303,7 +1306,7 @@ void BufferManager_UpdateSuggestedFrameImageCount(gcRegistersData_t *pGCRegs)
    if (BM_MemoryBufferSequence)
    {
       NbPixPerSubFrame = (pGCRegs->MemoryBufferSequenceHeight + 2)*pGCRegs->MemoryBufferSequenceWidth;
-      suggestedFrameImageCount = MIN(BM_FRAME_IMG_COUNT_PAYLOAD_SIZE_MIN/NbPixPerSubFrame, pGCRegs->MemoryBufferSequenceDownloadFrameCount);
+      suggestedFrameImageCount = MAX(MIN(BM_FRAME_IMG_COUNT_PAYLOAD_SIZE_MIN/NbPixPerSubFrame, pGCRegs->MemoryBufferSequenceDownloadFrameCount), 1);
    }
    else
    {

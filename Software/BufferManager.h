@@ -39,7 +39,7 @@
 #define BUFFERING_DBG(fmt, ...)          BUFFERING_PRINTF("Debug: " fmt "\n", ##__VA_ARGS__)
 
 /************************** Constant Definitions ****************************/
-#define BM_SEQ_SIZE_MIN                      2
+#define BM_SEQ_SIZE_MIN                      2 // Can't be 1 (see redmine #13392)
 #define BM_SEQ_SIZE_INC                      BM_NB_MEMORY_ADDR_SPACES
 #define BM_READY_TIMEOUT_IN_S                10       // seconds
 #define BM_WRITE_COMPLETION_TIMEOUT_IN_MS    1000     // ms
@@ -49,8 +49,9 @@
 
 
 
-// NTx-mini on board memory is configured for 28 Mb (32Mb*0.875) 
-#define BM_FRAME_IMG_COUNT_PAYLOAD_SIZE_MIN 990720 // = 12 frames x 320x258 (15.11719 Mb), 3 frames in 640x514, 1 frame in 1280x1026
+// NTx-mini on board memory is configured for 28 Mb (32MB*0.875)
+// NTx-mini waterlevel is configured at 0.390625% of 32 MB (0.125 MB)
+#define BM_FRAME_IMG_COUNT_PAYLOAD_SIZE_MIN 990720 // = 12 frames x 320x258 (1.89 MB), 3 frames in 640x514 (1.88 MB), 1 frame in 1280x1026 (2.5MB)
 
 /**
  * Memory address map.
