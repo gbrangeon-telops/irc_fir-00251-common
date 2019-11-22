@@ -86,7 +86,8 @@ echo run
 goto end
 
 :error
-
+pause
+exit
 
 :end
 
