@@ -1,8 +1,8 @@
 -------------------------------------------------------------------------------
 --
 -- Title       : axis64_auto_sw_1_2
--- Author      : Patrick Dubois
--- Company     : Telops/COPL/LRTS
+-- Author      : Philippe Couture
+-- Company     : Telops
 --
 -------------------------------------------------------------------------------
 --
@@ -36,16 +36,11 @@ entity axis64_auto_sw_1_2 is
    
 end axis64_auto_sw_1_2;
 
-
-
-
 architecture RTL of axis64_auto_sw_1_2 is 
    
-   signal sresetn       : std_logic;
-   signal rx_mosi_i     : t_axi4_stream_mosi64;
-   signal tx_miso_o     : t_axi4_stream_miso;
-   signal active_output : std_logic;
-
+   signal sresetn       : std_logic; 
+   type STATE is (TX0, TX1);
+   signal active_output       : STATE := TX0;
    
    component sync_resetn
       port(
@@ -56,9 +51,18 @@ architecture RTL of axis64_auto_sw_1_2 is
    
    
 begin    
+   
+   TX0_MOSI.TVALID <= RX_MOSI.TVALID when active_output = TX0 else '0';
+   TX0_MOSI.TLAST <= RX_MOSI.TLAST; 
+   TX0_MOSI.TDATA <= RX_MOSI.TDATA;   
+   TX0_MOSI.TID <= RX_MOSI.TID;  
 
-   RX_MISO <= TX0_MISO when active_output = '0' else TX1_MISO;
-
+   TX1_MOSI.TVALID <= RX_MOSI.TVALID when active_output = TX1 else '0';
+   TX1_MOSI.TLAST <= RX_MOSI.TLAST; 
+   TX1_MOSI.TDATA <= RX_MOSI.TDATA;   
+   TX1_MOSI.TID <= RX_MOSI.TID;
+   
+   RX_MISO <= TX0_MISO when active_output = TX0 else TX1_MISO;  
    --------------------------------------------------
    -- synchro reset 
    --------------------------------------------------   
@@ -68,7 +72,6 @@ begin
       CLK    => CLK,
       SRESETN => sresetn
       );
-   
 
    
    ----------------------------------------------------------
@@ -77,55 +80,30 @@ begin
    U2: process(CLK)
    begin
       if rising_edge(CLK) then
-         
+      
          if sresetn = '0' then            
-
-            TX0_MOSI.tuser <= (others => '0');
-            TX0_MOSI.tstrb <= (others => '1');
-            TX0_MOSI.tkeep <= (others => '1');
-            TX0_MOSI.tdest <= (others => '0');
-            TX0_MOSI.tid <= "1";
-            TX0_MOSI.tlast <= '0';
-            TX0_MOSI.tvalid <= '0';
+         
+            active_output <= TX0;        
+         
+         else         
+         
+            case active_output is
             
-            TX1_MOSI.tuser <= (others => '0');
-            TX1_MOSI.tstrb <= (others => '1');
-            TX1_MOSI.tkeep <= (others => '1');
-            TX1_MOSI.tdest <= (others => '0');
-            TX1_MOSI.tid <= "0";
-            TX1_MOSI.tlast <= '0';
-            TX1_MOSI.tvalid <= '0';
-
-            rx_mosi_i.tuser <= (others => '0');
-            rx_mosi_i.tstrb <= (others => '1');
-            rx_mosi_i.tkeep <= (others => '1');
-            rx_mosi_i.tdest <= (others => '0');
-            rx_mosi_i.tid <= "0";
-            rx_mosi_i.tlast <= '0';
-            rx_mosi_i.tvalid <= '0';
+               when TX0 =>   
+               
+                  if(RX_MOSI.TVALID = '1' and RX_MOSI.TLAST = '1' and TX0_MISO.TREADY = '1') then
+                     active_output <= TX1;
+                  end if; 
+               
+               when TX1 =>       
+               
+                  if(RX_MOSI.TVALID = '1' and RX_MOSI.TLAST = '1' and TX1_MISO.TREADY = '1') then
+                     active_output <= TX0;
+                  end if;
+               
+               when others =>
             
-            tx_miso_o.TREADY <= '0';
-            
-            active_output <= '0';
-            
-         else
-            -- assignations par defaut
-            if( active_output = '0' and TX0_MISO.TREADY = '1') then
-                rx_mosi_i <= RX_MOSI;
-                TX0_MOSI <= rx_mosi_i;
-                TX1_MOSI.TVALID <= '0';
-            elsif( active_output = '1' and TX1_MISO.TREADY = '1') then
-                rx_mosi_i <= RX_MOSI;
-                TX1_MOSI <= rx_mosi_i;
-                TX0_MOSI.TVALID <= '0';
-            end if;
-
-            if(rx_mosi_i.tvalid = '1' and rx_mosi_i.tlast = '1' and active_output = '0' and TX0_MISO.TREADY = '1') then
-                active_output <= '1';
-            elsif(rx_mosi_i.tvalid = '1' and rx_mosi_i.tlast = '1' and active_output = '1' and TX1_MISO.TREADY = '1') then
-                active_output <= '0';
-            end if;
-            
+            end case;
          end if;      
       end if;
       
