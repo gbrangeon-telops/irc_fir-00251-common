@@ -29,9 +29,6 @@
 #include "utils.h"
 #include "verbose.h"
 
-#if (!defined(STDOUT_BASEADDRESS) || !defined(STDIN_BASEADDRESS))
-#error STDIN and STDOUT must be set to "USB" in the BSP.
-#endif
 
 #define DT_ERR(fmt, ...)         FPGA_PRINTF("DT: Error: " fmt "\n", ##__VA_ARGS__)
 #define DT_INF(fmt, ...)         FPGA_PRINTF("DT: Info: " fmt "\n", ##__VA_ARGS__)

@@ -17,6 +17,7 @@
 #define PRINTF_UTILS_H
 
 #include <stdio.h>
+#include "xparameters.h"
 
 #define DUMMY_PRINTF(...)        ((void)0)
 #define DUMMY_PRINT(...)         ((void)0)
@@ -28,6 +29,10 @@
    #else
       #define PRINT(str)         print(str)
       #define PRINTF(fmt, ...)   xil_printf(fmt, ##__VA_ARGS__)
+      #if (!defined(STDOUT_BASEADDRESS) || !defined(STDIN_BASEADDRESS))
+         // The values are not used, but print() and xil_printf() need them to be defined.
+         #error STDIN and STDOUT must not be set to "none" in the BSP.
+      #endif
    #endif
 #else
    #define PRINT(str)            DUMMY_PRINT(str)
