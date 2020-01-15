@@ -116,7 +116,7 @@ begin
                   
                   when resize(ExposureTimeAdd32, uHdr_addr_loc32'length) =>
                      img_exposuretime_o    <= IMG_DATA_MOSI.TDATA(31 downto 0);
-                     cal_block_index_o    <= resize(IMG_DATA_MOSI.TDATA(63 downto 48), cal_block_index_o'length);
+                     cal_block_index_o    <= resize(IMG_DATA_MOSI.TDATA(63 downto 56), cal_block_index_o'length);
                      cal_block_index_valid_o <= '1';
                   
                   when resize(WidthAdd32, uHdr_addr_loc32'length) =>
