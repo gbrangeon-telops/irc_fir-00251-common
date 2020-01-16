@@ -19,8 +19,11 @@ use IEEE.STD_LOGIC_1164.all;
 use ieee.numeric_std.all;
 use work.trig_define.all;
 
-entity delay_measurement is   
-   	port(
+entity delay_measurement is
+      generic(       
+         CNT_START_VAL : positive := 1  -- at least 1 for gh_edge_det
+      );
+      port(
          CLK : in STD_LOGIC; 
          ACQ_INT : in STD_LOGIC; 
          EXT_TRIG : in STD_LOGIC; 
@@ -162,7 +165,7 @@ begin
          else   
 
             if rst_delay = '1' and rst_delay_last = '0' then
-               meas_count <= to_unsigned(3, meas_count'length);   -- +2 for the double sync on EXT_TRIG, +1 for gh_edge_det  
+               meas_count <= to_unsigned(CNT_START_VAL, meas_count'length);   -- +2 for the double sync on EXT_TRIG, +1 for gh_edge_det  
             else     
                meas_count <= meas_count + 1;       
             end if;
