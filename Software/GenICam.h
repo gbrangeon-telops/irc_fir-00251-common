@@ -95,9 +95,15 @@
 #define MotorizedFOVLensIsImplementedMask                0x00008000  /**< TDCFlags register bit mask for MotorizedFOVLensIsImplemented field */
 #define MotorizedFocusLensIsImplementedMask              0x00010000  /**< TDCFlags register bit mask for MotorizedFocusLensIsImplemented field */
 #define AutofocusIsImplementedMask                       0x00020000  /**< TDCFlags register bit mask for AutofocusIsImplemented field */
-#define ClDualBaseIsImplementedMask                      0x00040000  /**< TDCFlags register bit mask for ClDualBaseIsImplementedMask field */
-#define SaveConfigurationIsImplementedMask               0x00080000  /**< TDCFlags register bit mask for SaveConfigurationIsImplementedMask field */
-#define BurstModeIsImplementedMask                       0x00100000  /**< TDCFlags register bit mask for BurstModeIsImplementedMask field */
+#define ClDualBaseIsImplementedMask                      0x00040000  /**< TDCFlags register bit mask for ClDualBaseIsImplemented field */
+#define SaveConfigurationIsImplementedMask               0x00080000  /**< TDCFlags register bit mask for SaveConfigurationIsImplemented field */
+#define BurstModeIsImplementedMask                       0x00100000  /**< TDCFlags register bit mask for BurstModeIsImplemented field */
+#define EHDRIIsImplementedMask                           0x00200000  /**< TDCFlags register bit mask for EHDRIIsImplemented field */
+#define MemoryBufferIsImplementedMask                    0x00400000  /**< TDCFlags register bit mask for MemoryBufferIsImplemented field */
+#define AdvancedTriggerIsImplementedMask                 0x00800000  /**< TDCFlags register bit mask for AdvancedTriggerIsImplemented field */
+#define FlaggingIsImplementedMask                        0x01000000  /**< TDCFlags register bit mask for FlaggingIsImplemented field */
+#define GatingIsImplementedMask                          0x02000000  /**< TDCFlags register bit mask for GatingIsImplemented field */
+#define IRIGBIsImplementedMask                           0x04000000  /**< TDCFlags register bit mask for IRIGBIsImplemented field */
 #define SensorIsImplementedMask                          0xF8000000  /**< TDCFlags register bit mask for SensorIsImplemented field */
 #define SensorIsImplementedBitPos                        27          /**< TDCFlags register bit position for SensorIsImplemented field */
 
@@ -121,10 +127,21 @@
 #define SuphawkAIsImplemented          SensorIsImplemented(SuphawkASensor)
 #define PelicanD_150HzIsImplemented    SensorIsImplemented(PelicanD_150HzSensor)
 
-#define TDCFlagsSet(mask) GC_RegisterSetBitsUI32(&gcRegsDef[TDCFlagsIdx], mask)  /**< Set masked bits in TDCFlags register */
-#define TDCFlagsClr(mask) GC_RegisterClearBitsUI32(&gcRegsDef[TDCFlagsIdx], mask)  /**< Clear masked bits in TDCFlags register */
+#define TDCFlagsSet(mask) BitMaskSet(gcRegsData.TDCFlags, mask)  /**< Set masked bits in TDCFlags register */
+#define TDCFlagsClr(mask) BitMaskClr(gcRegsData.TDCFlags, mask)  /**< Clear masked bits in TDCFlags register */
 #define TDCFlagsTst(mask) BitMaskTst(gcRegsData.TDCFlags, mask)  /**< Test if masked bits in TDCFlags register are all set */
 #define TDCFlagsTstAny(mask) BitMaskTstAny(gcRegsData.TDCFlags, mask)  /**< Test if at least one of the masked bits in TDCFlags register is set */
+
+/**
+ * TDCFlags2 register bit field definition
+ */
+#define GPSIsImplementedMask                    0x00000001  /**< TDCFlags2 register bit mask for GPSIsImplemented field */
+#define VideoOutputIsImplementedMask            0x00000002  /**< TDCFlags2 register bit mask for VideoOutputIsImplemented field */
+
+#define TDCFlags2Set(mask) BitMaskSet(gcRegsData.TDCFlags2, mask)  /**< Set masked bits in TDCFlags2 register */
+#define TDCFlags2Clr(mask) BitMaskClr(gcRegsData.TDCFlags2, mask)  /**< Clear masked bits in TDCFlags2 register */
+#define TDCFlags2Tst(mask) BitMaskTst(gcRegsData.TDCFlags2, mask)  /**< Test if masked bits in TDCFlags2 register are all set */
+#define TDCFlags2TstAny(mask) BitMaskTstAny(gcRegsData.TDCFlags2, mask)  /**< Test if at least one of the masked bits in TDCFlags2 register is set */
 
 /**
  * TDCStatus register bit field definition
@@ -150,8 +167,8 @@
 #define TDC_STATUS_INIT                         (WaitingForCoolerMask | WaitingForInitMask | WaitingForCalibrationInitMask | WaitingForArmMask | \
                                                 WaitingForOutputFPGAMask | WaitingForFlashSettingsInitMask)
 
-#define TDCStatusSet(mask) GC_RegisterSetBitsUI32(&gcRegsDef[TDCStatusIdx], mask)  /**< Set masked bits in TDCStatus register */
-#define TDCStatusClr(mask) GC_RegisterClearBitsUI32(&gcRegsDef[TDCStatusIdx], mask)  /**< Clear masked bits in TDCStatus register */
+#define TDCStatusSet(mask) BitMaskSet(gcRegsData.TDCStatus, mask)  /**< Set masked bits in TDCStatus register */
+#define TDCStatusClr(mask) BitMaskClr(gcRegsData.TDCStatus, mask)  /**< Clear masked bits in TDCStatus register */
 #define TDCStatusTst(mask) BitMaskTst(gcRegsData.TDCStatus, mask)  /**< Test if masked bits in TDCStatus register are all set */
 #define TDCStatusTstAny(mask) BitMaskTstAny(gcRegsData.TDCStatus, mask)  /**< Test if at least one of the masked bits in TDCStatus register is set */
 
@@ -173,8 +190,8 @@
 #define ManufacturerTestImageIsAvailableMask    0x00001000  /**< AvailabilityFlags register bit mask for ManufacturerTestImageIsAvailable field */
 #define ExternalFanControlIsAvailableMask       0x00002000  /**< AvailabilityFlags register bit mask for ExternalFanControlIsAvailable field */
 
-#define AvailabilityFlagsSet(mask) GC_RegisterSetBitsUI32(&gcRegsDef[AvailabilityFlagsIdx], mask)  /**< Set masked bits in AvailabilityFlags register */
-#define AvailabilityFlagsClr(mask) GC_RegisterClearBitsUI32(&gcRegsDef[AvailabilityFlagsIdx], mask)  /**< Clear masked bits in AvailabilityFlags register */
+#define AvailabilityFlagsSet(mask) BitMaskSet(gcRegsData.AvailabilityFlags, mask)  /**< Set masked bits in AvailabilityFlags register */
+#define AvailabilityFlagsClr(mask) BitMaskClr(gcRegsData.AvailabilityFlags, mask)  /**< Clear masked bits in AvailabilityFlags register */
 #define AvailabilityFlagsTst(mask) BitMaskTst(gcRegsData.AvailabilityFlags, mask)  /**< Test if masked bits in AvailabilityFlags register are all set */
 #define AvailabilityFlagsTstAny(mask) BitMaskTstAny(gcRegsData.AvailabilityFlags, mask)  /**< Test if at least one of the masked bits in AvailabilityFlags register is set */
 
@@ -186,8 +203,8 @@
 #define GatingTriggerIsActiveMask               0x00000004  /**< IsActiveFlags register bit mask for GatingTriggerIsActive field */
 #define AutofocusIsActiveMask                   0x00000008  /**< IsActiveFlags register bit mask for AutofocusIsActive field */
 
-#define IsActiveFlagsSet(mask) GC_RegisterSetBitsUI32(&gcRegsDef[IsActiveFlagsIdx], mask)  /**< Set masked bits in IsActiveFlags register */
-#define IsActiveFlagsClr(mask) GC_RegisterClearBitsUI32(&gcRegsDef[IsActiveFlagsIdx], mask)  /**< Clear masked bits in IsActiveFlags register */
+#define IsActiveFlagsSet(mask) BitMaskSet(gcRegsData.IsActiveFlags, mask)  /**< Set masked bits in IsActiveFlags register */
+#define IsActiveFlagsClr(mask) BitMaskClr(gcRegsData.IsActiveFlags, mask)  /**< Clear masked bits in IsActiveFlags register */
 #define IsActiveFlagsTst(mask) BitMaskTst(gcRegsData.IsActiveFlags, mask)  /**< Test if masked bits in IsActiveFlags register are all set */
 #define IsActiveFlagsTstAny(mask) BitMaskTstAny(gcRegsData.IsActiveFlags, mask)  /**< Test if at least one of the masked bits in IsActiveFlags register is set */
 
@@ -275,12 +292,12 @@ typedef struct gcRegister gcRegister_t;
 
 /* AUTO-CODE BEGIN */
 // Auto-generated GeniCam library.
-// Generated from XML camera definition file version 12.7.1
+// Generated from XML camera definition file version 12.8.0
 // using generateGenICamCommonCLib.m Matlab script.
 
 #define GC_XMLMAJORVERSION    12
-#define GC_XMLMINORVERSION    7
-#define GC_XMLSUBMINORVERSION 1
+#define GC_XMLMINORVERSION    8
+#define GC_XMLSUBMINORVERSION 0
 
 // Enumerations values and data types
 ////////////////////////////////////////////////////////////////////////////////
@@ -1695,6 +1712,7 @@ typedef enum DeviceLedIndicatorStateEnum DeviceLedIndicatorState_t;
 #define MemoryBufferSequenceDownloadSuggestedFrameImageCountAddr  0x0000EC44  /**< MemoryBufferSequenceDownloadSuggestedFrameImageCount register address */
 #define MemoryBufferSequenceDownloadFrameImageCountAddr           0x0000EC48  /**< MemoryBufferSequenceDownloadFrameImageCount register address */
 #define MemoryBufferNumberOfSequencesMinAddr                      0x0000EC4C  /**< MemoryBufferNumberOfSequencesMin register address */
+#define TDCFlags2Addr                                             0x0000EC50  /**< TDCFlags2 register address */
 
 // Registers definition array indices
 ////////////////////////////////////////////////////////////////////////////////
@@ -1993,11 +2011,12 @@ typedef enum DeviceLedIndicatorStateEnum DeviceLedIndicatorState_t;
 #define MemoryBufferSequenceDownloadSuggestedFrameImageCountIdx   291
 #define MemoryBufferSequenceDownloadFrameImageCountIdx            292
 #define MemoryBufferNumberOfSequencesMinIdx                       293
+#define TDCFlags2Idx                                              294
 
 // Registers general macros
 ////////////////////////////////////////////////////////////////////////////////
 
-#define GC_REG_COUNT 294 /**< Number of GenICam registers */
+#define GC_REG_COUNT 295 /**< Number of GenICam registers */
 #define GC_REG_MAX_LENGTH 512 /**< GenICam registers maximum length (in bytes) */
 #define GC_REG_MAX_READ_LENGTH 512 /**< GenICam readable registers maximum length (in bytes) */
 #define GC_REG_MAX_WRITE_LENGTH 4 /**< GenICam writable registers maximum length (in bytes) */

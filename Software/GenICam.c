@@ -16,7 +16,7 @@
 
 /* AUTO-CODE BEGIN */
 // Auto-generated GeniCam library.
-// Generated from XML camera definition file version 12.7.1
+// Generated from XML camera definition file version 12.8.0
 // using generateGenICamCommonCLib.m Matlab script.
 
 // GenICam global variables definition
@@ -214,7 +214,7 @@ gcRegister_t gcRegsDef[GC_REG_COUNT] = {
    /* DeviceCoolerRunningTime */                               {0x0000EA9C, NULL, NULL, 4, 4, GCRO_Processing_FPGA, REG_UNLOCKED|REG_INT|REG_RO|REG_NOTSHARED|REG_BIGENDIAN},
    /* DevicePowerOnCycles */                                   {0x0000EAA0, NULL, NULL, 4, 4, GCRO_Processing_FPGA, REG_UNLOCKED|REG_INT|REG_RO|REG_NOTSHARED|REG_BIGENDIAN},
    /* DeviceCoolerPowerOnCycles */                             {0x0000EAA4, NULL, NULL, 4, 4, GCRO_Processing_FPGA, REG_UNLOCKED|REG_INT|REG_RO|REG_NOTSHARED|REG_BIGENDIAN},
-   /* TDCFlags */                                              {0x0000EAA8, NULL, NULL, 4, 4, GCRO_Processing_FPGA, REG_UNLOCKED|REG_INT|REG_RO|REG_NOTSHARED|REG_BIGENDIAN},
+   /* TDCFlags */                                              {0x0000EAA8, NULL, NULL, 4, 4, GCRO_Processing_FPGA, REG_UNLOCKED|REG_INT|REG_RO|REG_SHARED|REG_BIGENDIAN},
    /* TDCStatus */                                             {0x0000EAAC, NULL, NULL, 4, 4, GCRO_Processing_FPGA, REG_UNLOCKED|REG_INT|REG_RO|REG_NOTSHARED|REG_BIGENDIAN},
    /* AvailabilityFlags */                                     {0x0000EAB0, NULL, NULL, 4, 4, GCRO_Processing_FPGA, REG_UNLOCKED|REG_INT|REG_RO|REG_NOTSHARED|REG_BIGENDIAN},
    /* AcquisitionFrameRateMax */                               {0x0000EAB4, NULL, NULL, 4, 4, GCRO_Processing_FPGA, REG_UNLOCKED|REG_FLOAT|REG_RO|REG_NOTSHARED|REG_BIGENDIAN},
@@ -319,7 +319,8 @@ gcRegister_t gcRegsDef[GC_REG_COUNT] = {
    /* AcquisitionFrameRateUnrestrictedMax */                   {0x0000EC40, NULL, NULL, 4, 4, GCRO_Processing_FPGA, REG_UNLOCKED|REG_FLOAT|REG_RO|REG_NOTSHARED|REG_BIGENDIAN},
    /* MemoryBufferSequenceDownloadSuggestedFrameImageCount */  {0x0000EC44, NULL, NULL, 4, 4, GCRO_Storage_FPGA, REG_UNLOCKED|REG_INT|REG_RO|REG_SHARED|REG_BIGENDIAN},
    /* MemoryBufferSequenceDownloadFrameImageCount */           {0x0000EC48, NULL, NULL, 4, 4, GCRO_Processing_FPGA, REG_UNLOCKED|REG_INT|REG_RO|REG_SHARED|REG_BIGENDIAN},
-   /* MemoryBufferNumberOfSequencesMin */                      {0x0000EC4C, NULL, NULL, 4, 4, GCRO_Storage_FPGA, REG_UNLOCKED|REG_INT|REG_RO|REG_NOTSHARED|REG_BIGENDIAN}
+   /* MemoryBufferNumberOfSequencesMin */                      {0x0000EC4C, NULL, NULL, 4, 4, GCRO_Storage_FPGA, REG_UNLOCKED|REG_INT|REG_RO|REG_NOTSHARED|REG_BIGENDIAN},
+   /* TDCFlags2 */                                             {0x0000EC50, NULL, NULL, 4, 4, GCRO_Processing_FPGA, REG_UNLOCKED|REG_INT|REG_RO|REG_SHARED|REG_BIGENDIAN}
 };
 
 /* AUTO-CODE END */

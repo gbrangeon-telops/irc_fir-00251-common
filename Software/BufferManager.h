@@ -279,7 +279,7 @@ typedef enum BM_MOI_Activation_enum t_bufferMoiActivation;
 
 /***************** Macros (Inline Functions) Definitions ********************/
 #define Buffering_Intf_Ctor(add)    {sizeof(t_bufferManager)/4 - 2, add, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}
-#define BM_TURN_OFF_DOWNLOAD_MODE() (pGCRegs->MemoryBufferLegacyMode?0:GC_SetMemoryBufferSequenceDownloadMode(MBSDM_Off)); // Shared Register write
+#define BM_TURN_OFF_DOWNLOAD_MODE() (pGCRegs->MemoryBufferLegacyMode ? 0 : GC_SetMemoryBufferSequenceDownloadMode(MBSDM_Off)) // Shared Register write
 // Local Buffer Hardware Access Macros made available for Actualization/ImageCorrection
 // *** Disabling buffer also clears hardware table***
 #define BM_HW_SetLocalDisableBuffer(pBufferCtrl)      (AXI4L_write32((pBufferCtrl)->ConfigValid = 0, (pBufferCtrl)->ADD + BM_CONFIG_VALID))
