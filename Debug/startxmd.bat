@@ -14,9 +14,9 @@ set elfFile=
 
 rem Set xilinx directory
 set xDir=C:\Xilinx
-if exist D:\Xilinx\SDK\2013.4\*.* set xDir=D:\Xilinx
+if exist D:\Xilinx\SDK\2016.3\*.* set xDir=D:\Xilinx
 echo Xilinx directory: %xDir%
-set x_xmd=%xDir%\SDK\2013.4\bin\nt64\xmd.exe
+set x_xmd=%xDir%\SDK\2016.3\bin\xmd.bat
 
 rem Parse configuration parameter
 if "%1"=="r" (
