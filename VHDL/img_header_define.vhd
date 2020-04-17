@@ -22,7 +22,7 @@ use ieee.numeric_std.all;
 
 -- AUTO-CODE BEGIN
 -- Auto-generated IRCam image header definition package.
--- Generated from the IRCam header definition XLS file version 12.8
+-- Generated from the IRCam header definition XLS file version 12.9
 -- using generateIRCamHeaderVHDLLib.m Matlab script.
 
 package img_header_define is
@@ -183,6 +183,11 @@ package img_header_define is
    constant AECTargetWellFillingAdd32                    : std_logic_vector(5 downto 0) := std_logic_vector(to_unsigned(17,6));  --! AECTargetWellFilling field's 32-bit address
    constant AECTargetWellFillingBWE                      : std_logic_vector(3 downto 0) := "1111";                               --! AECTargetWellFilling field's word mask
    constant AECTargetWellFillingShift                    : natural := 0;                                                         --! AECTargetWellFilling field's shift value
+
+   constant BufferingFlagAdd8                            : std_logic_vector(7 downto 0) := x"4A";                                --! BufferingFlag field's 8-bit address
+   constant BufferingFlagAdd32                           : std_logic_vector(5 downto 0) := std_logic_vector(to_unsigned(18,6));  --! BufferingFlag field's 32-bit address
+   constant BufferingFlagBWE                             : std_logic_vector(3 downto 0) := "0010";                               --! BufferingFlag field's word mask
+   constant BufferingFlagShift                           : natural := 8;                                                         --! BufferingFlag field's shift value
 
    constant FWModeAdd8                                   : std_logic_vector(7 downto 0) := x"4B";                                --! FWMode field's 8-bit address
    constant FWModeAdd32                                  : std_logic_vector(5 downto 0) := std_logic_vector(to_unsigned(18,6));  --! FWMode field's 32-bit address

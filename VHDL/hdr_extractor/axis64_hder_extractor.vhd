@@ -15,8 +15,9 @@ use IEEE.STD_LOGIC_1164.all;
 use IEEE.numeric_std.ALL;
 use work.img_header_define.all;
 use work.tel2000.all;
-use work.calib_define.all;
-
+use work.calib_define.all; 
+use work.BufferingDefine.all;
+   
 entity axis64_hder_extractor is
    port(
       
@@ -28,7 +29,10 @@ entity axis64_hder_extractor is
       
       DECODED_HDR       : out decoded_hdr_type;
       CAL_BLOCK_INDEX   : out cal_block_index_type;
-      CAL_BLOCK_INDEX_VALID : out std_logic
+      CAL_BLOCK_INDEX_VALID : out std_logic; 
+      
+      MOI_SIGNAL        : out  std_logic; 
+      WRITE_FRAME       : out  std_logic
       
       );
    attribute KEEP_HIERARCHY : string;
@@ -62,13 +66,16 @@ architecture rtl of axis64_hder_extractor is
    signal img_hdr_len_o          : unsigned(15 downto 0);	--in bytes
    signal uHdr_addr_loc32        : unsigned(13 downto 0);
    signal tid                    : std_logic := '1';
-   
+   signal write_frame_i          : std_logic := '0';
+   signal moi_signal_i           : std_logic := '0';
    
 begin
    
    -- outputs
    CAL_BLOCK_INDEX <= cal_block_index_type(cal_block_index_o);
    CAL_BLOCK_INDEX_VALID <= cal_block_index_valid_o;
+   WRITE_FRAME        <= write_frame_i;
+   MOI_SIGNAL         <= moi_signal_i;
    
    DECODED_HDR.dval           <= hdr_info_valid_o;
    DECODED_HDR.exposure_time  <= img_exposuretime_o;
@@ -79,7 +86,7 @@ begin
    DECODED_HDR.fw_position    <= img_FWPosition_o;
    DECODED_HDR.ndf_position   <= img_NDFPosition_o;
    DECODED_HDR.ehdri_index    <= img_ehdriindex_o;
-   
+      
    --Reset management
    r0: sync_reset port map(ARESET => ARESET, CLK => CLK, SRESET => sreset);
    
@@ -96,6 +103,9 @@ begin
             img_hdr_len_o <= (others => '0');
          else
             
+            write_frame_i <= '0';
+            moi_signal_i <= '0';
+          
             if(IMG_DATA_MISO.TREADY = '1' and IMG_DATA_MOSI.TVALID = '1' and tid = '1') then-- we are in a valid hdr transmit
                
                if(IMG_DATA_MOSI.TLAST = '1' and (shift_right(img_hdr_len_o,2)-2 = uHdr_addr_loc32) ) then  --we divide by 4 because im_hdr_len is in bytes and uHdr_addr_loc is in 32 bit
@@ -125,10 +135,16 @@ begin
                      img_offsetx_o    <= IMG_DATA_MOSI.TDATA(47 downto 32);
                      img_offsety_o    <= IMG_DATA_MOSI.TDATA(63 downto 48);
   
+                  when resize(BufferingFlagAdd32, uHdr_addr_loc32'length) =>
+                     write_frame_i <= '1';
+                     if IMG_DATA_MOSI.TDATA(23 downto 16) = MOI_FLAG then
+                        moi_signal_i <= '1';
+                     end if;
+                     
                   when resize(FWPositionAdd32, uHdr_addr_loc32'length) =>
                      img_FWPosition_o     <= IMG_DATA_MOSI.TDATA(7 downto 0);
                      img_NDFPosition_o    <= IMG_DATA_MOSI.TDATA(23 downto 16);
-                     img_ehdriindex_o     <= IMG_DATA_MOSI.TDATA(31 downto 24);
+                     img_ehdriindex_o     <= IMG_DATA_MOSI.TDATA(31 downto 24);   
                      
                   when others =>
                   

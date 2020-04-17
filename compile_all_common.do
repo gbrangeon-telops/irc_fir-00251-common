@@ -6,7 +6,8 @@ setenv COMMON "D:\Telops\FIR-00251-Common"
 ## Package and Defines
 acom "$COMMON\VHDL\tel2000pkg.vhd"
 acom "$COMMON\VHDL\img_header_define.vhd"
-acom "$COMMON\VHDL\Calibration\calib_define.vhd"
+acom "$COMMON\VHDL\Calibration\calib_define.vhd" 
+acom "$COMMON\VHDL\Buffering\BufferingDefine.vhd"
  
 ## Compile All VHDL Source
 #MGT

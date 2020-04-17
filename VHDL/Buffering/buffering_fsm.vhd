@@ -44,6 +44,7 @@ entity BUFFERING_FSM is
         NEW_IMAGE_DETECT    : in std_logic;
         ACQUISITION_STOP    : in std_logic;
         MOI                 : in std_logic;
+        SEQ_WRITE_DONE      : out std_logic;
         FULL                : out std_logic;
         PAUSE               : out std_logic;
 
@@ -165,6 +166,7 @@ architecture rtl of BUFFERING_FSM is
    -- buffer ctrl
    signal moi_i : std_logic;
    signal new_image_detect_i : std_logic;
+   signal seq_write_done_i : std_logic;
    
    --CMD constant
    constant c_xCACHE : std_logic_vector(3 downto 0) := "0011"; -- Recommended dflt value
@@ -243,7 +245,7 @@ read_seq_id_u <= READ_SEQUENCE_ID;
 read_start_id_u <= READ_START_ID;
 read_stop_id_u <= READ_STOP_ID;
 
-
+SEQ_WRITE_DONE <= seq_write_done_i;
 
 -- MAP OUTPUTS
 --Cmd structure generation
@@ -355,7 +357,7 @@ begin
             new_image_detect_i <= '0';
             wr_acquisition_stop <= '0';
             WRITE_COMPLETED <= '0';
-            
+            seq_write_done_i <= '1'; 
         else
             if ACQUISITION_STOP = '1' then
                wr_acquisition_stop <= '1';
@@ -373,13 +375,15 @@ begin
             
             --Process state machine
             case write_state is
-               --type BufferMode is (BUF_OFF, BUF_WR_SEQ, BUF_RD_SEQ, BUF_RD_IMG);
-               --type BufferWrState is (STANDBY_WR, WR_PRE_MOI, WR_WAIT_MOI, WR_POST_MOI, ERROR_WR);
-                when STANDBY_WR =>
+               when STANDBY_WR =>    
+               
+                    seq_write_done_i <= '1';  
+               
                     if (nb_seq_in_mem_u = nb_sequence_u) or (wr_acquisition_stop = '1') then
                        WRITE_COMPLETED <= '1';
                     end if;
                     if(buffer_mode_s = BUF_WR_SEQ and new_image_detect_i = '1' and nb_seq_in_mem_u < nb_sequence_u and wr_acquisition_stop = '0') then --Mode Gige standard
+                        seq_write_done_i <= '0';
                         new_image_detect_i <= '0';
                         --change state
                         if(moi_i = '1') then

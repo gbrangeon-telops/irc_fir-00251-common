@@ -16,7 +16,7 @@
 
 /* AUTO-CODE BEGIN */
 // Auto-generated IRCam header library.
-// Generated from the IRCam header definition XLS file version 12.8
+// Generated from the IRCam header definition XLS file version 12.9
 // using generateIRCamHeaderCLib.m Matlab script.
 
 #define SignatureHdrAddr                              0x00  /**< Signature header field address */
@@ -51,6 +51,7 @@
 #define AECResponseTimeHdrAddr                        0x3C  /**< AECResponseTime header field address */
 #define AECImageFractionHdrAddr                       0x40  /**< AECImageFraction header field address */
 #define AECTargetWellFillingHdrAddr                   0x44  /**< AECTargetWellFilling header field address */
+#define BufferingFlagHdrAddr                          0x4A  /**< BufferingFlag header field address */
 #define FWModeHdrAddr                                 0x4B  /**< FWMode header field address */
 #define FWSpeedSetpointHdrAddr                        0x4C  /**< FWSpeedSetpoint header field address */
 #define FWSpeedHdrAddr                                0x4E  /**< FWSpeed header field address */
