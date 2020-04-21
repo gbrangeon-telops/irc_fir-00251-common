@@ -1315,3 +1315,27 @@ void BufferManager_UpdateSuggestedFrameImageCount(gcRegistersData_t *pGCRegs)
 
    GC_SetMemoryBufferSequenceDownloadSuggestedFrameImageCount(suggestedFrameImageCount);
 }
+
+void BufferManager_HW_MoiHandlerConfig(t_bufferManager *pBufferCtrl, uint32_t acq_stop)
+{
+   if (GC_ExternalMemoryBufferIsImplemented)
+   {
+      AXI4L_write32(acq_stop, pBufferCtrl->ADD + BM_ACQ_STOP);
+
+      if (!acq_stop)
+      {
+         if(BM_MemoryBufferWrite)
+         {
+            AXI4L_write32(BM_WRITE, pBufferCtrl->ADD + BM_BUFFER_MODE);
+         }
+         else if(BM_MemoryBufferRead)
+         {
+            AXI4L_write32(BM_READ, pBufferCtrl->ADD + BM_BUFFER_MODE);
+         }
+         else
+         {
+            AXI4L_write32(BM_OFF, pBufferCtrl->ADD + BM_BUFFER_MODE);
+         }
+      }
+   }
+}

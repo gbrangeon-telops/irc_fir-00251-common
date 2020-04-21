@@ -320,7 +320,7 @@ uint32_t BufferManager_HW_GetDirectInternalBufferSequenceRecordedSize(t_bufferMa
 void     BufferManager_HW_ForceLoadInternalBufferTable(t_bufferManager *pBufferCtrl, gcRegistersData_t *pGCRegs);
 void     BufferManager_HW_ForceDirectInternalBufferWriteConfig(t_bufferManager *pBufferCtrl, gcRegistersData_t *pGCRegs, \
                                                            uint32_t nbSeq, uint32_t seqSize, uint32_t preMOISize);
-
+void BufferManager_HW_MoiHandlerConfig(t_bufferManager *pBufferCtrl, uint32_t acq_stop);
 void BufferManager_UpdateSuggestedFrameImageCount(gcRegistersData_t *pGCRegs);
 
 #endif // BUFFERMANAGER_H
