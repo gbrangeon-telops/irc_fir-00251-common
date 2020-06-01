@@ -182,7 +182,7 @@
 #define NUCIsAvailableMask                      0x00000010  /**< AvailabilityFlags register bit mask for NUCIsAvailable field */
 #define RTIsAvailableMask                       0x00000020  /**< AvailabilityFlags register bit mask for RTIsAvailable field */
 #define IBRIsAvailableMask                      0x00000040  /**< AvailabilityFlags register bit mask for IBRIsAvailable field */
-#define IBIIsAvailableMask                      0x00000080  /**< AvailabilityFlags register bit mask for CalibrationIsAvailable field */
+#define IBIIsAvailableMask                      0x00000080  /**< AvailabilityFlags register bit mask for IBIIsAvailable field */
 #define AECPlusIsAvailableMask                  0x00000100  /**< AvailabilityFlags register bit mask for AECPlusIsAvailable field */
 #define NDFilter1IsAvailableMask                0x00000200  /**< AvailabilityFlags register bit mask for NDFilter1IsAvailable field */
 #define NDFilter2IsAvailableMask                0x00000400  /**< AvailabilityFlags register bit mask for NDFilter2IsAvailable field */
