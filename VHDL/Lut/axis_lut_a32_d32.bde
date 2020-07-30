@@ -2,7 +2,7 @@ SCHM0104
 
 HEADER
 {
- FREEID 11157
+ FREEID 11276
  VARIABLES
  {
   #ARCHITECTURE="sch"
@@ -26,8 +26,9 @@ HEADER
     #CUSTOM_NAME=""
     #GENERIC0="PAGE_ADD_WIDTH:natural:=14"
     #GENERIC1="PAGE_NUMBER:natural:=64"
+    #GENERIC2="flag_en:boolean:=false"
     #LANGUAGE="VHDL"
-    #MODIFIED="1450198125"
+    #MODIFIED="1595945489"
     #SYMBOL_GLOBALLY_UNIQUE_IDENTIFIER="62a68ef6-60b7-4f16-b8b1-3242c7dfbb5e"
    }
   }
@@ -203,7 +204,7 @@ HEADER
       #DIRECTION="IN"
       #FAMILY="Fub"
       #LENGTH="20"
-      #MDA_RECORD_TOKEN="OTHER"
+      #MDA_RECORD_TOKEN="RECORD"
       #MODIFIED="1"
       #NAME="X_MOSI"
       #NUMBER="0"
@@ -224,7 +225,7 @@ HEADER
       #DIRECTION="OUT"
       #FAMILY="Fub"
       #LENGTH="20"
-      #MDA_RECORD_TOKEN="OTHER"
+      #MDA_RECORD_TOKEN="RECORD"
       #MODIFIED="1"
       #NAME="X_MISO"
       #NUMBER="0"
@@ -245,7 +246,7 @@ HEADER
       #DIRECTION="OUT"
       #FAMILY="Fub"
       #LENGTH="20"
-      #MDA_RECORD_TOKEN="OTHER"
+      #MDA_RECORD_TOKEN="RECORD"
       #MODIFIED="1"
       #NAME="RD_ADD_MOSI"
       #NUMBER="0"
@@ -266,7 +267,7 @@ HEADER
       #DIRECTION="IN"
       #FAMILY="Fub"
       #LENGTH="20"
-      #MDA_RECORD_TOKEN="OTHER"
+      #MDA_RECORD_TOKEN="RECORD"
       #MODIFIED="1"
       #NAME="RD_ADD_MISO"
       #NUMBER="0"
@@ -306,7 +307,7 @@ HEADER
      {
       #DIRECTION="IN"
       #LENGTH="20"
-      #MDA_RECORD_TOKEN="OTHER"
+      #MDA_RECORD_TOKEN="RECORD"
       #NAME="LUT_PAGE_MOSI"
       #NUMBER="0"
       #SIDE="left"
@@ -324,7 +325,7 @@ HEADER
      {
       #DIRECTION="OUT"
       #LENGTH="20"
-      #MDA_RECORD_TOKEN="OTHER"
+      #MDA_RECORD_TOKEN="RECORD"
       #NAME="LUT_PAGE_MISO"
       #NUMBER="0"
       #SIDE="left"
@@ -342,7 +343,7 @@ HEADER
      {
       #DIRECTION="IN"
       #LENGTH="20"
-      #MDA_RECORD_TOKEN="OTHER"
+      #MDA_RECORD_TOKEN="RECORD"
       #NAME="Xi_MISO"
       #NUMBER="0"
       #SIDE="right"
@@ -360,7 +361,7 @@ HEADER
      {
       #DIRECTION="OUT"
       #LENGTH="20"
-      #MDA_RECORD_TOKEN="OTHER"
+      #MDA_RECORD_TOKEN="RECORD"
       #NAME="Xi_MOSI"
       #NUMBER="0"
       #SIDE="right"
@@ -378,7 +379,7 @@ HEADER
      {
       #DIRECTION="IN"
       #LENGTH="20"
-      #MDA_RECORD_TOKEN="OTHER"
+      #MDA_RECORD_TOKEN="RECORD"
       #NAME="LUT_PARAM"
       #NUMBER="0"
       #SIDE="left"
@@ -821,6 +822,7 @@ PAGE ""
     #CUSTOM_NAME=""
     #GENERIC0="PAGE_NUMBER : natural := PAGE_NUMBER"
     #GENERIC1="PAGE_ADD_WIDTH : natural := PAGE_ADD_WIDTH"
+    #GENERIC2="flag_en : boolean := flag_en"
     #LIBRARY="work"
     #NO_CONF="1"
     #PRAGMED_GENERICS=""
@@ -1506,7 +1508,7 @@ PAGE ""
   TEXT  10361, 0, 0
   {
    TEXT "@GENERIC_ACTUAL_VALUES()"
-   RECT (800,1240,1392,1306)
+   RECT (920,1220,1512,1319)
    PARENT 8588
   }
   TEXT  10399, 0, 0
@@ -1521,8 +1523,9 @@ PAGE ""
    TEXT 
 "PAGE_ADD_WIDTH : natural := 8;\n"+
 "PAGE_NUMBER : natural := 64;\n"+
+"flag_en : boolean := false;\n"+
 ""
-   RECT (1820,1300,2320,1420)
+   RECT (1820,1300,2320,1440)
    OUTLINE 5,1, (0,0,0)
    FILL (0,(255,219,179),0)
    MARGINS (20,20)
@@ -1975,7 +1978,7 @@ PAGE ""
  
  BODY
  {
-  TEXT  11140, 0, 0
+  TEXT  11259, 0, 0
   {
    PAGEALIGN 10
    OUTLINE 5,1, (0,0,0)
@@ -1986,7 +1989,7 @@ PAGE ""
    COLOR (0,0,0)
    FONT (12,0,0,700,0,0,0,"Arial")
   }
-  TEXT  11141, 0, 0
+  TEXT  11260, 0, 0
   {
    PAGEALIGN 10
    TEXT "$CREATIONDATE"
@@ -1997,7 +2000,7 @@ PAGE ""
    FONT (12,0,0,700,0,128,0,"Arial")
    UPDATE 0
   }
-  TEXT  11142, 0, 0
+  TEXT  11261, 0, 0
   {
    PAGEALIGN 10
    TEXT "Title:"
@@ -2007,7 +2010,7 @@ PAGE ""
    COLOR (0,0,0)
    FONT (12,0,0,700,0,0,0,"Arial")
   }
-  TEXT  11143, 0, 0
+  TEXT  11262, 0, 0
   {
    PAGEALIGN 10
    OUTLINE 5,1, (0,0,0)
@@ -2019,7 +2022,7 @@ PAGE ""
    FONT (12,0,0,700,0,128,0,"Arial")
    UPDATE 0
   }
-  TEXT  11144, 0, 0
+  TEXT  11263, 0, 0
   {
    PAGEALIGN 10
    TEXT 
@@ -2032,7 +2035,7 @@ PAGE ""
    FONT (12,0,0,700,0,0,0,"Arial")
    MULTILINE
   }
-  TEXT  11145, 0, 0
+  TEXT  11264, 0, 0
   {
    PAGEALIGN 10
    TEXT "Page:"
@@ -2042,7 +2045,7 @@ PAGE ""
    COLOR (0,0,0)
    FONT (12,0,0,700,0,0,0,"Arial")
   }
-  TEXT  11146, 0, 0
+  TEXT  11265, 0, 0
   {
    PAGEALIGN 10
    OUTLINE 5,1, (0,0,0)
@@ -2054,7 +2057,7 @@ PAGE ""
    FONT (12,0,0,700,0,128,0,"Arial")
    UPDATE 0
   }
-  TEXT  11147, 0, 0
+  TEXT  11266, 0, 0
   {
    PAGEALIGN 10
    TEXT "Revision:"
@@ -2064,7 +2067,7 @@ PAGE ""
    COLOR (0,0,0)
    FONT (12,0,0,700,0,0,0,"Arial")
   }
-  TEXT  11148, 0, 0
+  TEXT  11267, 0, 0
   {
    PAGEALIGN 10
    TEXT "$Revision"
@@ -2075,7 +2078,7 @@ PAGE ""
    FONT (12,0,0,700,0,204,0,"Arial")
    UPDATE 0
   }
-  GROUP  11149, 0, 0
+  GROUP  11268, 0, 0
   {
    PAGEALIGN 10
    RECT (2320,1620,3201,2001)
@@ -2087,7 +2090,7 @@ PAGE ""
     FILL (1,(0,0,0),0)
    }
   }
-  GROUP  11150, 0, 0
+  GROUP  11269, 0, 0
   {
    PAGEALIGN 10
    RECT (2320,1820,3201,1821)
@@ -2099,7 +2102,7 @@ PAGE ""
     FILL (1,(0,0,0),0)
    }
   }
-  GROUP  11151, 0, 0
+  GROUP  11270, 0, 0
   {
    PAGEALIGN 10
    RECT (2320,1760,3201,1761)
@@ -2111,7 +2114,7 @@ PAGE ""
     FILL (1,(0,0,0),0)
    }
   }
-  GROUP  11152, 0, 0
+  GROUP  11271, 0, 0
   {
    PAGEALIGN 10
    RECT (2320,1880,3201,1881)
@@ -2123,7 +2126,7 @@ PAGE ""
     FILL (1,(0,0,0),0)
    }
   }
-  GROUP  11153, 0, 0
+  GROUP  11272, 0, 0
   {
    PAGEALIGN 10
    RECT (2320,1940,3201,1941)
@@ -2135,7 +2138,7 @@ PAGE ""
     FILL (1,(0,0,0),0)
    }
   }
-  GROUP  11154, 0, 0
+  GROUP  11273, 0, 0
   {
    PAGEALIGN 10
    RECT (2500,1620,2501,1761)
@@ -2146,7 +2149,7 @@ PAGE ""
     POINTS ( (0,0), (0,140) )
    }
   }
-  GROUP  11155, 0, 0
+  GROUP  11274, 0, 0
   {
    PAGEALIGN 10
    RECT (2500,1760,2501,2001)
@@ -2157,7 +2160,7 @@ PAGE ""
     POINTS ( (0,0), (0,240) )
    }
   }
-  BMPPICT  11156, 0, 0
+  BMPPICT  11275, 0, 0
   {
    PAGEALIGN 10
    RECT (2340,1680,2479,1725)

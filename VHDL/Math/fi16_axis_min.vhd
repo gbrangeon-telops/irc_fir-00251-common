@@ -81,7 +81,7 @@ begin
       ARESET => areset,
       CLK    => CLK,
       SRESET => sreset
-      ); 
+      ); 		   
    
    U1: axis_sync_flow
    port map(
