@@ -17,9 +17,7 @@ use work.tel2000.all;
 entity axis_fi32tou16 is
    generic(
       VOUT_MIN : unsigned(15 downto 0) := x"0000";
-      VOUT_MAX : unsigned(15 downto 0) := x"FFF0";
-      VALUE_MIN : unsigned(15 downto 0) := x"FFF1";
-      VALUE_MAX : unsigned(15 downto 0) := x"FFF2"
+      VOUT_MAX : unsigned(15 downto 0) := x"FFF0"
       );  
    port(
       ARESETN    : in  std_logic;
@@ -87,11 +85,11 @@ begin
                pipe_underfl <= '0';
                pipe_overfl <= '0';     
                if data_in < to_integer(VOUT_MIN) then            
-                  pipe_rx_mosi.tdata <= std_logic_vector(VALUE_MIN);
+                  pipe_rx_mosi.tdata <= std_logic_vector(VOUT_MIN);
                   pipe_underfl <= RX_MOSI.TVALID;
                else              
                   if data_in > to_integer(VOUT_MAX) then            
-                     pipe_rx_mosi.tdata <= std_logic_vector(VALUE_MAX);
+                     pipe_rx_mosi.tdata <= std_logic_vector(VOUT_MAX);
                      pipe_overfl <= RX_MOSI.TVALID;                            
                   end if;
                end if;

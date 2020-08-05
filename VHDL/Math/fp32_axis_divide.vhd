@@ -69,7 +69,7 @@ begin
    RXA_MISO.TREADY <= rxa_tready;  
    RXB_MISO.TREADY <= rxb_tready;  
    
-   TX_MOSI.TUSER  <= tx_tuser(19 downto 12) or tx_tuser(11 downto 4); -- Take the tuser of either input
+   TX_MOSI.TUSER  <= tx_tuser(11 downto 4); -- TX_MOSI.TUSER = RXA_MOSI.TUSER 
    TX_MOSI.TKEEP  <= tx_data_valid & tx_data_valid & tx_data_valid & tx_data_valid; 
    TX_MOSI.TSTRB  <= tx_data_valid & tx_data_valid & tx_data_valid & tx_data_valid;
    TX_MOSI.TVALID <= tx_data_valid;

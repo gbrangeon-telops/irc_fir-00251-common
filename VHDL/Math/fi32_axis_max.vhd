@@ -22,10 +22,9 @@ entity fi32_axis_max is
       a_input_signed  : boolean := false;
       a_input_efflen  : natural := 12;     -- largeur effective des données A en entrée. Max = 31
       b_input_signed  : boolean := false;
-      b_input_efflen  : natural := 12;     -- largeur effective des données B en entrée.  Max = 31
-      tuser_index	  : integer := 2;
-	  flag_en		  : boolean := true
-	  );      
+      b_input_efflen  : natural := 12     -- largeur effective des données B en entrée.  Max = 31
+      );      
+   
    port(
       ARESETN    : in std_logic;
       CLK        : in std_logic;
@@ -113,9 +112,7 @@ begin
    b_unsigned_case: if b_input_efflen < 32 and not a_input_signed generate
       begin
       b_32bits <= to_signed(to_integer(unsigned(RXB_MOSI.TDATA(b_input_efflen-1 downto 0))), 32);     
-   end generate;						 
-   
-   
+   end generate;
    
    process(CLK)
    begin
@@ -134,15 +131,9 @@ begin
             TX_MOSI <= RXA_MOSI;
             if sync_tvalid = '1' then 
                if a_32bits > b_32bits then 
-                  TX_MOSI.TDATA <= std_logic_vector(a_32bits);		
-				  TX_MOSI.TUSER(tuser_index) <= '0';
+                  TX_MOSI.TDATA <= std_logic_vector(a_32bits);
                else
-                  TX_MOSI.TDATA <= std_logic_vector(b_32bits); 
-				  if flag_en = true then
-				  	TX_MOSI.TUSER(tuser_index) <= '1';
-				  else
-					TX_MOSI.TUSER(tuser_index) <= '0';
-				  end if;    
+                  TX_MOSI.TDATA <= std_logic_vector(b_32bits);
                end if;
             else
                TX_MOSI.TVALID <= '0'; 

@@ -70,7 +70,7 @@ architecture RTL of fp32_axis_greaterThan is
    
 begin
    
-   TX_MOSI.TUSER  <= tx_tuser(15 downto 8) or tx_tuser(7 downto 0); -- Take the tuser of either input
+   TX_MOSI.TUSER  <= tx_tuser(15 downto 8); -- TX_MOSI.TUSER = RXA_MOSI.TUSER
    TX_MOSI.TKEEP  <= "1111"; 
    TX_MOSI.TSTRB  <= "1111";
    TX_MOSI.TVALID <= tx_data_valid;
