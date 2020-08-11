@@ -36,9 +36,11 @@ entity tdp_ram_w32 is
       
       -- port A : RD
       A_RD         : in std_logic;
-      A_RD_ADD     : in std_logic_vector(31 downto 0);
+      A_RD_ADD     : in std_logic_vector(31 downto 0);	 
+	  A_RD_EOF_IN  : in std_logic;
       A_RD_DATA    : out std_logic_vector(31 downto 0);
       A_RD_DVAL    : out std_logic;
+	  A_RD_EOF_OUT : out std_logic;
       A_ERR        : out std_logic;
       
       -- port B : WR       
@@ -129,6 +131,7 @@ architecture rtl of tdp_ram_w32 is
    signal a_dval_pipe    : std_logic_vector(5 downto 0);
    signal b_dval_pipe    : std_logic_vector(5 downto 0);
    signal b_eof_pipe     : std_logic_vector(5 downto 0);
+   signal a_eof_pipe     : std_logic_vector(5 downto 0);
    signal a_rd_data_i    : std_logic_vector(A_RD_DATA'length-1 downto 0);
    signal b_rd_data_i    : std_logic_vector(B_RD_DATA'length-1 downto 0);
    signal sreset_A_CLK   : std_logic;
@@ -167,16 +170,22 @@ begin
       if rising_edge(A_CLK) then 
          if sreset_A_CLK = '1' then	
             A_RD_DVAL <= '0';
-            a_dval_pipe <= (others =>'0');
+			A_RD_EOF_OUT <= '0';
+            a_dval_pipe <= (others =>'0'); 
+			a_eof_pipe <= (others =>'0');
             a_wr_i(0) <= '0';
-            A_ERR <= '0';
+            A_ERR <= '0';	  
          else
             
             -- generation de A_RD_DVAL            
             a_dval_pipe(0) <= A_RD; 
             a_dval_pipe(1) <= a_dval_pipe(0);
             A_RD_DVAL <= a_dval_pipe(1);
-            
+             -- generation de A_RD_EOF  
+            a_eof_pipe(0) <= A_RD_EOF_IN; 
+            a_eof_pipe(1) <= a_eof_pipe(0);            
+            A_RD_EOF_OUT <= a_eof_pipe(1);
+			
             -- arbitreur 
             if A_RD = '1' then
                a_add_i <= A_RD_ADD;
