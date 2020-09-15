@@ -63,7 +63,7 @@ architecture rtl of clink_bitslip_ctrl is
    type bslip_fsm_type is (idle, do_bslip_st, wait_feedback_st, check_feedback_st, check_bslip_end_st, incr_bslip_cnt_st, output_st);
    
    signal bslip_fsm      : bslip_fsm_type;
-   signal done_i         : std_logic;
+   signal done_i         : std_logic := '0';
    signal success_i      : std_logic;
    signal bslip_pulse_i  : std_logic;
    signal sreset         : std_logic;
