@@ -33,19 +33,17 @@ entity MGT_CTRL is
 		 AXI4_LITE_MISO : out t_axi4_lite_miso;
 
        --! MGT status Signals
-       FRAME_ERR : in STD_LOGIC_VECTOR(2 downto 0);
 		 HARD_ERR : in STD_LOGIC_VECTOR(2 downto 0);
 		 SOFT_ERR : in STD_LOGIC_VECTOR(2 downto 0);
 		 CHANNEL_UP : in STD_LOGIC_VECTOR(2 downto 0);
 		 LANE_UP : in STD_LOGIC_VECTOR(5 downto 0);
 		 RX_RESETDONE : in STD_LOGIC_VECTOR(2 downto 0);
 		 TX_RESETDONE : in STD_LOGIC_VECTOR(2 downto 0);
-		 PLL_NOT_LOCK : in STD_LOGIC_VECTOR(2 downto 0);
+		 MMCM_NOT_LOCKED : in STD_LOGIC_VECTOR(2 downto 0);
 		 TX_OUT_LOCK : in STD_LOGIC_VECTOR(2 downto 0);
 		 LINK_RESET : in STD_LOGIC_VECTOR(2 downto 0);
 		 GT0_QPLLLOCK : in STD_LOGIC_VECTOR(1 downto 0);
 		 GT0_QPLLREFCLKLOST : in STD_LOGIC_VECTOR(1 downto 0);
-		 GT0_QPLLRESET : in STD_LOGIC_VECTOR(2 downto 0);
 		 
        --! MGT Control Signals
        POWER_DOWN : out STD_LOGIC_VECTOR(2 downto 0);
@@ -150,7 +148,8 @@ begin
    MBSDM <= mbsdm_sync(0 downto 0);
    
    -- Input Register Mapped from Input ports
-   core_status_i(2 downto 0) <= FRAME_ERR;
+   core_status_i(0 downto 0) <= (others => '0');
+   core_status_i(2 downto 1) <= (others => '0');
    core_status_i(5 downto 3) <= HARD_ERR;
    core_status_i(8 downto 6) <= SOFT_ERR;
    core_status_i(11 downto 9) <= CHANNEL_UP;
@@ -163,8 +162,7 @@ begin
 
    pll_status_i(1 downto 0) <= GT0_QPLLLOCK;
    pll_status_i(3 downto 2) <= GT0_QPLLREFCLKLOST;
-   pll_status_i(6 downto 4) <= GT0_QPLLRESET;
-   pll_status_i(31 downto 7) <= (others => '0');
+   pll_status_i(31 downto 4) <= (others => '0');
 
 
    -- I/O Connections assignments
