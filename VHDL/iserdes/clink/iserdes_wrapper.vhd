@@ -24,7 +24,8 @@ use IEEE.vital_timing.all;
 
 entity iserdes_wrapper is
    generic(
-      IOBDELAY       : STRING := "NONE"   -- "IBUF" or "NONE"
+   IOBDELAY       : STRING  := "NONE";   -- "IBUF" or "NONE"
+   DATA_WIDTH     : INTEGER := 7         -- Q8 est open si DATA_WIDTH = 7
       );
       
    port (
@@ -42,7 +43,8 @@ entity iserdes_wrapper is
       Q4       : out STD_ULOGIC;
       Q5       : out STD_ULOGIC;
       Q6       : out STD_ULOGIC;
-      Q7       : out STD_ULOGIC
+      Q7       : out STD_ULOGIC;
+      Q8       : out STD_ULOGIC
       );
 end iserdes_wrapper;
 
@@ -107,7 +109,7 @@ begin
    
    generic map (
       DATA_RATE=> "SDR",
-      DATA_WIDTH => 7,
+      DATA_WIDTH => DATA_WIDTH,
       DYN_CLKDIV_INV_EN =>"FALSE",
       DYN_CLK_INV_EN => "FALSE",
       INIT_Q1 => '0',
@@ -147,7 +149,7 @@ begin
       Q5           => Q5,
       Q6           => Q6,
       Q7           => Q7,
-      Q8           => open,
+      Q8           => Q8,  -- Q8 est open si DATA_WIDTH = 7
       RST          => RST,
       SHIFTIN1     => '0',
       SHIFTIN2     => '0',

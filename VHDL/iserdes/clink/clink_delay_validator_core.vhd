@@ -26,8 +26,8 @@ entity clink_delay_validator_core is
       RST              : out std_logic;
       START            : out std_logic;
       
-      SUCCESS          : in std_logic_vector(6 downto 0);
-      DONE             : in std_logic_vector(6 downto 0);    
+      SUCCESS          : in std_logic_vector(7 downto 0);
+      DONE             : in std_logic_vector(7 downto 0);    
       
       DLY_FDB_RDY      : out std_logic;
       DLY_FDB_SUCCESS  : out std_logic
