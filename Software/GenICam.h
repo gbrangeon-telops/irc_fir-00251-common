@@ -69,7 +69,7 @@
 #define ScorpiomwASensor         12
 #define Isc0207A_3kSensor        13
 #define Isc0804ASensor           14
-#define BlackbirdDSensor         15
+#define Blackbird1280DSensor     15
 #define Isc0804A_500HzSensor     16
 #define SuphawkASensor           17
 #define PelicanD_150HzSensor     18
@@ -122,7 +122,7 @@
 #define ScorpiomwAIsImplemented        SensorIsImplemented(ScorpiomwASensor)
 #define Isc0207A_3kIsImplemented       SensorIsImplemented(Isc0207A_3kSensor)
 #define Isc0804AIsImplemented          SensorIsImplemented(Isc0804ASensor)
-#define BlackbirdDIsImplemented        SensorIsImplemented(BlackbirdDSensor)
+#define Blackbird1280DIsImplemented    SensorIsImplemented(Blackbird1280DSensor)
 #define Isc0804A_500HzIsImplemented    SensorIsImplemented(Isc0804A_500HzSensor)
 #define SuphawkAIsImplemented          SensorIsImplemented(SuphawkASensor)
 #define PelicanD_150HzIsImplemented    SensorIsImplemented(PelicanD_150HzSensor)
