@@ -17,7 +17,11 @@ use work.tel2000.all;
 entity axis_fi32tou16 is
    generic(
       VOUT_MIN : unsigned(15 downto 0) := x"0000";
-      VOUT_MAX : unsigned(15 downto 0) := x"FFF0"
+      VOUT_MAX : unsigned(15 downto 0) := x"FFF0";
+      VALUE_REPL_MIN : unsigned(15 downto 0) := x"FFF1";
+      VALUE_REPL_MAX : unsigned(15 downto 0) := x"FFF2";  
+	  --Use Vout replacement value if true, else uses vout value
+	  VALUE_REPL : boolean := true
       );  
    port(
       ARESETN    : in  std_logic;
@@ -84,12 +88,20 @@ begin
                pipe_rx_mosi.tvalid  <= RX_MOSI.TVALID;         
                pipe_underfl <= '0';
                pipe_overfl <= '0';     
-               if data_in < to_integer(VOUT_MIN) then            
-                  pipe_rx_mosi.tdata <= std_logic_vector(VOUT_MIN);
+               if data_in < to_integer(VOUT_MIN) then           
+				  if VALUE_REPL = true then
+                  	  pipe_rx_mosi.tdata <= std_logic_vector(VALUE_REPL_MIN);	   
+				  else
+					  pipe_rx_mosi.tdata <= std_logic_vector(VOUT_MIN);
+				  end if;    
                   pipe_underfl <= RX_MOSI.TVALID;
                else              
                   if data_in > to_integer(VOUT_MAX) then            
-                     pipe_rx_mosi.tdata <= std_logic_vector(VOUT_MAX);
+                     if VALUE_REPL = true then
+					 	pipe_rx_mosi.tdata <= std_logic_vector(VALUE_REPL_MAX);	  
+					 else
+						 pipe_rx_mosi.tdata <= std_logic_vector(VOUT_MAX);
+					 end if;    
                      pipe_overfl <= RX_MOSI.TVALID;                            
                   end if;
                end if;
