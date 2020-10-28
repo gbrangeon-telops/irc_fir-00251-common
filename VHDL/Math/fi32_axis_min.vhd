@@ -22,11 +22,10 @@ entity fi32_axis_min is
       a_input_signed  : boolean := false;
       a_input_efflen  : natural := 12;     -- largeur effective des données A en entrée. Max = 31
       b_input_signed  : boolean := false;
-      b_input_efflen  : natural := 12;     -- largeur effective des données B en entrée.  Max = 31 
-	  tuser_index	  : integer := 2;
-	  flag_en		  : boolean := true
+      b_input_efflen  : natural := 12;     -- largeur effective des données B en entrée.  Max = 31
+      tuser_index     : integer := TUSER_OCR_PIX_BIT;
+      flag_en         : boolean := false
       );      
-   
    port(
       ARESETN    : in std_logic;
       CLK        : in std_logic;
@@ -63,7 +62,7 @@ architecture rtl of fi32_axis_min is
          ARESET : in std_logic;
          SRESET : out std_logic;
          CLK    : in std_logic);
-   end component;    
+   end component;
    
    signal a_32bits, b_32bits : signed(31 downto 0);
    signal sync_tready        : std_logic;
@@ -75,7 +74,7 @@ begin
    
    sync_tready <= TX_MISO.TREADY;
    TX_SIGNED <= '1';
-    areset <= not ARESETN;
+   areset <= not ARESETN;
    
    -- synchro reset   
    U0: sync_reset
@@ -117,13 +116,13 @@ begin
    
    process(CLK)
    begin
-      if rising_edge(CLK) then 
+      if rising_edge(CLK) then
          -- erreur si entrée valide sur plus que 31 bits
          if a_input_efflen = 32 or b_input_efflen = 32 then 
             ERR <= '1';
          else
             ERR <= '0';
-         end if;  
+         end if;
 
          TX_MOSI.TID    <= (others => '0');   -- non supporté
          TX_MOSI.TDEST  <= (others => '0');   -- non supporté	 
@@ -133,14 +132,11 @@ begin
             if sync_tvalid = '1' then 
                if a_32bits < b_32bits then 
                   TX_MOSI.TDATA <= std_logic_vector(a_32bits);
-				  TX_MOSI.TUSER(tuser_index) <= '0';
                else
-                  TX_MOSI.TDATA <= std_logic_vector(b_32bits); 
-  				  if flag_en = true then
-				  	TX_MOSI.TUSER(tuser_index) <= '1';
-				  else
-					TX_MOSI.TUSER(tuser_index) <= '0';
-				  end if; 
+                  TX_MOSI.TDATA <= std_logic_vector(b_32bits);
+                  if flag_en = true then
+                     TX_MOSI.TUSER(tuser_index) <= '1';
+                  end if;
                end if;
             else
                TX_MOSI.TVALID <= '0'; 
@@ -150,6 +146,7 @@ begin
          if sreset = '1' then
             TX_MOSI.TVALID <= '0';
          end if;
+         
       end if; 
    end process;
    

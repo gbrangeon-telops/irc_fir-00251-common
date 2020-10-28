@@ -98,7 +98,8 @@ acom \
  "$COMMON\VHDL\Utilities\axis_64_to_32_wrap.vhd" \
  "$COMMON\VHDL\Utilities\axis_64_to_16_wrap.vhd" \
  "$COMMON\VHDL\Utilities\axis64_throughput_ctrl.vhd" \
- "$COMMON\VHDL\Utilities\axis_128_to_64_wrap.vhd" 
+ "$COMMON\VHDL\Utilities\axis_128_to_64_wrap.vhd" \
+ "$COMMON\VHDL\Utilities\axis32_tuser_merge.vhd"
 
 acom -nowarn DAGGEN_0523 \
  "$COMMON\VHDL\Utilities\axis16_reg.vhd" \
@@ -133,5 +134,4 @@ acom "$COMMON\VHDL\Ram\tdp_ram_w32.vhd"
 acom \
  "$COMMON\VHDL\Lut\LUT_native_switch.vhd" \
  "$COMMON\VHDL\Lut\axis_lut_X_to_ADD.bde" \
- "$COMMON\VHDL\Lut\axis_lut_core_a32_d32.bde" \
- "$COMMON\VHDL\Lut\axis_lut_a32_d32.bde"
+ "$COMMON\VHDL\Lut\axis_lut_core_a32_d32.bde"

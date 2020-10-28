@@ -650,18 +650,18 @@ package TEL2000 is
    -- Pixel special values (tag)   
    constant VALID_PIX_MIN_VAL    : std_logic_vector(15 downto 0) := x"0000";
    constant VALID_PIX_MAX_VAL    : std_logic_vector(15 downto 0) := x"FFF0";
-   constant TAG_LDS_PIX			 : std_logic_vector(15 downto 0) := x"FFF1";
-   constant TAG_UDS_PIX		     : std_logic_vector(15 downto 0) := x"FFF2";
-   constant TAG_UCR_PIX			 : std_logic_vector(15 downto 0) := x"FFFC";
-   constant TAG_OCR_PIX			 : std_logic_vector(15 downto 0) := x"FFFD";
+   constant TAG_LDS_PIX          : std_logic_vector(15 downto 0) := x"FFF1";
+   constant TAG_UDS_PIX          : std_logic_vector(15 downto 0) := x"FFF2";
+   constant TAG_UCR_PIX          : std_logic_vector(15 downto 0) := x"FFFC";
+   constant TAG_OCR_PIX          : std_logic_vector(15 downto 0) := x"FFFD";
    constant TAG_BAD_PIX          : std_logic_vector(15 downto 0) := x"FFFE";
    constant TAG_SATURATED_PIX    : std_logic_vector(15 downto 0) := x"FFFF";
    
    -- TUSER bit definitions
    constant TUSER_BAD_PIX_BIT       : integer := 0;
    constant TUSER_SATURATED_PIX_BIT : integer := 1;
-   constant TUSER_UCR_PIX_BIT		: integer := 2;
-   constant TUSER_OCR_PIX_BIT		: integer := 3;
+   constant TUSER_UCR_PIX_BIT       : integer := 2;
+   constant TUSER_OCR_PIX_BIT       : integer := 3;
    
    
    ------------------------------------------

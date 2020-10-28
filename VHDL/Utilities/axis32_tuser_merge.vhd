@@ -1,5 +1,5 @@
 ------------------------------------------------------------------
---!   @file : t_axi4_ajout_tuser
+--!   @file : axis32_tuser_merge
 --!   @brief
 --!   @details
 --!
@@ -16,34 +16,30 @@ use IEEE.STD_LOGIC_1164.all;
 use IEEE.numeric_std.all; 
 use work.tel2000.all;
 
-entity axis_add_tuser is
-   generic(                            
-      FifoSize		   : integer := 16;     -- 
-      ASYNC          : boolean := false);	-- Use asynchronous fifos
-   
+entity axis32_tuser_merge is
    port(
-   	  ARESETN  : in std_logic;
+      ARESETN  : in std_logic;
+      CLK      : in std_logic;
       
       -- Input of fifo
-      RX_CLK   : in std_logic;
-      RX_MOSI  : in t_axi4_stream_mosi32;
-      RX_MISO  : in t_axi4_stream_miso;
+      TUSER_MOSI  : in t_axi4_stream_mosi32;
+      TUSER_MISO  : in t_axi4_stream_miso;
       
       -- Input of data
-      RXA_MOSI     : in t_axi4_stream_mosi32;
-      RXA_MISO     : out t_axi4_stream_miso;
+      RX_MOSI     : in t_axi4_stream_mosi32;
+      RX_MISO     : out t_axi4_stream_miso;
       
       -- Output of data with tuser of fifo
-      TX_MOSI  : out t_axi4_stream_mosi32;
-      TX_MISO  : in t_axi4_stream_miso;
+      TX_MOSI     : out t_axi4_stream_mosi32;
+      TX_MISO     : in t_axi4_stream_miso;
       
       -- overflow
       OVFL     : out std_logic
       
       );
-end axis_add_tuser;
+end axis32_tuser_merge;
 
-architecture rtl of axis_add_tuser is
+architecture rtl of axis32_tuser_merge is
 
 COMPONENT fwft_sfifo_w8_d16
   PORT (
@@ -71,6 +67,7 @@ signal input_valid : std_logic;
 signal exchange_valid : std_logic;		 
 signal areset             : std_logic;
 signal sreset             : std_logic;
+signal fifo_out_tuser     : std_logic_vector(TX_MOSI.TUSER'range);
    
 begin
 	
@@ -80,30 +77,31 @@ areset <= not ARESETN;
    U0: sync_reset
    port map(
       ARESET => areset,
-      CLK    => RX_CLK,
+      CLK    => CLK,
       SRESET => sreset
       ); 
 	
-input_valid <= RX_MOSI.TVALID and RX_MISO.TREADY;	
-exchange_valid <= RXA_MOSI.TVALID and TX_MISO.TREADY;					 
+input_valid <= TUSER_MOSI.TVALID and TUSER_MISO.TREADY;	
+exchange_valid <= RX_MOSI.TVALID and TX_MISO.TREADY;					 
 
-RXA_MISO <= TX_MISO;
-TX_MOSI.TVALID <= RXA_MOSI.TVALID;
-TX_MOSI.TDATA <= RXA_MOSI.TDATA;
-TX_MOSI.TSTRB <= RXA_MOSI.TSTRB;
-TX_MOSI.TKEEP <= RXA_MOSI.TKEEP;
-TX_MOSI.TLAST <= RXA_MOSI.TLAST;
-TX_MOSI.TID <= RXA_MOSI.TID;
-TX_MOSI.TDEST <= RXA_MOSI.TDEST;
+RX_MISO <= TX_MISO;
+TX_MOSI.TVALID <= RX_MOSI.TVALID;
+TX_MOSI.TDATA <= RX_MOSI.TDATA;
+TX_MOSI.TSTRB <= RX_MOSI.TSTRB;
+TX_MOSI.TKEEP <= RX_MOSI.TKEEP;
+TX_MOSI.TLAST <= RX_MOSI.TLAST;
+TX_MOSI.TID <= RX_MOSI.TID;
+TX_MOSI.TDEST <= RX_MOSI.TDEST;
+TX_MOSI.TUSER <= fifo_out_tuser;
 
 fifo : fwft_sfifo_w8_d16
   PORT MAP (
-    clk => RX_CLK,
+    clk => CLK,
     srst => sreset,
-    din => RX_MOSI.TUSER,
+    din => TUSER_MOSI.TUSER,
     wr_en => input_valid,
     rd_en => exchange_valid,
-    dout => TX_MOSI.TUSER,
+    dout => fifo_out_tuser,
     full => open,
     overflow => OVFL,
     empty => open,
