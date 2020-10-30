@@ -25,6 +25,7 @@ acom \
  "$COMMON\VHDL\Fifo\t_axi4_stream64_fifo.vhd" \
  "$COMMON\VHDL\Fifo\t_axi4_stream_wr16_rd64_fifo.vhd" \
  "$COMMON\VHDL\Fifo\t_axi4_stream_wr32_rd64_fifo.vhd" \
+ "$COMMON\VHDL\Fifo\t_axi4_stream_wr32_rd16_fifo.vhd" \
  "$COMMON\VHDL\Fifo\t_axi4_stream_wr64_rd16_fifo.vhd" \
  "$COMMON\VHDL\Fifo\t_axi4_stream_wr64_rd32_fifo.vhd" \
  "$COMMON\VHDL\Fifo\t_axi4_stream_wr64_rd64_fifo.vhd" \
