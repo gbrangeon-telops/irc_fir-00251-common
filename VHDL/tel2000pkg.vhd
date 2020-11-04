@@ -569,10 +569,10 @@ package TEL2000 is
       exp_info     : exp_info_type; --! données du temps d'intégration de l'image dont le numero est frame_id
       ref_feedbk   : std_logic_vector(1 downto 0); --! feedback pour elcorr. Utilisé uniquement dans module fpa
       dval_gen_stat: std_logic_vector(7 downto 0); --! statut venant de dval_gen. Utilisé uniquement dans module fpa
-      offsetx      : unsigned(9 downto 0); 
-      offsety      : unsigned(9 downto 0);
-      width        : unsigned(9 downto 0);
-      height       : unsigned(9 downto 0);
+      offsetx      : unsigned(11 downto 0); 
+      offsety      : unsigned(11 downto 0);
+      width        : unsigned(11 downto 0);
+      height       : unsigned(11 downto 0);
    end record;
    
    
