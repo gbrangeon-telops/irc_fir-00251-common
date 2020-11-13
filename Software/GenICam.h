@@ -73,6 +73,7 @@
 #define Isc0804A_500HzSensor     16
 #define SuphawkASensor           17
 #define PelicanD_150HzSensor     18
+#define Xro3503ASensor           19
 
 /**
  * TDCFlags register bit field definition
@@ -126,6 +127,7 @@
 #define Isc0804A_500HzIsImplemented    SensorIsImplemented(Isc0804A_500HzSensor)
 #define SuphawkAIsImplemented          SensorIsImplemented(SuphawkASensor)
 #define PelicanD_150HzIsImplemented    SensorIsImplemented(PelicanD_150HzSensor)
+#define Xro3503AIsImplemented          SensorIsImplemented(Xro3503ASensor)
 
 #define TDCFlagsSet(mask) BitMaskSet(gcRegsData.TDCFlags, mask)  /**< Set masked bits in TDCFlags register */
 #define TDCFlagsClr(mask) BitMaskClr(gcRegsData.TDCFlags, mask)  /**< Clear masked bits in TDCFlags register */
