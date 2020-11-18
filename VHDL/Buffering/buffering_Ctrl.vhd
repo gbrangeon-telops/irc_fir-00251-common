@@ -293,7 +293,7 @@ begin
     U3D : double_sync port map(D => acq_stop_o,              Q => ACQ_STOP ,         RESET => sreset,    CLK => CLK_DATA);
 
    U3E : sync_pulse port map(Pulse => regWrite, Clk => CLK_DATA, Pulse_out_sync =>regWrite_sync);
-   VECT_SYNC: process (CLK_CTRL)
+   VECT_SYNC: process (CLK_DATA)
    begin
       if rising_edge(CLK_DATA) then
          if regWrite_sync = '1' then
