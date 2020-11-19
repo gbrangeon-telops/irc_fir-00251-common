@@ -1322,7 +1322,7 @@ void BufferManager_HW_MoiHandlerConfig(t_bufferManager *pBufferCtrl, uint32_t ac
    {
       AXI4L_write32(acq_stop, pBufferCtrl->ADD + BM_ACQ_STOP);
 
-      if (!acq_stop)
+      if (!acq_stop && !TDCStatusTst(WaitingForImageCorrectionMask))
       {
          if(BM_MemoryBufferWrite)
          {
