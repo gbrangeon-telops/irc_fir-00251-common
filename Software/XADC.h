@@ -104,8 +104,8 @@ struct xadcChannelStruct {
    float voltOffset;          /**< Raw ADC value to voltage value offset */
    float voltGain;            /**< Raw ADC value to voltage value  gain */
    float voltage;             /**< Voltage value corresponding to raw ADC value */
-   float phyOffset;           /**< Raw ADC value to physical value offset */
-   float phyGain;             /**< Raw ADC value to physical value gain */
+   float phyOffset;           /**< Voltage value to physical value offset */
+   float phyGain;             /**< Voltage value to physical value gain */
    xadcFunc_t phyConverter;   /**< Voltage value to physical unit value converter function pointer */
    float * p_physical;        /**< Physical value corresponding to voltage value */
    xadcFunc_t callback;       /**< XADC channel process callback function pointer */
