@@ -58,7 +58,7 @@ architecture rtl of clink_delay_validator_core is
    signal success_latch       : std_logic_vector(SUCCESS'LENGTH-1 downto 0);
    signal start_i             : std_logic;
    signal rst_i               : std_logic;
-   signal rst_cnt             : unsigned(1 downto 0);
+   signal rst_cnt             : unsigned(3 downto 0);
    
    
 begin
@@ -133,7 +133,7 @@ begin
                when rst_validator_st1 =>                     
                   rst_i <= '1';
                   rst_cnt <= rst_cnt + 1;
-                  if rst_cnt = 3 then
+                  if rst_cnt(3) = '1' then
                      core_fsm <= rst_validator_st2;
                   end if;
                
