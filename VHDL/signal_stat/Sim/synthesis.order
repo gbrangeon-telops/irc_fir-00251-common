@@ -1,0 +1,3 @@
+i<>.\src\axi_monitor_testbench.vhd
+i<>.\..\axi_monitor.vhd
+i<>.\..\axi_monitor_define.vhd

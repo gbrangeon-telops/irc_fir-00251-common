@@ -1,0 +1,60 @@
+[Project]
+Current Flow=Generic
+VCS=0
+version=3
+Current Config=compile
+
+[Configurations]
+compile=work
+
+[Library]
+work=.\work\work.lib
+
+[Settings]
+AccessRead=0
+AccessReadWrite=0
+AccessACCB=0
+AccessACCR=0
+AccessReadWriteSLP=0
+AccessReadTopLevel=1
+DisableC=1
+ENABLE_ADV_DATAFLOW=0
+FLOW_TYPE=HDL
+LANGUAGE=VHDL
+REFRESH_FLOW=1
+FLOWTOOLS=NONE
+FAMILY=Xilinx VIRTEX4
+fileopenfolder=D:\Telops\FIR-00251-Common\VHDL\signal_stat
+
+[LocalVerilogSets]
+EnableSLP=1
+EnableDebug=0
+
+[LocalVhdlSets]
+CompileWithDebug=0
+
+[$LibMap$]
+work=.
+Active_lib=VIRTEX4
+xilinxun=VIRTEX4
+UnlinkedDesignLibrary=VIRTEX4
+DESIGNS=VIRTEX4
+
+[Files.Data]
+.\src\axi_monitor_testbench.do=Macro
+.\src\axi_monitor_testbench.vhd=VHDL Source Code
+.\..\axi_monitor.vhd=VHDL Source Code
+.\..\axi_monitor_define.vhd=VHDL Source Code
+
+[Files]
+/..\..\axi_monitor_define.vhd=-1
+/..\..\axi_monitor.vhd=-1
+/axi_monitor_testbench.do=-1
+/axi_monitor_testbench.vhd=-1
+
+[SpecTracer]
+WindowVisible=0
+[HierarchyViewer]
+HierarchyInformation=axi_monitor_testbench|TB_ARCHITECTURE|0 
+ShowHide=ShowTopLevel
+Selected=
