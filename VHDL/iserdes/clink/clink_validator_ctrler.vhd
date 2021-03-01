@@ -242,7 +242,9 @@ begin
                end if;
                
                -- compteur de lval
-               lval_cnt <= lval_cnt + 1;         -- il peut faire un wrap, pas de problème. Si cela arrive, forcément que LVAL_LENGTH_MEAS ne serapas celle escompté. Les min_mmax trancheront
+               if fval_last = '1' then
+                  lval_cnt <= lval_cnt + 1;         -- il peut faire un wrap, pas de problème. Si cela arrive, forcément que LVAL_LENGTH_MEAS ne serapas celle escompté. Les min_mmax trancheront
+               end if;
                
             end if;
             
