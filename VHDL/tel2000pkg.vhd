@@ -629,6 +629,14 @@ package TEL2000 is
       ehdri_index    : std_logic_vector(7 downto 0);
    end record;
    
+   -- axis_frame_rate stats
+   type axis_frame_rate_type is
+   record
+      frame_rate_min    : std_logic_vector(31 downto 0);   -- Minimum measured frame rate
+      frame_rate        : std_logic_vector(31 downto 0);   -- Last measured frame rate
+      frame_rate_max    : std_logic_vector(31 downto 0);   -- Maximum measured frame rate
+   end record;
+   
    -- Response constant.
    constant AXI_OKAY   : std_logic_vector(1 downto 0) := "00"; --! Successful Read or Write Acces
    constant AXI_EXOKAY : std_logic_vector(1 downto 0) := "01"; --! Successful Exclusive Read or Write Access

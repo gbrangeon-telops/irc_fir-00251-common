@@ -1,5 +1,5 @@
 ------------------------------------------------------------------
---!   @file axis64_frame_rate.vhd
+--!   @file axis16_lite_frame_rate.vhd
 --!   @brief Measure the frame rate of the AXI-Stream interface.
 --!
 --!   $Rev$
@@ -14,7 +14,7 @@ use IEEE.STD_LOGIC_1164.all;
 use IEEE.numeric_std.all;
 use work.TEL2000.all;
 
-entity axis64_frame_rate is
+entity axis16_lite_frame_rate is
    generic(
       CLK_FREQ_MHZ   : real range 0.0 to 4294.0 := 100.0;
       HDER_TLAST_EN  : boolean := true
@@ -23,7 +23,7 @@ entity axis64_frame_rate is
       CLK            : in  STD_LOGIC;
       ARESETN        : in  STD_LOGIC;
       
-      AXIS_MOSI      : in  t_axi4_stream_mosi64;
+      AXIS_MOSI      : in  t_axi4_stream_mosi16_lite;
       AXIS_MISO      : in  t_axi4_stream_miso;
 
       MB_CLK         : in  STD_LOGIC;
@@ -32,9 +32,9 @@ entity axis64_frame_rate is
       FRAME_RATE_MAX : out STD_LOGIC_VECTOR(31 downto 0);
       FRAME_RATE_STAT: out axis_frame_rate_type
    );
-end axis64_frame_rate;
+end axis16_lite_frame_rate;
 
-architecture rtl of axis64_frame_rate is
+architecture rtl of axis16_lite_frame_rate is
 
    component sync_resetn
       port(

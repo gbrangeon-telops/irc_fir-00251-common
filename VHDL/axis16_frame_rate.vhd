@@ -29,7 +29,8 @@ entity axis16_frame_rate is
       MB_CLK         : in  STD_LOGIC;
       FRAME_RATE     : out STD_LOGIC_VECTOR(31 downto 0);
       FRAME_RATE_MIN : out STD_LOGIC_VECTOR(31 downto 0);
-      FRAME_RATE_MAX : out STD_LOGIC_VECTOR(31 downto 0)
+      FRAME_RATE_MAX : out STD_LOGIC_VECTOR(31 downto 0);
+      FRAME_RATE_STAT: out axis_frame_rate_type
    );
 end axis16_frame_rate;
 
@@ -69,6 +70,11 @@ begin
    FRAME_RATE     <= std_logic_vector(resize(frame_rate_mb, FRAME_RATE'length));
    FRAME_RATE_MIN <= std_logic_vector(resize(frame_rate_min_mb, FRAME_RATE_MIN'length));
    FRAME_RATE_MAX <= std_logic_vector(resize(frame_rate_max_mb, FRAME_RATE_MAX'length));
+   
+   --Also available in a record (same signals as individuals)
+   FRAME_RATE_STAT.frame_rate       <= std_logic_vector(resize(frame_rate_mb, FRAME_RATE_STAT.frame_rate'length));
+   FRAME_RATE_STAT.frame_rate_min   <= std_logic_vector(resize(frame_rate_min_mb, FRAME_RATE_STAT.frame_rate_min'length));
+   FRAME_RATE_STAT.frame_rate_max   <= std_logic_vector(resize(frame_rate_max_mb, FRAME_RATE_STAT.frame_rate_max'length));
    
    output : process(MB_CLK)
    begin

@@ -85,6 +85,7 @@ acom \
  "$COMMON\VHDL\axis64_frame_rate.vhd" \
  "$COMMON\VHDL\axis32_frame_rate.vhd" \
  "$COMMON\VHDL\axis16_frame_rate.vhd" \
+ "$COMMON\VHDL\axis16_lite_frame_rate.vhd" \
  "$COMMON\VHDL\axis64_frame_pix_cnt.vhd" \
  "$COMMON\VHDL\axis32_frame_pix_cnt.vhd" \
  "$COMMON\VHDL\axis16_frame_pix_cnt.vhd" \
