@@ -57,8 +57,8 @@ architecture rtl of t_axi4_stream_wr32_rd64_fifo is
           full : out STD_LOGIC;
           empty : out STD_LOGIC;
           valid : out STD_LOGIC;
- 		  wr_rst_busy : out STD_LOGIC;
-		  rd_rst_busy : out STD_LOGIC
+ 		    wr_rst_busy : out STD_LOGIC;
+		    rd_rst_busy : out STD_LOGIC
          );
    END COMPONENT;
    
@@ -77,7 +77,19 @@ architecture rtl of t_axi4_stream_wr32_rd64_fifo is
          );
    END COMPONENT;
    
-   
+   COMPONENT fwft_sfifo_wr34_rd68_d32
+      PORT (      
+         clk : in STD_LOGIC;
+         srst : in STD_LOGIC;
+         din : in STD_LOGIC_VECTOR ( 33 downto 0 );
+         wr_en : in STD_LOGIC;
+         rd_en : in STD_LOGIC;
+         dout : out STD_LOGIC_VECTOR ( 67 downto 0 );
+         full : out STD_LOGIC;
+         empty : out STD_LOGIC;
+         valid : out STD_LOGIC
+         );
+   END COMPONENT;   
    
    signal FoundGenCase     : boolean := FALSE;
 
@@ -170,7 +182,7 @@ begin
    
    
    
-   sgen_wr32_rd64_d512_async :  if (WR_FIFO_DEPTH > 0 and WR_FIFO_DEPTH <= 512 and ASYNC) generate 
+   sgen_wr32_rd64_d512_async :  if (WR_FIFO_DEPTH > 32 and WR_FIFO_DEPTH <= 512 and ASYNC) generate 
       
    -- Fifo generator (13.1) synthesis setting : 
    -- Interface type -> Native, Fifo implementation -> Idependent clock block ram, Read mode -> Fist Word Fall Through,
@@ -198,6 +210,28 @@ begin
          );
    end generate;
 
+
+   sgen_wr32_rd64_d32_sync :  if (WR_FIFO_DEPTH > 0 and WR_FIFO_DEPTH <= 32 and not ASYNC) generate 
+      
+   begin  
+      
+      FoundGenCase <= true;  
+
+      fwft_sfifo_wr34_rd68_d32_inst : fwft_sfifo_wr34_rd68_d32
+      PORT MAP (
+          clk => RX_CLK,
+          srst => areset,
+          din => fifo_din,
+          wr_en => fifo_wr_en,
+          rd_en => fifo_rd_en,
+          dout => fifo_dout,
+          full => fifo_full,
+          empty => fifo_empty,
+          valid => fifo_valid
+         );
+   end generate;
+         
+         
       ovfl_proc : process(RX_CLK, ARESETN)
 	   begin	
 		  if ARESETN = '0' then 
