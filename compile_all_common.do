@@ -135,5 +135,7 @@ acom "$COMMON\VHDL\Ram\tdp_ram_w32.vhd"
 # LUT
 acom \
  "$COMMON\VHDL\Lut\LUT_native_switch.vhd" \
+ "$COMMON\VHDL\Lut\lut_axil_absolute_add.vhd" \
+ "$COMMON\VHDL\Lut\param_lut_fifo.bde" \
  "$COMMON\VHDL\Lut\axis_lut_X_to_ADD.bde" \
  "$COMMON\VHDL\Lut\axis_lut_core_a32_d32.bde"

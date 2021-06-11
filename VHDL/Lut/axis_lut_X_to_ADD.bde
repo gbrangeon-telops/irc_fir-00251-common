@@ -2,10 +2,10 @@ SCHM0104
 
 HEADER
 {
- FREEID 24187
+ FREEID 24227
  VARIABLES
  {
-  #ARCHITECTURE="axis_lut_X_to_ADD"
+  #ARCHITECTURE="rtl"
   #BLOCKTABLE_FILE="#table.bde"
   #BLOCKTABLE_INCLUDED="1"
   #DEFAULT_RANGE0="<range<name=\"err\"><left=\"32\"><direction=\"downto\"><right=\"0\"><initial_value=\"\"><delay=\"\">>"
@@ -3736,7 +3736,7 @@ PAGE ""
     #VHDL_TYPE="t_axi4_stream_mosi32"
    }
    COORD (4340,1640)
-   VERTEXES ( (2,23845) )
+   VERTEXES ( (2,24190) )
   }
   TEXT  7988, 0, 0
   {
@@ -3762,7 +3762,7 @@ PAGE ""
    }
    COORD (4340,1660)
    ORIENTATION 2
-   VERTEXES ( (2,23847) )
+   VERTEXES ( (2,24187) )
   }
   TEXT  7991, 0, 0
   {
@@ -3838,7 +3838,6 @@ PAGE ""
    SHOWLABEL
    SHOWTEXT
    CORNER 10
-   VTX (  23846, 23848 )
   }
   INSTANCE  7999, 0, 0
   {
@@ -7207,40 +7206,6 @@ PAGE ""
     #NAME="ERR(32:25)"
    }
   }
-  VTX  23845, 0, 0
-  {
-   COORD (4340,1640)
-  }
-  VTX  23846, 0, 0
-  {
-   COORD (4160,1640)
-  }
-  VTX  23847, 0, 0
-  {
-   COORD (4340,1660)
-  }
-  VTX  23848, 0, 0
-  {
-   COORD (4160,1660)
-  }
-  RECORD  23849, 0, 0
-  {
-   NET 7992
-   VTX 23845, 23846
-   VARIABLES
-   {
-    #NAMED="1"
-   }
-  }
-  RECORD  23850, 0, 0
-  {
-   NET 7994
-   VTX 23847, 23848
-   VARIABLES
-   {
-    #NAMED="1"
-   }
-  }
   GENERIC  23976, 0, 0
   {
    LABEL "Generic"
@@ -7259,6 +7224,40 @@ PAGE ""
    SHOWLABEL
    SHOWTEXT
    CORNER 10
+  }
+  VTX  24187, 0, 0
+  {
+   COORD (4340,1660)
+  }
+  VTX  24188, 0, 0
+  {
+   COORD (4220,1660)
+  }
+  RECORD  24189, 0, 0
+  {
+   NET 7994
+   VTX 24187, 24188
+   VARIABLES
+   {
+    #NAMED="1"
+   }
+  }
+  VTX  24190, 0, 0
+  {
+   COORD (4340,1640)
+  }
+  VTX  24191, 0, 0
+  {
+   COORD (4220,1640)
+  }
+  RECORD  24192, 0, 0
+  {
+   NET 7992
+   VTX 24190, 24191
+   VARIABLES
+   {
+    #NAMED="1"
+   }
   }
  }
  
@@ -7285,7 +7284,7 @@ PAGE ""
  
  BODY
  {
-  TEXT  24170, 0, 0
+  TEXT  24210, 0, 0
   {
    PAGEALIGN 10
    OUTLINE 5,1, (0,0,0)
@@ -7296,7 +7295,7 @@ PAGE ""
    COLOR (0,0,0)
    FONT (12,0,0,700,0,0,0,"Arial")
   }
-  TEXT  24171, 0, 0
+  TEXT  24211, 0, 0
   {
    PAGEALIGN 10
    TEXT "$CREATIONDATE"
@@ -7307,7 +7306,7 @@ PAGE ""
    FONT (12,0,0,700,0,128,0,"Arial")
    UPDATE 0
   }
-  TEXT  24172, 0, 0
+  TEXT  24212, 0, 0
   {
    PAGEALIGN 10
    TEXT "Title:"
@@ -7317,7 +7316,7 @@ PAGE ""
    COLOR (0,0,0)
    FONT (12,0,0,700,0,0,0,"Arial")
   }
-  TEXT  24173, 0, 0
+  TEXT  24213, 0, 0
   {
    PAGEALIGN 10
    OUTLINE 5,1, (0,0,0)
@@ -7329,7 +7328,7 @@ PAGE ""
    FONT (12,0,0,700,0,128,0,"Arial")
    UPDATE 0
   }
-  TEXT  24174, 0, 0
+  TEXT  24214, 0, 0
   {
    PAGEALIGN 10
    TEXT 
@@ -7342,7 +7341,7 @@ PAGE ""
    FONT (12,0,0,700,0,0,0,"Arial")
    MULTILINE
   }
-  TEXT  24175, 0, 0
+  TEXT  24215, 0, 0
   {
    PAGEALIGN 10
    TEXT "Page:"
@@ -7352,7 +7351,7 @@ PAGE ""
    COLOR (0,0,0)
    FONT (12,0,0,700,0,0,0,"Arial")
   }
-  TEXT  24176, 0, 0
+  TEXT  24216, 0, 0
   {
    PAGEALIGN 10
    OUTLINE 5,1, (0,0,0)
@@ -7364,7 +7363,7 @@ PAGE ""
    FONT (12,0,0,700,0,128,0,"Arial")
    UPDATE 0
   }
-  TEXT  24177, 0, 0
+  TEXT  24217, 0, 0
   {
    PAGEALIGN 10
    TEXT "Revision:"
@@ -7374,7 +7373,7 @@ PAGE ""
    COLOR (0,0,0)
    FONT (12,0,0,700,0,0,0,"Arial")
   }
-  TEXT  24178, 0, 0
+  TEXT  24218, 0, 0
   {
    PAGEALIGN 10
    TEXT "$Revision"
@@ -7385,7 +7384,7 @@ PAGE ""
    FONT (12,0,0,700,0,204,0,"Arial")
    UPDATE 0
   }
-  GROUP  24179, 0, 0
+  GROUP  24219, 0, 0
   {
    PAGEALIGN 10
    RECT (6920,2820,7801,3201)
@@ -7397,7 +7396,7 @@ PAGE ""
     FILL (1,(0,0,0),0)
    }
   }
-  GROUP  24180, 0, 0
+  GROUP  24220, 0, 0
   {
    PAGEALIGN 10
    RECT (6920,3020,7801,3021)
@@ -7409,7 +7408,7 @@ PAGE ""
     FILL (1,(0,0,0),0)
    }
   }
-  GROUP  24181, 0, 0
+  GROUP  24221, 0, 0
   {
    PAGEALIGN 10
    RECT (6920,2960,7801,2961)
@@ -7421,7 +7420,7 @@ PAGE ""
     FILL (1,(0,0,0),0)
    }
   }
-  GROUP  24182, 0, 0
+  GROUP  24222, 0, 0
   {
    PAGEALIGN 10
    RECT (6920,3080,7801,3081)
@@ -7433,7 +7432,7 @@ PAGE ""
     FILL (1,(0,0,0),0)
    }
   }
-  GROUP  24183, 0, 0
+  GROUP  24223, 0, 0
   {
    PAGEALIGN 10
    RECT (6920,3140,7801,3141)
@@ -7445,7 +7444,7 @@ PAGE ""
     FILL (1,(0,0,0),0)
    }
   }
-  GROUP  24184, 0, 0
+  GROUP  24224, 0, 0
   {
    PAGEALIGN 10
    RECT (7100,2820,7101,2961)
@@ -7456,7 +7455,7 @@ PAGE ""
     POINTS ( (0,0), (0,140) )
    }
   }
-  GROUP  24185, 0, 0
+  GROUP  24225, 0, 0
   {
    PAGEALIGN 10
    RECT (7100,2960,7101,3201)
@@ -7467,7 +7466,7 @@ PAGE ""
     POINTS ( (0,0), (0,240) )
    }
   }
-  BMPPICT  24186, 0, 0
+  BMPPICT  24226, 0, 0
   {
    PAGEALIGN 10
    RECT (6940,2880,7079,2925)

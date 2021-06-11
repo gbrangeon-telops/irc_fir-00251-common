@@ -2,7 +2,7 @@ SCHM0104
 
 HEADER
 {
- FREEID 16719
+ FREEID 16736
  VARIABLES
  {
   #ARCHITECTURE="sch"
@@ -2699,7 +2699,7 @@ PAGE ""
     #SYMBOL_GLOBALLY_UNIQUE_IDENTIFIER="8a703c42-6002-4ead-ac2b-c30bf15614f3"
    }
    COORD (960,500)
-   VERTEXES ( (6,13926), (18,13938), (22,13942), (24,13944), (26,13946), (28,13948), (30,13950), (20,14938), (8,14946), (12,14944), (16,14958), (14,14961), (10,15916), (4,15919), (2,15938) )
+   VERTEXES ( (6,13926), (18,13938), (22,13942), (24,13944), (26,13946), (28,13948), (30,13950), (20,14938), (8,14946), (12,14944), (14,14961), (10,15916), (4,15919), (2,15938) )
   }
   TEXT  8613, 0, 0
   {
@@ -3976,7 +3976,6 @@ PAGE ""
   }
   NET WIRE  12578, 0, 0
   NET WIRE  13044, 0, 0
-  NET WIRE  13045, 0, 0
   NET BUS  13050, 0, 0
   NET BUS  13055, 0, 0
   NET WIRE  13060, 0, 0
@@ -4845,19 +4844,6 @@ PAGE ""
   {
    NET 8804
    VTX 14945, 14946
-  }
-  VTX  14958, 0, 0
-  {
-   COORD (1280,600)
-  }
-  VTX  14959, 0, 0
-  {
-   COORD (1320,600)
-  }
-  WIRE  14960, 0, 0
-  {
-   NET 13045
-   VTX 14958, 14959
   }
   VTX  14961, 0, 0
   {
@@ -6432,7 +6418,7 @@ PAGE ""
  
  BODY
  {
-  TEXT  16702, 0, 0
+  TEXT  16719, 0, 0
   {
    PAGEALIGN 10
    OUTLINE 5,1, (0,0,0)
@@ -6443,7 +6429,7 @@ PAGE ""
    COLOR (0,0,0)
    FONT (12,0,0,700,0,0,0,"Arial")
   }
-  TEXT  16703, 0, 0
+  TEXT  16720, 0, 0
   {
    PAGEALIGN 10
    TEXT "$CREATIONDATE"
@@ -6454,7 +6440,7 @@ PAGE ""
    FONT (12,0,0,700,0,128,0,"Arial")
    UPDATE 0
   }
-  TEXT  16704, 0, 0
+  TEXT  16721, 0, 0
   {
    PAGEALIGN 10
    TEXT "Title:"
@@ -6464,7 +6450,7 @@ PAGE ""
    COLOR (0,0,0)
    FONT (12,0,0,700,0,0,0,"Arial")
   }
-  TEXT  16705, 0, 0
+  TEXT  16722, 0, 0
   {
    PAGEALIGN 10
    OUTLINE 5,1, (0,0,0)
@@ -6476,7 +6462,7 @@ PAGE ""
    FONT (12,0,0,700,0,128,0,"Arial")
    UPDATE 0
   }
-  TEXT  16706, 0, 0
+  TEXT  16723, 0, 0
   {
    PAGEALIGN 10
    TEXT 
@@ -6489,7 +6475,7 @@ PAGE ""
    FONT (12,0,0,700,0,0,0,"Arial")
    MULTILINE
   }
-  TEXT  16707, 0, 0
+  TEXT  16724, 0, 0
   {
    PAGEALIGN 10
    TEXT "Page:"
@@ -6499,7 +6485,7 @@ PAGE ""
    COLOR (0,0,0)
    FONT (12,0,0,700,0,0,0,"Arial")
   }
-  TEXT  16708, 0, 0
+  TEXT  16725, 0, 0
   {
    PAGEALIGN 10
    OUTLINE 5,1, (0,0,0)
@@ -6511,7 +6497,7 @@ PAGE ""
    FONT (12,0,0,700,0,128,0,"Arial")
    UPDATE 0
   }
-  TEXT  16709, 0, 0
+  TEXT  16726, 0, 0
   {
    PAGEALIGN 10
    TEXT "Revision:"
@@ -6521,7 +6507,7 @@ PAGE ""
    COLOR (0,0,0)
    FONT (12,0,0,700,0,0,0,"Arial")
   }
-  TEXT  16710, 0, 0
+  TEXT  16727, 0, 0
   {
    PAGEALIGN 10
    TEXT "$Revision"
@@ -6532,7 +6518,7 @@ PAGE ""
    FONT (12,0,0,700,0,204,0,"Arial")
    UPDATE 0
   }
-  GROUP  16711, 0, 0
+  GROUP  16728, 0, 0
   {
    PAGEALIGN 10
    RECT (2520,2620,3401,3001)
@@ -6544,7 +6530,7 @@ PAGE ""
     FILL (1,(0,0,0),0)
    }
   }
-  GROUP  16712, 0, 0
+  GROUP  16729, 0, 0
   {
    PAGEALIGN 10
    RECT (2520,2820,3401,2821)
@@ -6556,7 +6542,7 @@ PAGE ""
     FILL (1,(0,0,0),0)
    }
   }
-  GROUP  16713, 0, 0
+  GROUP  16730, 0, 0
   {
    PAGEALIGN 10
    RECT (2520,2760,3401,2761)
@@ -6568,7 +6554,7 @@ PAGE ""
     FILL (1,(0,0,0),0)
    }
   }
-  GROUP  16714, 0, 0
+  GROUP  16731, 0, 0
   {
    PAGEALIGN 10
    RECT (2520,2880,3401,2881)
@@ -6580,7 +6566,7 @@ PAGE ""
     FILL (1,(0,0,0),0)
    }
   }
-  GROUP  16715, 0, 0
+  GROUP  16732, 0, 0
   {
    PAGEALIGN 10
    RECT (2520,2940,3401,2941)
@@ -6592,7 +6578,7 @@ PAGE ""
     FILL (1,(0,0,0),0)
    }
   }
-  GROUP  16716, 0, 0
+  GROUP  16733, 0, 0
   {
    PAGEALIGN 10
    RECT (2700,2620,2701,2761)
@@ -6603,7 +6589,7 @@ PAGE ""
     POINTS ( (0,0), (0,140) )
    }
   }
-  GROUP  16717, 0, 0
+  GROUP  16734, 0, 0
   {
    PAGEALIGN 10
    RECT (2700,2760,2701,3001)
@@ -6614,7 +6600,7 @@ PAGE ""
     POINTS ( (0,0), (0,240) )
    }
   }
-  BMPPICT  16718, 0, 0
+  BMPPICT  16735, 0, 0
   {
    PAGEALIGN 10
    RECT (2540,2680,2679,2725)
