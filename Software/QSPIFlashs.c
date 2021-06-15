@@ -237,12 +237,12 @@ IRC_Status_t QSPIFlash_Read(qspiFlash_t *qspiFlash, uint32_t address, uint8_t *b
          nextPageAddr = ((tmpAddress / PAGE_SIZE) + 1 ) * PAGE_SIZE;
          qspiFlash->dataLength = MIN(nextPageAddr - tmpAddress, qspiFlash->dataCount - qspiFlash->dataOffset);
 
-         qspiFlash->txDataBuffer[0] = COMMAND_QUAD_IO_READ;
+         qspiFlash->txDataBuffer[0] = COMMAND_RANDOM_READ;
          qspiFlash->txDataBuffer[1] = (uint8_t)((tmpAddress >> 16) & 0x000000FF);
          qspiFlash->txDataBuffer[2] = (uint8_t)((tmpAddress >> 8) & 0x000000FF);
          qspiFlash->txDataBuffer[3] = (uint8_t)(tmpAddress & 0x000000FF);
 
-         qspiFlash->byteCount = qspiFlash->dataLength + QUAD_IO_READ_DUMMY_BYTES + READ_WRITE_EXTRA_BYTES;
+         qspiFlash->byteCount = qspiFlash->dataLength + READ_WRITE_EXTRA_BYTES;
 
          qspiFlash->transferStatus = QSPIFTS_WAIT_TRANSFER_DONE;
 
@@ -258,7 +258,7 @@ IRC_Status_t QSPIFlash_Read(qspiFlash_t *qspiFlash, uint32_t address, uint8_t *b
 
       case QSPIFTS_TRANSFER_DONE:
          memcpy(&qspiFlash->p_data[qspiFlash->dataOffset],
-               &qspiFlash->rxDataBuffer[QUAD_IO_READ_DUMMY_BYTES + READ_WRITE_EXTRA_BYTES],
+               &qspiFlash->rxDataBuffer[READ_WRITE_EXTRA_BYTES],
                qspiFlash->dataLength);
          qspiFlash->dataOffset += qspiFlash->dataLength;
 
@@ -288,6 +288,148 @@ IRC_Status_t QSPIFlash_Read(qspiFlash_t *qspiFlash, uint32_t address, uint8_t *b
    }
 
    return IRC_NOT_DONE;
+}
+
+/**
+ * Read ID from QSPI Flash
+ *
+ * @param qspiFlash is the pointer to the QSPI flash data structure.
+ * @param buffer is a pointer to the byte buffer that will be filled using received data.
+ *
+ * @return IRC_NOT_DONE if the flash reading is not done.
+ * @return IRC_SUCCESS if successfully read the flash.
+ * @return IRC_FAILURE if failed to read the flash.
+ */
+IRC_Status_t QSPIFlash_ReadID(qspiFlash_t *qspiFlash, uint8_t *buffer)
+{
+   IRC_Status_t status;
+   XStatus xstatus;
+
+   if (qspiFlash->status == QSPIFS_IDLE)
+   {
+      QSPIFlash_Reset(qspiFlash);
+      qspiFlash->status = QSPIFS_READ_ID;
+      qspiFlash->address = 0;
+      qspiFlash->p_data = buffer;
+      qspiFlash->dataCount = FLASH_ID_SIZE;
+   }
+   else if (qspiFlash->status != QSPIFS_READ_ID)
+   {
+      QSPIFlash_Reset(qspiFlash);
+      return IRC_FAILURE;
+   }
+
+   switch(qspiFlash->transferStatus)
+   {
+      case QSPIFTS_STATUS_REQUEST:
+         qspiFlash->transferStatus = QSPIFTS_WAIT_FLASH_READY;
+         status = QSPIFlash_StatusReq(qspiFlash);
+         if (status != IRC_SUCCESS)
+         {
+            QSPIFlash_Reset(qspiFlash);
+            return IRC_FAILURE;
+         }
+         break;
+
+      case QSPIFTS_WAIT_FLASH_READY:
+      case QSPIFTS_WAIT_TRANSFER_DONE:
+         // Nothing to do
+         break;
+
+      case QSPIFTS_FLASH_READY:
+         qspiFlash->dataLength = qspiFlash->dataCount - qspiFlash->dataOffset;
+         qspiFlash->txDataBuffer[0] = COMMAND_READ_ID;
+         qspiFlash->byteCount = qspiFlash->dataLength + READ_ID_BYTES;
+         qspiFlash->transferStatus = QSPIFTS_WAIT_TRANSFER_DONE;
+
+         xstatus = XSpi_Transfer(&qspiFlash->spiDevice, qspiFlash->txDataBuffer, qspiFlash->rxDataBuffer, qspiFlash->byteCount);
+         if(xstatus != XST_SUCCESS)
+         {
+            QSPIFlash_Reset(qspiFlash);
+            return IRC_FAILURE;
+         }
+
+         QSPI_DBG("Reading %d bytes...", qspiFlash->dataLength);
+         break;
+
+      case QSPIFTS_TRANSFER_DONE:
+         memcpy(&qspiFlash->p_data[qspiFlash->dataOffset],
+               &qspiFlash->rxDataBuffer[READ_ID_BYTES],
+               qspiFlash->dataLength);
+         qspiFlash->dataOffset += qspiFlash->dataLength;
+
+         if (qspiFlash->dataOffset != qspiFlash->dataCount)
+         {
+            qspiFlash->transferStatus = QSPIFTS_WAIT_FLASH_READY;
+            status = QSPIFlash_StatusReq(qspiFlash);
+            if (status != IRC_SUCCESS)
+            {
+               QSPIFlash_Reset(qspiFlash);
+               return IRC_FAILURE;
+            }
+         }
+         else
+         {
+            qspiFlash->status = QSPIFS_IDLE;
+            return IRC_SUCCESS;
+         }
+         break;
+
+      case QSPIFTS_WAIT_FLASH_WRITE_ENABLED:
+      case QSPIFTS_FLASH_WRITE_ENABLED:
+      case QSPIFTS_ERROR:
+         QSPIFlash_Reset(qspiFlash);
+         return IRC_FAILURE;
+         break; // Unreachable
+   }
+
+   return IRC_NOT_DONE;
+}
+
+/**
+ * Decode Flash ID data
+ *
+ * @param buffer is a pointer to the byte buffer that contains the ID data
+ * @return decoded identification
+ */
+
+qspiFlashID_t QSPIFlash_DecodeID(uint8_t *buffer)
+{
+   uint8_t manID = buffer[0];
+   uint8_t devIdMSB = buffer[1];
+   uint8_t devIdLSB = buffer[2];
+   qspiFlashID_t rv;
+
+   if (manID == FLASH_MANUFACTUER_ID_MICRON)
+   {
+      if (devIdMSB == FLASH_MICRON_MEMTYPE_3V)
+      {
+         if (devIdLSB == FLASH_MICRON_MEMSIZE_128M)
+            rv = QSPIFID_MICRON_MT25QL128;
+         else if (devIdLSB == FLASH_MICRON_MEMSIZE_256M)
+            rv = QSPIFID_MICRON_MT25QL256;
+         else
+            rv = QSPIFID_MICRON_UNKNOWN_MEMSIZE;
+      }
+      else
+         rv = QSPIFID_MICRON_UNKNOWN_MEMTYPE;
+   }
+   else if (manID == FLASH_MANUFACTUER_ID_CYPRESS)
+   {
+      if (devIdMSB == FLASH_CYPRESS_MEMTYPE_STD)
+      {
+         if (devIdLSB == FLASH_CYPRESS_MEMSIZE_256M)
+            rv = QSPIFID_CYPRESS_S25FL256;
+         else
+            rv = QSPIFID_CYPRESS_UNKNOWN_MEMSIZE;
+      }
+      else
+         rv = QSPIFID_CYPRESS_UNKNOWN_MEMTYPE;
+   }
+   else
+      rv = QSPIFID_UNKNOWN_MANUFACTURER;
+
+   return rv;
 }
 
 /**

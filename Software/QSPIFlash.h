@@ -53,6 +53,7 @@
 #define COMMAND_SECTOR_ERASE     0xD8 /* Sector Erase command */
 #define COMMAND_BULK_ERASE       0xC7 /* Bulk Erase command */
 #define COMMAND_STATUSREG_READ   0x05 /* Status read command */
+#define COMMAND_READ_ID          0x9F /* Read ID command */
 
 /**
  * This definitions specify the EXTRA bytes in each of the command
@@ -65,6 +66,7 @@
 #define BULK_ERASE_BYTES         1 /* Bulk erase extra bytes */
 #define STATUS_READ_BYTES        2 /* Status read bytes count */
 #define STATUS_WRITE_BYTES       2 /* Status write bytes count */
+#define READ_ID_BYTES            1 /* Read ID bytes count */
 
 /**
  * Flash not busy mask in the status register of the flash device.
@@ -86,6 +88,11 @@
  */
 #define QSPIFLASH_SIZE           (256 * SECTOR_SIZE)
 
+/**
+ * Number of bytes in the Read ID buffer
+ */
+#define FLASH_ID_SIZE            3 /* Just enough to get Manufacturer ID and Device ID */
+
 /*
  * The following definitions specify the number of dummy bytes to ignore in the
  * data read from the flash. This is apart from the dummy bytes returned in
@@ -101,6 +108,44 @@
 #define QSPIF_RXBUFFER_SIZE      (PAGE_SIZE + READ_WRITE_EXTRA_BYTES + QUAD_IO_READ_DUMMY_BYTES)
 #define QSPIF_TXBUFFER_SIZE      (PAGE_SIZE + READ_WRITE_EXTRA_BYTES)
 
+
+/* Manufacturer IDs */
+#define FLASH_MANUFACTUER_ID_MICRON    0x20 /* Micron */
+#define FLASH_MANUFACTUER_ID_CYPRESS   0x01 /* Cypress */
+
+/* Micron memory type */
+#define FLASH_MICRON_MEMTYPE_3V        0xBA
+
+/* Micron memory sizes */
+#define FLASH_MICRON_MEMSIZE_128M      0x18 /* 128-MBit */
+#define FLASH_MICRON_MEMSIZE_256M      0x19 /* 256-MBit */
+
+/* Cypress memory type */
+#define FLASH_CYPRESS_MEMTYPE_STD      0x02
+
+/* Cypress memory sizes */
+#define FLASH_CYPRESS_MEMSIZE_256M     0x19 /* 256-MBit */
+
+/**
+ * QSPI Flash IDs
+ */
+enum qspiFlashIDEnum {
+    QSPIFID_MICRON_MT25QL128 = 0,    /* Micron 128-MBit */
+    QSPIFID_MICRON_MT25QL256,        /* Micron 256-MBit */
+    QSPIFID_CYPRESS_S25FL256,        /* Cypress 256-MBit */
+    QSPIFID_MICRON_UNKNOWN_MEMTYPE,  /* Micron unknown memory type */
+    QSPIFID_MICRON_UNKNOWN_MEMSIZE,  /* Micron unknown memory size */
+    QSPIFID_CYPRESS_UNKNOWN_MEMTYPE, /* Cypress unknown memory type */
+    QSPIFID_CYPRESS_UNKNOWN_MEMSIZE, /* Cypress unknown memory size */
+    QSPIFID_UNKNOWN_MANUFACTURER     /* unknown manufacturer */
+};
+
+/**
+  * QSPI Flash ID type
+  */
+typedef enum qspiFlashIDEnum qspiFlashID_t;
+
+
 /**
  * QSPI flash status.
  */
@@ -108,7 +153,8 @@ enum qspiFlashStatusEnum {
    QSPIFS_IDLE = 0,
    QSPIFS_READ,
    QSPIFS_SECTOR_ERASE,
-   QSPIFS_WRITE
+   QSPIFS_WRITE,
+   QSPIFS_READ_ID
 };
 
 /**
@@ -167,6 +213,8 @@ IRC_Status_t QSPIFlash_Reset(qspiFlash_t *qspiFlash);
 IRC_Status_t QSPIFlash_StatusReq(qspiFlash_t *qspiFlash);
 IRC_Status_t QSPIFlash_WriteEnable(qspiFlash_t *qspiFlash);
 IRC_Status_t QSPIFlash_Read(qspiFlash_t *qspiFlash, uint32_t address, uint8_t *buffer, uint32_t dataCount);
+IRC_Status_t QSPIFlash_ReadID(qspiFlash_t *qspiFlash, uint8_t *buffer);
+qspiFlashID_t QSPIFlash_DecodeID(uint8_t *buffer);
 IRC_Status_t QSPIFlash_SectorErase(qspiFlash_t *qspiFlash, uint32_t address, uint32_t dataCount);
 IRC_Status_t QSPIFlash_Write(qspiFlash_t *qspiFlash, uint8_t *buffer, uint32_t address, uint32_t dataCount);
 IRC_Status_t QSPIFlash_UnitTest(qspiFlash_t *qspiFlash);
