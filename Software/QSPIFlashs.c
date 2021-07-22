@@ -416,10 +416,17 @@ qspiFlashID_t QSPIFlash_DecodeID(uint8_t *buffer)
    }
    else if (manID == FLASH_MANUFACTUER_ID_CYPRESS)
    {
-      if (devIdMSB == FLASH_CYPRESS_MEMTYPE_STD)
+      if (devIdMSB == FLASH_CYPRESS_MEMTYPE_FL_S)
       {
          if (devIdLSB == FLASH_CYPRESS_MEMSIZE_256M)
-            rv = QSPIFID_CYPRESS_S25FL256;
+            rv = QSPIFID_CYPRESS_S25FL256S;
+         else
+            rv = QSPIFID_CYPRESS_UNKNOWN_MEMSIZE;
+      }
+      else if (devIdMSB == FLASH_CYPRESS_MEMTYPE_FL_L)
+      {
+         if (devIdLSB == FLASH_CYPRESS_MEMSIZE_256M)
+            rv = QSPIFID_CYPRESS_S25FL256L;
          else
             rv = QSPIFID_CYPRESS_UNKNOWN_MEMSIZE;
       }

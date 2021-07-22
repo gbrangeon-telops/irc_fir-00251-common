@@ -121,7 +121,8 @@
 #define FLASH_MICRON_MEMSIZE_256M      0x19 /* 256-MBit */
 
 /* Cypress memory type */
-#define FLASH_CYPRESS_MEMTYPE_STD      0x02
+#define FLASH_CYPRESS_MEMTYPE_FL_S     0x02
+#define FLASH_CYPRESS_MEMTYPE_FL_L     0x60
 
 /* Cypress memory sizes */
 #define FLASH_CYPRESS_MEMSIZE_256M     0x19 /* 256-MBit */
@@ -132,7 +133,8 @@
 enum qspiFlashIDEnum {
     QSPIFID_MICRON_MT25QL128 = 0,    /* Micron 128-MBit */
     QSPIFID_MICRON_MT25QL256,        /* Micron 256-MBit */
-    QSPIFID_CYPRESS_S25FL256,        /* Cypress 256-MBit */
+    QSPIFID_CYPRESS_S25FL256S,       /* Cypress 256-MBit FL-S family */
+    QSPIFID_CYPRESS_S25FL256L,       /* Cypress 256-MBit FL-L family */
     QSPIFID_MICRON_UNKNOWN_MEMTYPE,  /* Micron unknown memory type */
     QSPIFID_MICRON_UNKNOWN_MEMSIZE,  /* Micron unknown memory size */
     QSPIFID_CYPRESS_UNKNOWN_MEMTYPE, /* Cypress unknown memory type */
