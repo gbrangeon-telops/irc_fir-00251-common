@@ -391,8 +391,11 @@ IRC_Status_t QSPIFlash_ReadID(qspiFlash_t *qspiFlash, uint8_t *buffer)
  *
  * @param buffer is a pointer to the byte buffer that contains the ID data
  * @return decoded identification
+ *
+ * NOTE!!!
+ * Ne pas oublier de mettre à jour le code du projet JTAG-PROM bridge si de nouveaux IDs sont supportés.
+ *
  */
-
 qspiFlashID_t QSPIFlash_DecodeID(uint8_t *buffer)
 {
    uint8_t manID = buffer[0];
