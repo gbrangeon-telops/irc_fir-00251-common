@@ -34,7 +34,7 @@
 #define XADC_SAMPLING_PERIOD_US     (uint64_t) 100000
 #define XADC_TIMEOUT_PERIOD_US      (uint64_t) 2000000
 
-#define XADC_NUM_SKIPPED_SAMPLES    1
+#define XADC_FILTER_DEPTH           5  /* depth of the moving average filter */
 
 /**
  * XADC state.

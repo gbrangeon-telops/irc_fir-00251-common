@@ -23,7 +23,7 @@
 #include "power_ctrl.h"
 #endif
 
-#define FILTER_DEPTH 5  /* depth of the moving average filter */
+
 
 XSysMon xsm;
 
@@ -275,9 +275,9 @@ void XADC_SM()
  */
 static void FilterAdcData(xadcChannel_t *xadcCh)
 {
-   static float intChanSamples[XIC_COUNT][FILTER_DEPTH];
+   static float intChanSamples[XIC_COUNT][XADC_FILTER_DEPTH];
 #ifdef XADC_EXTERNAL_CHANNELS_ENABLED
-   static float extChanSamples[XEC_COUNT][FILTER_DEPTH];
+   static float extChanSamples[XEC_COUNT][XADC_FILTER_DEPTH];
 #endif
    float sum = 0.0F;
    int i;
@@ -286,14 +286,14 @@ static void FilterAdcData(xadcChannel_t *xadcCh)
    {
       if (!xadcCh->isValid)
       {
-         for (i = 0; i < FILTER_DEPTH-1; i++)
+         for (i = 0; i < XADC_FILTER_DEPTH-1; i++)
             intChanSamples[xadcCh->id][i] = xadcCh->voltage;
       }
       memmove(&intChanSamples[xadcCh->id][1], &intChanSamples[xadcCh->id][0],
-              sizeof(float) * (FILTER_DEPTH-1));
+              sizeof(float) * (XADC_FILTER_DEPTH-1));
       intChanSamples[xadcCh->id][0] = xadcCh->voltage;
 
-      for (i = 0; i < FILTER_DEPTH; i++)
+      for (i = 0; i < XADC_FILTER_DEPTH; i++)
          sum += intChanSamples[xadcCh->id][i];
    }
 #ifdef XADC_EXTERNAL_CHANNELS_ENABLED
@@ -301,17 +301,17 @@ static void FilterAdcData(xadcChannel_t *xadcCh)
    {
       if (!xadcCh->isValid)
       {
-         for (i = 0; i < FILTER_DEPTH-1; i++)
+         for (i = 0; i < XADC_FILTER_DEPTH-1; i++)
             extChanSamples[xadcCh->id][i] = xadcCh->voltage;
       }
       memmove(&extChanSamples[xadcCh->id][1], &extChanSamples[xadcCh->id][0],
-              sizeof(float) * (FILTER_DEPTH-1));
+              sizeof(float) * (XADC_FILTER_DEPTH-1));
       extChanSamples[xadcCh->id][0] = xadcCh->voltage;
 
-      for (i = 0; i < FILTER_DEPTH; i++)
+      for (i = 0; i < XADC_FILTER_DEPTH; i++)
          sum += extChanSamples[xadcCh->id][i];
    }
 #endif
 
-   xadcCh->voltage = sum / FILTER_DEPTH;
+   xadcCh->voltage = sum / XADC_FILTER_DEPTH;
 }
