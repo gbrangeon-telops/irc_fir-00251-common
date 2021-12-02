@@ -139,8 +139,9 @@
 /**
  * TDCFlags2 register bit field definition
  */
-#define GPSIsImplementedMask                    0x00000001  /**< TDCFlags2 register bit mask for GPSIsImplemented field */
-#define VideoOutputIsImplementedMask            0x00000002  /**< TDCFlags2 register bit mask for VideoOutputIsImplemented field */
+#define GPSIsImplementedMask                             0x00000001  /**< TDCFlags2 register bit mask for GPSIsImplemented field */
+#define VideoOutputIsImplementedMask                     0x00000002  /**< TDCFlags2 register bit mask for VideoOutputIsImplemented field */
+#define ManufacturerStaticImageIsImplementedMask         0x00000004  /**< TDCFlags2 register bit mask for ManufacturerStaticImageIsImplemented field */
 
 #define TDCFlags2Set(mask) BitMaskSet(gcRegsData.TDCFlags2, mask)  /**< Set masked bits in TDCFlags2 register */
 #define TDCFlags2Clr(mask) BitMaskClr(gcRegsData.TDCFlags2, mask)  /**< Clear masked bits in TDCFlags2 register */
@@ -296,11 +297,11 @@ typedef struct gcRegister gcRegister_t;
 
 /* AUTO-CODE BEGIN */
 // Auto-generated GeniCam library.
-// Generated from XML camera definition file version 13.0.0
+// Generated from XML camera definition file version 13.1.0
 // using generateGenICamCommonCLib.m Matlab script.
 
 #define GC_XMLMAJORVERSION    13
-#define GC_XMLMINORVERSION    0
+#define GC_XMLMINORVERSION    1
 #define GC_XMLSUBMINORVERSION 0
 
 // Enumerations values and data types
