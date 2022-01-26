@@ -44,6 +44,31 @@ entity t_axi4_stream64_fifo is
 end t_axi4_stream64_fifo;
 
 architecture rtl of t_axi4_stream64_fifo is
+
+   COMPONENT t_axi4_stream64_sfifo_d16
+      PORT (
+         s_aclk : IN STD_LOGIC;
+         s_aresetn : IN STD_LOGIC;
+         s_axis_tvalid : IN STD_LOGIC;
+         s_axis_tready : OUT STD_LOGIC;
+         s_axis_tdata : IN STD_LOGIC_VECTOR(63 DOWNTO 0);
+         s_axis_tstrb : IN STD_LOGIC_VECTOR(7 DOWNTO 0);
+         s_axis_tkeep : IN STD_LOGIC_VECTOR(7 DOWNTO 0);
+         s_axis_tlast : IN STD_LOGIC;
+         s_axis_tid : IN STD_LOGIC_VECTOR(0 DOWNTO 0);
+         s_axis_tdest : IN STD_LOGIC_VECTOR(2 DOWNTO 0);
+         s_axis_tuser : IN STD_LOGIC_VECTOR(15 DOWNTO 0);
+         m_axis_tvalid : OUT STD_LOGIC;
+         m_axis_tready : IN STD_LOGIC;
+         m_axis_tdata : OUT STD_LOGIC_VECTOR(63 DOWNTO 0);
+         m_axis_tstrb : OUT STD_LOGIC_VECTOR(7 DOWNTO 0);
+         m_axis_tkeep : OUT STD_LOGIC_VECTOR(7 DOWNTO 0);
+         m_axis_tlast : OUT STD_LOGIC;
+         m_axis_tid : OUT STD_LOGIC_VECTOR(0 DOWNTO 0);
+         m_axis_tdest : OUT STD_LOGIC_VECTOR(2 DOWNTO 0);
+         m_axis_tuser : OUT STD_LOGIC_VECTOR(15 DOWNTO 0)
+         );
+   END COMPONENT;
    
    COMPONENT t_axi4_stream64_sfifo_d128
       PORT (
@@ -338,6 +363,37 @@ begin
    RX_MISO.TREADY <= rx_tready;
    
    -- Synchronous fifo types...
+   
+   
+   
+   sgen_d16 : if (FifoSize > 0 and FifoSize <= 16 and not ASYNC and not PACKET_MODE) generate
+      begin                  
+      FoundGenCase <= true;  
+      t_axi4_stream64_sfifo_d16_inst : t_axi4_stream64_sfifo_d16
+      PORT MAP (
+         s_aresetn => ARESETN,
+         s_aclk => RX_CLK,
+         s_axis_tvalid => RX_MOSI.TVALID,
+         s_axis_tready => rx_tready,
+         s_axis_tdata => RX_MOSI.TDATA,
+         s_axis_tstrb => RX_MOSI.TSTRB,
+         s_axis_tkeep => RX_MOSI.TKEEP,
+         s_axis_tlast => RX_MOSI.TLAST,
+         s_axis_tid => RX_MOSI.TID,
+         s_axis_tdest => RX_MOSI.TDEST,
+         s_axis_tuser => RX_MOSI.TUSER,
+         m_axis_tvalid => TX_MOSI.TVALID,
+         m_axis_tready => TX_MISO.TREADY,
+         m_axis_tdata => TX_MOSI.TDATA,
+         m_axis_tstrb => TX_MOSI.TSTRB,
+         m_axis_tkeep => TX_MOSI.TKEEP,
+         m_axis_tlast => TX_MOSI.TLAST,
+         m_axis_tid => TX_MOSI.TID,
+         m_axis_tdest => TX_MOSI.TDEST,
+         m_axis_tuser => TX_MOSI.TUSER
+         );
+   end generate;
+   
    sgen_d128 : if (FifoSize > 64 and FifoSize <= 128 and not ASYNC and not PACKET_MODE) generate
       begin                  
       FoundGenCase <= true;  
