@@ -1,5 +1,5 @@
 ------------------------------------------------------------------
---!   @file : t_axi4_stream_Wr64_Rd32_fifo
+--!   @file : t_axi4_stream_Wr64_Rd64_fifo
 --!   @brief
 --!   @details
 --!
@@ -76,7 +76,19 @@ architecture rtl of t_axi4_stream_wr64_rd64_fifo is
          );
    END COMPONENT;
    
-   
+   COMPONENT fwft_sfifo_wr66_rd66_d128
+      PORT (      
+          clk : in STD_LOGIC;
+          srst : in STD_LOGIC;
+          din : in STD_LOGIC_VECTOR ( 65 downto 0 );
+          wr_en : in STD_LOGIC;
+          rd_en : in STD_LOGIC;
+          dout : out STD_LOGIC_VECTOR ( 65 downto 0 );
+          full : out STD_LOGIC;
+          empty : out STD_LOGIC;
+          valid : out STD_LOGIC
+         );
+   END COMPONENT;   
 
    signal FoundGenCase     : boolean := FALSE;
 
@@ -129,15 +141,28 @@ begin
       TX_MOSI.TDEST <= (others => '0'); -- non géré
       TX_MOSI.TUSER <= (others => '0'); -- non géré  
 	  
-	  
-   sgen_wr64_rd32_d512_sync : if (WR_FIFO_DEPTH > 0 and WR_FIFO_DEPTH <= 512 and not ASYNC) generate  
-   -- Fifo generator (13.1) synthesis setting : 
-   -- Interface type -> Native, Fifo implementation -> Common clock block ram, Read mode -> Fist Word Fall Through,
-   -- Data Port Parameters : Write width -> 66, Write Depth -> 512, Read width -> 66, 
-   -- ECC, Output register and Power Gating Options : ECC -> OFF, Output register -> ON (Embedded register), 
-   -- Initialization  -> DEFAULT VALUES (Safety circuit -> OFF)
-   -- Status Flag -> ALL DEFAULT, except : Overflow -> OFF, Valid Flag -> ON
-   -- Data count option -> DEFAULT VALUES.
+
+   sgen_wr64_rd64_d128_sync : if (WR_FIFO_DEPTH > 0 and WR_FIFO_DEPTH <= 128 and not ASYNC) generate 
+   begin  
+      
+      FoundGenCase <= true;  
+
+      fwft_sfifo_wr66_rd66_d128_inst : fwft_sfifo_wr66_rd66_d128
+      PORT MAP (
+          clk => TX_CLK,
+          srst => areset,
+          din => fifo_din,
+          wr_en => fifo_wr_en,
+          rd_en => fifo_rd_en,
+          dout => fifo_dout,
+          full => fifo_full,
+          empty => fifo_empty,
+          valid => fifo_valid
+         );
+   end generate; 
+   
+   
+   sgen_wr64_rd64_d512_sync : if (WR_FIFO_DEPTH > 128 and WR_FIFO_DEPTH <= 512 and not ASYNC) generate  
    begin  
       
       FoundGenCase <= true;  
@@ -156,14 +181,7 @@ begin
          );
    end generate; 
    
-   sgen_wr64_rd32_d512_async : if (WR_FIFO_DEPTH > 0 and WR_FIFO_DEPTH <= 512 and ASYNC) generate  
-   -- Fifo generator (13.1) synthesis setting : 
-   -- Interface type -> Native, Fifo implementation -> Independent clock block ram, Read mode -> Fist Word Fall Through,
-   -- Data Port Parameters : Write width -> 66, Write Depth -> 512, Read width -> 66, 
-   -- ECC, Output register and Power Gating Options : ECC -> OFF, Output register -> ON (Embedded register), 
-   -- Initialization  -> DEFAULT VALUES (Safety circuit -> OFF)
-   -- Status Flag -> ALL DEFAULT, except : Overflow -> OFF, Valid Flag -> ON
-   -- Data count option -> DEFAULT VALUES.
+   sgen_wr64_rd64_d512_async : if (WR_FIFO_DEPTH > 0 and WR_FIFO_DEPTH <= 512 and ASYNC) generate 
    begin  
       
       FoundGenCase <= true;  
