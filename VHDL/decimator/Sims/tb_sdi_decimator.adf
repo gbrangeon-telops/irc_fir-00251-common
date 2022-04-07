@@ -1,0 +1,184 @@
+[Project]
+Current Flow=Generic
+VCS=0
+version=3
+Current Config=compile
+
+[Configurations]
+compile=work
+
+[Library]
+work=.\src\work\work.lib
+
+[Settings]
+AccessRead=0
+AccessReadWrite=0
+AccessACCB=0
+AccessACCR=0
+AccessReadWriteSLP=0
+AccessReadTopLevel=1
+DisableC=1
+ENABLE_ADV_DATAFLOW=0
+FLOW_TYPE=HDL
+LANGUAGE=VHDL
+REFRESH_FLOW=1
+FLOWTOOLS=NONE
+FAMILY=
+fileopenfolder=D:\Telops\FIR-00251-Common\VHDL\decimator\Hdl
+AddGeneratedFilesToDesignBrowser=0
+DesignStatusPath=$dsn\src\DESIGN_STATUS
+DesignActivationScript=$dsn\design.do
+
+[LocalVerilogSets]
+EnableSLP=1
+EnableDebug=0
+
+[LocalVhdlSets]
+CompileWithDebug=0
+NetlistCompilation=1
+EnableVHDL93Key=0
+EnableVHDL2002Key=1
+EnableVHDL2008Key=0
+DisableVHDL87Key=0
+Syntax RelaxLRM=0
+MaxErrorsKey=100
+OptimizationLevel=3
+DisableRangeChecks=0
+ProtectLevel=0
+IncrementalCompilation=0
+AdditionalOptions=
+
+[$LibMap$]
+Active_lib=
+work=.
+
+[SpecTracer]
+WindowVisible=0
+
+[HierarchyViewer]
+HierarchyInformation=top|Top|0
+ShowHide=ShowTopLevel
+Selected=
+
+[DesignStructure]
+WaveformASDB=.\src
+Waveform=.\src
+PerlScript=.\src
+Drawing=.\src
+WaveformASDBAWC=.\src
+EDIFNetlist=.\src
+Text=.\src
+ExternalFile=.\src
+EDIFSchematic=.\src
+WaveformASDBC=.\src
+ListFile=.\src
+SymbolSheet=.\src
+HTMLDocument=.\src
+OvaSourceCode=.\src
+MemFile=.\src
+PslSourceCode=.\src
+adc=.\src
+Cpp=.\src
+ActiveCADTestVectors=.\src
+TclScript=.\src
+Macro=.\src
+SDF=.\src
+SystemVerilogSourceCode=.\src
+VerilogSourceCode=.\src
+VHDLSourceCode=.\src
+StateDiagram=.\src
+BlockDiagram=.\src
+GenerateToCustomFolder=0
+
+[CodeCoverage]
+Directory=$dsn\coverage
+CollectDataPerInstance=0
+CollectDataForAll=0
+LimitBranchCoverage=0
+
+[Files]
+/build_sim.do=-1
+/run_sim.do=-1
+/stim.vhd=-1
+/Top.bde=-1
+/waveform.do=-1
+/..\..\..\..\..\IP\160\t_axi4_stream64_sfifo_d16384\t_axi4_stream64_sfifo_d16384_funcsim.vhdl=-1
+/..\..\..\..\..\..\FIR-00251-Common\VHDL\Utilities\axis64_throughput_ctrl.vhd=-1
+/..\..\..\..\..\..\FIR-00251-Common\VHDL\hdr_extractor\axis64_hder_extractor.vhd=-1
+/..\..\..\HDL\hdr_manager.vhd=-1
+/..\..\..\HDL\video_fwposition_SM.vhd=-1
+/..\..\..\HDL\video_fwposition_selector.bde=-1
+/..\..\..\HDL\video_freeze_SM.vhd=-1
+/..\..\..\HDL\video_freeze.bde=-1
+/..\..\..\HDL\video_ehdri_SM.vhd=-1
+/..\..\..\HDL\video_ehdri_selector.bde=-1
+/..\..\..\HDL\video_data_handler.bde=-1
+/..\..\..\..\..\..\FIR-00251-Common\VHDL\Utilities\axis64_hole.vhd=-1
+/..\..\..\..\..\..\FIR-00251-Common\VHDL\Utilities\axis64_RandomMiso.vhd=-1
+/..\..\..\..\..\..\FIR-00251-Common\VHDL\Calibration\calib_define.vhd=-1
+/..\..\..\..\..\..\FIR-00251-Common\VHDL\Buffering\BufferingDefine.vhd=-1
+/..\..\..\..\..\..\FIR-00251-Common\VHDL\img_header_define.vhd=-1
+/..\..\..\HDL\SDI_ctrl.vhd=-1
+/..\..\..\..\..\..\FIR-00251-Common\VHDL\FrameBuffer\FB_define.vhd=-1
+/..\..\..\..\..\..\FIR-00251-Common\VHDL\Fifo\t_axi4_stream_wr32_rd64_fifo.vhd=-1
+/..\..\Hdl\build_decimator.do=-1
+/..\..\Hdl\column_decimator.vhd=-1
+/..\..\Hdl\decimator.bde=-1
+/..\..\Hdl\decimator_define.vhd=-1
+/..\..\Hdl\row_decimator.vhd=-1
+
+[Files.Data]
+.\src\build_sim.do=Macro
+.\src\run_sim.do=Macro
+.\src\stim.vhd=VHDL Source Code
+.\src\Top.bde=Block Diagram
+.\src\waveform.do=Macro
+.\..\Hdl\build_sdi_decimator.do=Macro
+.\..\..\..\..\IP\160\t_axi4_stream64_sfifo_d16384\t_axi4_stream64_sfifo_d16384_funcsim.vhdl=VHDL Source Code
+.\..\..\..\..\..\FIR-00251-Common\VHDL\Utilities\axis64_throughput_ctrl.vhd=VHDL Source Code
+.\..\..\..\..\..\FIR-00251-Common\VHDL\hdr_extractor\axis64_hder_extractor.vhd=VHDL Source Code
+.\..\..\HDL\hdr_manager.vhd=VHDL Source Code
+.\..\..\HDL\video_fwposition_SM.vhd=VHDL Source Code
+.\..\..\HDL\video_fwposition_selector.bde=Block Diagram
+.\..\..\HDL\video_freeze_SM.vhd=VHDL Source Code
+.\..\..\HDL\video_freeze.bde=Block Diagram
+.\..\..\HDL\video_ehdri_SM.vhd=VHDL Source Code
+.\..\..\HDL\video_ehdri_selector.bde=Block Diagram
+.\..\..\HDL\video_data_handler.bde=Block Diagram
+.\..\..\..\..\..\FIR-00251-Common\VHDL\Utilities\axis64_hole.vhd=VHDL Source Code
+.\..\..\..\..\..\FIR-00251-Common\VHDL\Utilities\axis64_RandomMiso.vhd=VHDL Source Code
+.\..\..\..\..\..\FIR-00251-Common\VHDL\Calibration\calib_define.vhd=VHDL Source Code
+.\..\..\..\..\..\FIR-00251-Common\VHDL\Buffering\BufferingDefine.vhd=VHDL Source Code
+.\..\..\..\..\..\FIR-00251-Common\VHDL\img_header_define.vhd=VHDL Source Code
+.\..\..\HDL\SDI_ctrl.vhd=VHDL Source Code
+.\..\..\..\..\..\FIR-00251-Common\VHDL\FrameBuffer\FB_define.vhd=VHDL Source Code
+.\..\..\..\..\..\FIR-00251-Common\VHDL\Fifo\t_axi4_stream_wr32_rd64_fifo.vhd=VHDL Source Code
+.\..\Hdl\build_decimator.do=Macro
+.\..\Hdl\column_decimator.vhd=VHDL Source Code
+.\..\Hdl\decimator.bde=Block Diagram
+.\..\Hdl\decimator_define.vhd=VHDL Source Code
+.\..\Hdl\row_decimator.vhd=VHDL Source Code
+.\compile\video_freeze.vhd=VHDL Source Code
+.\compile\video_ehdri_selector.vhd=VHDL Source Code
+.\compile\video_fwposition_selector.vhd=VHDL Source Code
+.\compile\video_data_handler.vhd=VHDL Source Code
+.\compile\decimator.vhd=VHDL Source Code
+.\compile\Top.vhd=VHDL Source Code
+
+
+
+
+
+
+[file_out:/..\..\..\HDL\video_freeze.bde]
+/..\compile\video_freeze.vhd=-1
+[file_out:/..\..\..\HDL\video_ehdri_selector.bde]
+/..\compile\video_ehdri_selector.vhd=-1
+[file_out:/..\..\..\HDL\video_fwposition_selector.bde]
+/..\compile\video_fwposition_selector.vhd=-1
+[file_out:/..\..\..\HDL\video_data_handler.bde]
+/..\compile\video_data_handler.vhd=-1
+[file_out:/Top.bde]
+/..\compile\Top.vhd=-1
+[file_out:/..\..\Hdl\decimator.bde]
+/..\compile\decimator.vhd=-1
