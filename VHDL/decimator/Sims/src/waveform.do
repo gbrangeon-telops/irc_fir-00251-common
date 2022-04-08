@@ -12,7 +12,7 @@ add wave -noreg -logic {/Top/U1/AXIS_MOSI.TDATA}
 add wave -noreg -logic {/Top/U1/AXIS_MOSI.TVALID} 
 add wave -noreg -logic {/Top/U1/AXIS_MOSI.TLAST} 
 add wave -noreg -logic {/Top/U1/AXIS_MISO.TREADY} 
-
+													 
 add wave -named_row "------------------------CTRL INTF-------------------------------------"
 add wave -noreg -logic {/Top/CTRL/AXI4_LITE_MOSI}   
 add wave -noreg -logic {/Top/CTRL/AXI4_LITE_MISO} 
@@ -53,39 +53,39 @@ add wave -noreg -logic {}
 add wave -named_row "------------------------row decimator-------------------------------------"
 
 
-add wave -noreg -logic {/Top/U9/U4/AXIS_RX_DATA_MOSI.TVALID} 
-add wave -noreg -logic {/Top/U9/U4/AXIS_RX_DATA_MISO.TREADY} 
-add wave -noreg -logic {/Top/U9/U4/AXIS_RX_DATA_MOSI.TDATA} 
-add wave -noreg -logic {/Top/U9/U4/AXIS_RX_DATA_MOSI.TLAST} 
-add wave -noreg -logic {/Top/U9/U4/AXIS_TX_DATA_MOSI.TVALID} 
-add wave -noreg -logic {/Top/U9/U4/AXIS_TX_DATA_MISO.TREADY} 
-add wave -noreg -logic {/Top/U9/U4/AXIS_TX_DATA_MOSI.TDATA} 
-add wave -noreg -logic {/Top/U9/U4/AXIS_TX_DATA_MOSI.TLAST} 
-add wave -noreg -logic {/Top/U9/U4/pix_cnt} 
-add wave -noreg -logic {/Top/U9/U4/row_decimator_state}   
-add wave -noreg -logic {/Top/U9/U4/AXIS_RX_DATA_MOSI} 
-add wave -noreg -logic {/Top/U9/U4/AXIS_TX_DATA_MOSI} 
-add wave -noreg -logic {/Top/U9/U4/CFG} 
+add wave -noreg -logic {/Top/U9/g0/U4/AXIS_RX_DATA_MOSI.TVALID} 
+add wave -noreg -logic {/Top/U9/g0/U4/AXIS_RX_DATA_MISO.TREADY} 
+add wave -noreg -logic {/Top/U9/g0/U4/AXIS_RX_DATA_MOSI.TDATA} 
+add wave -noreg -logic {/Top/U9/g0/U4/AXIS_RX_DATA_MOSI.TLAST} 
+add wave -noreg -logic {/Top/U9/g0/U4/AXIS_TX_DATA_MOSI.TVALID} 
+add wave -noreg -logic {/Top/U9/g0/U4/AXIS_TX_DATA_MISO.TREADY} 
+add wave -noreg -logic {/Top/U9/g0/U4/AXIS_TX_DATA_MOSI.TDATA} 
+add wave -noreg -logic {/Top/U9/g0/U4/AXIS_TX_DATA_MOSI.TLAST} 
+add wave -noreg -logic {/Top/U9/g0/U4/pix_cnt} 
+add wave -noreg -logic {/Top/U9/g0/U4/row_decimator_state}   
+add wave -noreg -logic {/Top/U9/g0/U4/AXIS_RX_DATA_MOSI} 
+add wave -noreg -logic {/Top/U9/g0/U4/AXIS_TX_DATA_MOSI} 
+add wave -noreg -logic {/Top/U9/g0/U4/CFG} 
 
 add wave -noreg -logic {}
 
 
 add wave -named_row "------------------------column decimator-------------------------------------"
-add wave -noreg -logic {/Top/U9/U2/AXIS_RX_DATA_MOSI.TVALID} 
-add wave -noreg -logic {/Top/U9/U2/AXIS_RX_DATA_MISO.TREADY} 
-add wave -noreg -logic {/Top/U9/U2/AXIS_RX_DATA_MOSI.TDATA} 
-add wave -noreg -logic {/Top/U9/U2/AXIS_RX_DATA_MOSI.TLAST} 
+add wave -noreg -logic {/Top/U9/g1/U2/AXIS_RX_DATA_MOSI.TVALID} 
+add wave -noreg -logic {/Top/U9/g1/U2/AXIS_RX_DATA_MISO.TREADY} 
+add wave -noreg -logic {/Top/U9/g1/U2/AXIS_RX_DATA_MOSI.TDATA} 
+add wave -noreg -logic {/Top/U9/g1/U2/AXIS_RX_DATA_MOSI.TLAST} 
 
-add wave -noreg -logic {/Top/U9/U2/asym_fifo_input_i.TVALID} 
-add wave -noreg -logic {/Top/U9/U2/asym_fifo_input_i.TDATA} 
-add wave -noreg -logic {/Top/U9/U2/asym_fifo_input_i.TLAST}
+add wave -noreg -logic {/Top/U9/g1/U2/asym_fifo_input_i.TVALID} 
+add wave -noreg -logic {/Top/U9/g1/U2/asym_fifo_input_i.TDATA} 
+add wave -noreg -logic {/Top/U9/g1/U2/asym_fifo_input_i.TLAST}
 
-add wave -noreg -logic {/Top/U9/U2/AXIS_TX_DATA_MOSI.TVALID} 
-add wave -noreg -logic {/Top/U9/U2/AXIS_TX_DATA_MISO.TREADY}
-add wave -noreg -logic {/Top/U9/U2/AXIS_TX_DATA_MOSI.TDATA} 
-add wave -noreg -logic {/Top/U9/U2/AXIS_TX_DATA_MOSI.TLAST}	
-add wave -noreg -logic {/Top/U9/U2/AXIS_RX_DATA_MOSI} 
-add wave -noreg -logic {/Top/U9/U2/AXIS_TX_DATA_MOSI} 
+add wave -noreg -logic {/Top/U9/g1/U2/AXIS_TX_DATA_MOSI.TVALID} 
+add wave -noreg -logic {/Top/U9/g1/U2/AXIS_TX_DATA_MISO.TREADY}
+add wave -noreg -logic {/Top/U9/g1/U2/AXIS_TX_DATA_MOSI.TDATA} 
+add wave -noreg -logic {/Top/U9/g1/U2/AXIS_TX_DATA_MOSI.TLAST}	
+add wave -noreg -logic {/Top/U9/g1/U2/AXIS_RX_DATA_MOSI} 
+add wave -noreg -logic {/Top/U9/g1/U2/AXIS_TX_DATA_MOSI} 
 
 
 add wave -named_row "------------------------asym fifo-------------------------------------"

@@ -56,7 +56,7 @@ work=.
 WindowVisible=0
 
 [HierarchyViewer]
-HierarchyInformation=top|Top|0
+HierarchyInformation=top|Top|0 
 ShowHide=ShowTopLevel
 Selected=
 
@@ -133,7 +133,6 @@ LimitBranchCoverage=0
 .\src\stim.vhd=VHDL Source Code
 .\src\Top.bde=Block Diagram
 .\src\waveform.do=Macro
-.\..\Hdl\build_sdi_decimator.do=Macro
 .\..\..\..\..\IP\160\t_axi4_stream64_sfifo_d16384\t_axi4_stream64_sfifo_d16384_funcsim.vhdl=VHDL Source Code
 .\..\..\..\..\..\FIR-00251-Common\VHDL\Utilities\axis64_throughput_ctrl.vhd=VHDL Source Code
 .\..\..\..\..\..\FIR-00251-Common\VHDL\hdr_extractor\axis64_hder_extractor.vhd=VHDL Source Code
@@ -158,11 +157,11 @@ LimitBranchCoverage=0
 .\..\Hdl\decimator.bde=Block Diagram
 .\..\Hdl\decimator_define.vhd=VHDL Source Code
 .\..\Hdl\row_decimator.vhd=VHDL Source Code
+.\compile\decimator.vhd=VHDL Source Code
 .\compile\video_freeze.vhd=VHDL Source Code
 .\compile\video_ehdri_selector.vhd=VHDL Source Code
 .\compile\video_fwposition_selector.vhd=VHDL Source Code
 .\compile\video_data_handler.vhd=VHDL Source Code
-.\compile\decimator.vhd=VHDL Source Code
 .\compile\Top.vhd=VHDL Source Code
 
 
@@ -178,7 +177,7 @@ LimitBranchCoverage=0
 /..\compile\video_fwposition_selector.vhd=-1
 [file_out:/..\..\..\HDL\video_data_handler.bde]
 /..\compile\video_data_handler.vhd=-1
-[file_out:/Top.bde]
-/..\compile\Top.vhd=-1
 [file_out:/..\..\Hdl\decimator.bde]
 /..\compile\decimator.vhd=-1
+[file_out:/Top.bde]
+/..\compile\Top.vhd=-1
