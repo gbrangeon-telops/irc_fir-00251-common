@@ -142,6 +142,7 @@
 #define GPSIsImplementedMask                             0x00000001  /**< TDCFlags2 register bit mask for GPSIsImplemented field */
 #define VideoOutputIsImplementedMask                     0x00000002  /**< TDCFlags2 register bit mask for VideoOutputIsImplemented field */
 #define ManufacturerStaticImageIsImplementedMask         0x00000004  /**< TDCFlags2 register bit mask for ManufacturerStaticImageIsImplemented field */
+#define Mem4DDRIsImplementedMask                         0x00000008  /**< TDCFlags2 register bit mask for Mem4DDRIsImplementedMask field */
 
 #define TDCFlags2Set(mask) BitMaskSet(gcRegsData.TDCFlags2, mask)  /**< Set masked bits in TDCFlags2 register */
 #define TDCFlags2Clr(mask) BitMaskClr(gcRegsData.TDCFlags2, mask)  /**< Clear masked bits in TDCFlags2 register */
