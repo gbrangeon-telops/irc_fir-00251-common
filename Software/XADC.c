@@ -35,6 +35,7 @@ IRC_Status_t XADC_Init(uint16_t xsmDeviceId)
 {
    XSysMon_Config *xsmConfig;
    XStatus status;
+//   uint16_t overTempShutdown, overTempReset;
 
    // Get the configuration of system monitor
    xsmConfig = XSysMon_LookupConfig(xsmDeviceId);
@@ -54,6 +55,18 @@ IRC_Status_t XADC_Init(uint16_t xsmDeviceId)
 
    // Disable all the alarms
    XSysMon_SetAlarmEnables(&xsm, 0x0000);
+
+//   // Enable OverTemp shutdown
+//   XSysMon_SetAlarmEnables(&xsm, XSM_CFR_OT_MASK);
+//
+//   // Set OverTemp shutdown (OT_UPPER)
+//   overTempShutdown = (uint16_t)( C_TO_K((float)60) * 4096.0F / 503.975F );   // from XADC user guide (ug480)
+//   XSysMon_SetOverTemp(&xsm, MIN(overTempShutdown, XSM_ATR_OT_UPPER_VAL_MAX));
+//   XSysMon_EnableUserOverTemp(&xsm);
+//
+//   // Set OverTemp reset (OT_LOWER)
+//   overTempReset = (uint16_t)( C_TO_K((float)50) * 65536.0F / 503.975F );   // from XADC user guide (ug480)
+//   XSysMon_SetAlarmThreshold(&xsm, XSM_ATR_OT_LOWER, overTempReset);
 
    // Disable the Sequencer before configuring registers.
    XSysMon_SetSequencerMode(&xsm, XSM_SEQ_MODE_SAFE);
