@@ -670,6 +670,7 @@ package TEL2000 is
    constant TUSER_SATURATED_PIX_BIT : integer := 1;
    constant TUSER_UCR_PIX_BIT       : integer := 2;
    constant TUSER_OCR_PIX_BIT       : integer := 3;
+   constant TUSER_LDS_PIX_BIT       : integer := 4;   -- use only with axis32 or more
    
    
    ------------------------------------------
@@ -756,7 +757,7 @@ package body TEL2000 is
       wait until (miso.BVALID = '1' and rising_edge(Clk));
       mosi.BREADY <= '1';
       mosi.AWVALID	<= '0';
-      mosi.WVALID	<= '0';
+      mosi.WVALID   <= '0';
    end write_axi_lite;
    
    procedure read_axi_lite (signal Clk : in std_logic; Addr : in std_logic_vector(31 downto 0); signal miso : in  t_axi4_lite_miso; signal mosi : out t_axi4_lite_mosi; signal ReadValue : out std_logic_vector(31 downto 0)) is
@@ -774,7 +775,7 @@ package body TEL2000 is
       mosi.WDATA	   <= (others => '0');
       mosi.WVALID	   <= '0';
       mosi.WSTRB	   <= (others =>'0');
-      wait until (miso.RVALID = '1'  and rising_edge(Clk));
+      wait until (miso.RVALID = '1' and rising_edge(Clk));
       ReadValue      <= miso.RDATA;
       mosi.ARVALID	<= '0';
       mosi.RREADY	   <= '1';

@@ -43,7 +43,7 @@ architecture RTL of axis_fi32tou16 is
          CLK : in std_logic);
    end component;
    
-   type pipe_rx_mosi_type is  array (1 to 2) of t_axi4_stream_mosi16; 
+
    signal data_in        : signed(31 downto 0);
    signal pipe_rx_mosi   : t_axi4_stream_mosi16;
    signal pipe_underfl   : std_logic;
@@ -86,7 +86,7 @@ begin
                pipe_rx_mosi.tvalid  <= RX_MOSI.TVALID;         
                pipe_underfl <= '0';
                pipe_overfl <= '0';     
-               if data_in < to_integer(VOUT_MIN) then
+               if data_in < to_integer(VOUT_MIN) or RX_MOSI.TUSER(TUSER_LDS_PIX_BIT) = '1' then
                   pipe_rx_mosi.tdata <= std_logic_vector(VALUE_REPL_MIN);
                   pipe_underfl <= RX_MOSI.TVALID;
                else
