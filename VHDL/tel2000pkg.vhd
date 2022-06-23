@@ -749,21 +749,22 @@ package body TEL2000 is
       mosi.AWADDR    <= Addr ;
       mosi.AWVALID	<= '1';
       mosi.AWPROT    <= (others => '0') ;
-      mosi.BREADY	   <='0';
+      mosi.BREADY	   <= '0';
       mosi.WDATA	   <= Value ;
       mosi.WVALID	   <= '1';
       mosi.WSTRB	   <= (others =>'1');
       wait until (miso.AWREADY = '1' and miso.WREADY = '1' and rising_edge(Clk));
-      wait until (miso.BVALID = '1' and rising_edge(Clk));
-      mosi.BREADY <= '1';
       mosi.AWVALID	<= '0';
-      mosi.WVALID   <= '0';
+      mosi.WVALID    <= '0';
+      wait until (miso.BVALID = '1' and rising_edge(Clk));
+      mosi.BREADY    <= '1';
+      wait until (rising_edge(Clk));
+      mosi.BREADY    <= '0';
    end write_axi_lite;
    
    procedure read_axi_lite (signal Clk : in std_logic; Addr : in std_logic_vector(31 downto 0); signal miso : in  t_axi4_lite_miso; signal mosi : out t_axi4_lite_mosi; signal ReadValue : out std_logic_vector(31 downto 0)) is
       -- subprogram_declarative_items (constant declarations, variable declarations, etc.)      
    begin
-      
       mosi.ARVALID   <= '1';
       mosi.ARADDR    <= Addr;
       mosi.ARPROT    <= (others => '0');
@@ -771,16 +772,16 @@ package body TEL2000 is
       mosi.AWADDR    <= (others => '0');
       mosi.AWVALID	<= '0';
       mosi.AWPROT    <= (others => '0');
-      mosi.BREADY	   <='0';
+      mosi.BREADY	   <= '0';
       mosi.WDATA	   <= (others => '0');
       mosi.WVALID	   <= '0';
       mosi.WSTRB	   <= (others =>'0');
+      wait until (miso.ARREADY = '1' and rising_edge(Clk));
+      mosi.ARVALID	<= '0';
       wait until (miso.RVALID = '1' and rising_edge(Clk));
-      ReadValue      <= miso.RDATA;
-      mosi.ARVALID	<= '0';
       mosi.RREADY	   <= '1';
-      wait until rising_edge(Clk);
-      mosi.ARVALID	<= '0';
+      ReadValue      <= miso.RDATA;
+      wait until (rising_edge(Clk));
       mosi.RREADY	   <= '0';
    end read_axi_lite; 
    
