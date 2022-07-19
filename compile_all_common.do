@@ -101,8 +101,9 @@ acom \
  "$COMMON\VHDL\Utilities\axis_64_to_16_wrap.vhd" \
  "$COMMON\VHDL\Utilities\axis64_throughput_ctrl.vhd" \
  "$COMMON\VHDL\Utilities\axis_128_to_64_wrap.vhd" \
- "$COMMON\VHDL\Utilities\axis32_tuser_merge.vhd"
-
+ "$COMMON\VHDL\Utilities\axis32_tuser_merge.vhd" \
+ "$COMMON\VHDL\Utilities\rst_conditioner.vhd"
+ 
 acom -nowarn DAGGEN_0523 \
  "$COMMON\VHDL\Utilities\axis16_reg.vhd" \
  "$COMMON\VHDL\Utilities\axis16_reg_wrap.vhd" \
