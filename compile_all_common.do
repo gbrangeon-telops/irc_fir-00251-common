@@ -30,7 +30,7 @@ acom \
  "$COMMON\VHDL\Fifo\t_axi4_stream_wr64_rd32_fifo.vhd" \
  "$COMMON\VHDL\Fifo\t_axi4_stream_wr64_rd64_fifo.vhd" \
  "$COMMON\VHDL\Fifo\t_axi4_stream_wr64_rd128_fifo.vhd" \
- "$COMMON\VHDL\Fifo\t_axi4_stream_wr128_rd64_fifo.vhd" \
+ "$COMMON\VHDL\Fifo\t_axi4_stream_wr128_rd64_fifo.vhd"
  
 #hdr extractor
 acom -relax \
