@@ -45,20 +45,18 @@ end t_axi4_stream_wr64_rd128_fifo;
 
 architecture rtl of t_axi4_stream_wr64_rd128_fifo is
    
-   COMPONENT fwft_afifo_wr66_rd132_d32
-      PORT (      
-          rst : in STD_LOGIC;
-          wr_clk : in STD_LOGIC;
-          rd_clk : in STD_LOGIC;
+   
+      COMPONENT fwft_sfifo_wr66_rd132_d128
+      PORT (         
+          clk : in STD_LOGIC;
+          srst : in STD_LOGIC;
           din : in STD_LOGIC_VECTOR ( 65 downto 0 );
           wr_en : in STD_LOGIC;
           rd_en : in STD_LOGIC;
           dout : out STD_LOGIC_VECTOR ( 131 downto 0 );
           full : out STD_LOGIC;
           empty : out STD_LOGIC;
-          valid : out STD_LOGIC;
-          wr_rst_busy : out STD_LOGIC;
-          rd_rst_busy : out STD_LOGIC
+          valid : out STD_LOGIC
          );
    END COMPONENT;
    
@@ -121,33 +119,23 @@ begin
     TX_MOSI.TUSER <= (others => '0'); -- non géré                        
                           
    
-   sgen_wr32_rd64_d32_async :  if (WR_FIFO_DEPTH > 0 and WR_FIFO_DEPTH <= 32 and ASYNC) generate 
+   sgen_wr64_rd128_d128 :  if (WR_FIFO_DEPTH > 0 and WR_FIFO_DEPTH <= 128 and not ASYNC) generate 
       
-   -- Fifo generator (13.1) synthesis setting : 
-   -- Interface type -> Native, Fifo implementation -> Idependent clock block ram, Read mode -> Fist Word Fall Through,
-   -- Data Port Parameters : Write width -> 34, Write Depth -> 512, Read width -> 68, 
-   -- ECC, Output register and Power Gating Options : ECC -> OFF, Output register -> ON (Embedded register), 
-   -- Initialization  -> DEFAULT VALUES (Safety circuit -> OFF)
-   -- Status Flag -> ALL DEFAULT, except : Overflow -> OFF, Valid Flag -> ON
-   -- Data count option -> DEFAULT VALUES.
    begin  
       
       FoundGenCase <= true;  
 
-      fwft_afifo_wr66_rd132_d32_inst : fwft_afifo_wr66_rd132_d32
+      fwft_sfifo_wr66_rd132_d128_inst : fwft_sfifo_wr66_rd132_d128
       PORT MAP (
-          wr_clk => RX_CLK,
-          rd_clk => TX_CLK,
-          rst => areset,
+          clk => RX_CLK,
+          srst => areset,
           din => fifo_din,
           wr_en => fifo_wr_en,
           rd_en => fifo_rd_en,
           dout => fifo_dout,
           full => fifo_full,
           empty => fifo_empty,
-          valid => fifo_valid,
-		  wr_rst_busy => open,
-		  rd_rst_busy => open
+          valid => fifo_valid
          );
    end generate;
 
