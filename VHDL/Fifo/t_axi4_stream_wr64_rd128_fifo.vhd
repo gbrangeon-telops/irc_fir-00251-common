@@ -45,6 +45,22 @@ end t_axi4_stream_wr64_rd128_fifo;
 
 architecture rtl of t_axi4_stream_wr64_rd128_fifo is
    
+      COMPONENT fwft_afifo_wr66_rd132_d32
+      PORT (      
+          rst : in STD_LOGIC;
+          wr_clk : in STD_LOGIC;
+          rd_clk : in STD_LOGIC;
+          din : in STD_LOGIC_VECTOR ( 65 downto 0 );
+          wr_en : in STD_LOGIC;
+          rd_en : in STD_LOGIC;
+          dout : out STD_LOGIC_VECTOR ( 131 downto 0 );
+          full : out STD_LOGIC;
+          empty : out STD_LOGIC;
+          valid : out STD_LOGIC;
+          wr_rst_busy : out STD_LOGIC;
+          rd_rst_busy : out STD_LOGIC
+         );
+      END COMPONENT;
    
       COMPONENT fwft_sfifo_wr66_rd132_d128
       PORT (         
@@ -96,9 +112,9 @@ begin
       fifo_rd_en <=  TX_MISO.TREADY and fifo_valid and (not fifo_empty) ; 
 
       ---------------------------- INPUT MAPPING ----------------------------------
-      fifo_din(65 downto 2)  <= RX_MOSI.TDATA;
+     fifo_din(65 downto 2)  <= RX_MOSI.TDATA;
 	  fifo_din(1)  <= RX_MOSI.TID(0);
-      fifo_din(0)  <= RX_MOSI.TLAST;
+     fifo_din(0)  <= RX_MOSI.TLAST;
                                               
 	  ---------------------------- OUTPUT MAPPING ----------------------------------
      
@@ -119,7 +135,31 @@ begin
     TX_MOSI.TUSER <= (others => '0'); -- non géré                        
                           
    
-   sgen_wr64_rd128_d128 :  if (WR_FIFO_DEPTH > 0 and WR_FIFO_DEPTH <= 128 and not ASYNC) generate 
+   
+   sgen_wr32_rd64_d32_async :  if (WR_FIFO_DEPTH > 16 and WR_FIFO_DEPTH <= 32 and ASYNC) generate 
+   begin  
+      
+      FoundGenCase <= true;  
+
+      fwft_afifo_wr66_rd132_d32_inst : fwft_afifo_wr66_rd132_d32
+      PORT MAP (
+          wr_clk => RX_CLK,
+          rd_clk => TX_CLK,
+          rst => areset,
+          din => fifo_din,
+          wr_en => fifo_wr_en,
+          rd_en => fifo_rd_en,
+          dout => fifo_dout,
+          full => fifo_full,
+          empty => fifo_empty,
+          valid => fifo_valid,
+		    wr_rst_busy => open,
+		    rd_rst_busy => open
+          );
+   end generate;
+   
+   
+   sgen_wr64_rd128_d128 :  if (WR_FIFO_DEPTH > 64 and WR_FIFO_DEPTH <= 128 and not ASYNC) generate 
       
    begin  
       
