@@ -15,6 +15,7 @@
 library IEEE;
 use IEEE.STD_LOGIC_1164.all;
 use IEEE.numeric_std.all;
+use work.fpa_serdes_define.all;
 
 entity clink_delay_ctrl is
    
@@ -50,9 +51,9 @@ end clink_delay_ctrl;
 
 architecture rtl of clink_delay_ctrl is
    
-   constant C_DELAY_RESOLUTION_NS : real := 0.078; -- 78ps when IDELAYCTRL REF_CLK is 200MHz
+
    constant C_BIT_TIME_NS         : real := CLK_PERIOD_NS / real(DATA_WIDTH);   
-   constant C_BIT_PERIOD_FACTOR   : integer := integer(C_BIT_TIME_NS / C_DELAY_RESOLUTION_NS); -- 22
+   constant C_BIT_PERIOD_FACTOR   : integer := integer(C_BIT_TIME_NS / C_DELAY_RESOLUTION_NS);
    constant C_ALL_ONES            : unsigned(DLY_DATA'LENGTH-1 downto 0) := (others => '1');
    
    component sync_reset is
