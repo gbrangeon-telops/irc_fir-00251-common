@@ -18,6 +18,8 @@
 
 #include "Protocol_F1F2.h"
 #include "Protocol_Pleora.h"
+#include "GC_Registers.h"
+#include "BufferManager.h"
 #include <stdio.h> // For NULL
 #include <string.h> // For memcpy
 
@@ -357,6 +359,7 @@ void CtrlIntf_Process(ctrlIntf_t *ctrlIntf)
                      {
                         netCmd.f1f2.destAddr = p_register->owner;
                         netCmd.f1f2.destPort = NIP_GC_MANAGER;
+                        CtrlIntf_MBSD_OutputDetection(netCmd, p_register);
                      }
                      break;
 
@@ -609,4 +612,48 @@ IRC_Status_t CtrlIntf_Reset(ctrlIntf_t *ctrlIntf)
    return IRC_SUCCESS;
          }
 
+/*
+ * Output mode detection (gige vs clink).
+ */
+void CtrlIntf_MBSD_OutputDetection(networkCommand_t netCmd, gcRegister_t *p_register)
+{
+   #ifdef FPGA_PROC
 
+   static niPort_t current_mode = NIP_UNDEFINED;
+
+   if((p_register->p_data == &gcRegsData.MemoryBufferSequenceDownloadMode || BM_MemoryBufferRead) &&
+      (netCmd.f1f2.srcPort == NIP_CI_CLINK || netCmd.f1f2.srcPort == NIP_CI_PLEORA)  &&
+      (netCmd.f1f2.srcPort != current_mode)){
+
+         switch (netCmd.f1f2.srcPort)
+         {
+            case NIP_CI_CLINK:
+               // clink download detected.
+               if(TDCFlags2Tst(BufferClinkDownloadIsImplementedMask))
+               {
+                  IsActiveFlagsSet(BufferClinkDownloadIsActiveMask);
+                  GC_SetIsActiveFlags(gcRegsData.IsActiveFlags);
+                  BufferManager_UpdateSuggestedFrameImageCount(&gcRegsData);
+                  GC_UpdateJumboFrameHeight(&gcRegsData, false);
+                  current_mode = netCmd.f1f2.srcPort;
+                  CI_INF("Memory Buffer Download port has switch to CLINK \n");
+               }
+               break;
+
+            case NIP_CI_PLEORA:
+               // gige download detected.
+               IsActiveFlagsClr(BufferClinkDownloadIsActiveMask);
+               GC_SetIsActiveFlags(gcRegsData.IsActiveFlags);
+               BufferManager_UpdateSuggestedFrameImageCount(&gcRegsData);
+               GC_UpdateJumboFrameHeight(&gcRegsData, false);
+               current_mode = netCmd.f1f2.srcPort;
+               CI_INF("Memory Buffer Download port has switch to GIGE \n");
+               break;
+
+            default:
+               break;
+            }
+   }
+
+   #endif
+   }

@@ -150,7 +150,7 @@ IRC_Status_t CtrlIntf_Enable(ctrlIntf_t *ctrlIntf);
 IRC_Status_t CtrlIntf_Disable(ctrlIntf_t *ctrlIntf);
 IRC_Status_t CtrlIntf_Reset(ctrlIntf_t *ctrlIntf);
 void CtrlIntf_Process(ctrlIntf_t *ctrlIntf);
-
+void CtrlIntf_MBSD_OutputDetection(networkCommand_t netCmd, gcRegister_t *p_register);
 #endif // CTRLINTERFACE_H
 
 

@@ -46,6 +46,7 @@
 #define BM_BITS_PER_PIXEL                    16       // 2 bytes
 #define BM_MAX_FRAME_PERIOD_US               (20e6)   // 0.05 Hz min
 #define BM_NB_SEQ_MIN                        1
+#define BM_CLINK_MAX_BITRATE                 5440.0F     // Mb/s (340Mpix/s x 2 x 8)
 
 
 
@@ -146,6 +147,14 @@
 #define BM_MOI_ACTIVATION     0x68
 #define BM_SOFT_MOI_SIG       0x6C
 #define BM_EXT_BUF_PRSNT      0x70
+
+#define BM_STALLED_CNT        0x74
+#define BM_VALID_CNT          0x78
+#define BM_DOWNLOAD_OUTPUT    0x7C
+#define BM_DVAL               0x80
+#define BM_WIDTH              0x84
+#define BM_LVAL_PAUSE_MIN     0x88
+#define BM_FVAL_PAUSE_MIN     0x8C
 
 // BM_SEQ_COMPLETED bit assignment
 #define BM_SEQ_WR_COMPLETED   0x00000001
@@ -322,5 +331,6 @@ void     BufferManager_HW_ForceDirectInternalBufferWriteConfig(t_bufferManager *
                                                            uint32_t nbSeq, uint32_t seqSize, uint32_t preMOISize);
 void BufferManager_HW_MoiHandlerConfig(t_bufferManager *pBufferCtrl, uint32_t acq_stop);
 void BufferManager_UpdateSuggestedFrameImageCount(gcRegistersData_t *pGCRegs);
+void BufferManager_UpdateFlowControllerConfig(gcRegistersData_t *pGCRegs);
 
 #endif // BUFFERMANAGER_H

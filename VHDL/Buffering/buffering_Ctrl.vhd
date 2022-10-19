@@ -79,7 +79,8 @@ entity Buffering_Ctrl is
     SKIP_DATA       : out std_logic;
     EXT_BUF_PRSNT_N : in  std_logic;
     MEM_READY       : in  std_logic;
-    AXIL_MEM_ADDR_WIDTH : out integer;    -- 1 to 32
+    AXIL_MEM_ADDR_WIDTH : out integer;    -- 1 to 32  
+	 FLOW_CTRLER_CONFIG : out  flow_ctrler_config_type;
 
     -- CLK_CTRL
     ARESETN         : in  std_logic;
@@ -100,38 +101,43 @@ architecture RTL of Buffering_Ctrl is
    ----------------------------   
    -- Address of registers
    ----------------------------   
-   constant MEM0_BASE_ADDR_LSB_ADDR     : std_logic_vector(ADDR_LSB + OPT_MEM_ADDR_BITS downto 0) := std_logic_vector(to_unsigned(0,ADDR_LSB + OPT_MEM_ADDR_BITS + 1));
-   constant MEM0_BASE_ADDR_MSB_ADDR     : std_logic_vector(ADDR_LSB + OPT_MEM_ADDR_BITS downto 0) := std_logic_vector(to_unsigned(4,ADDR_LSB + OPT_MEM_ADDR_BITS + 1));
-   constant MEM1_BASE_ADDR_LSB_ADDR     : std_logic_vector(ADDR_LSB + OPT_MEM_ADDR_BITS downto 0) := std_logic_vector(to_unsigned(8,ADDR_LSB + OPT_MEM_ADDR_BITS + 1));
-   constant MEM1_BASE_ADDR_MSB_ADDR     : std_logic_vector(ADDR_LSB + OPT_MEM_ADDR_BITS downto 0) := std_logic_vector(to_unsigned(12,ADDR_LSB + OPT_MEM_ADDR_BITS + 1));
-   constant NB_SEQUENCE_MAX_ADDR        : std_logic_vector(ADDR_LSB + OPT_MEM_ADDR_BITS downto 0) := std_logic_vector(to_unsigned(16,ADDR_LSB + OPT_MEM_ADDR_BITS + 1));
-   constant SEQ_IMG_TOTAL_ADDR          : std_logic_vector(ADDR_LSB + OPT_MEM_ADDR_BITS downto 0) := std_logic_vector(to_unsigned(20,ADDR_LSB + OPT_MEM_ADDR_BITS + 1));
-   constant FRAME_SIZE_ADDR             : std_logic_vector(ADDR_LSB + OPT_MEM_ADDR_BITS downto 0) := std_logic_vector(to_unsigned(24,ADDR_LSB + OPT_MEM_ADDR_BITS + 1));
-   constant BUFFER_MODE_ADDR            : std_logic_vector(ADDR_LSB + OPT_MEM_ADDR_BITS downto 0) := std_logic_vector(to_unsigned(28,ADDR_LSB + OPT_MEM_ADDR_BITS + 1));
-   constant HDR_BYTESSIZE_ADDR          : std_logic_vector(ADDR_LSB + OPT_MEM_ADDR_BITS downto 0) := std_logic_vector(to_unsigned(32,ADDR_LSB + OPT_MEM_ADDR_BITS + 1));
-   constant IMG_BYTESSIZE_ADDR          : std_logic_vector(ADDR_LSB + OPT_MEM_ADDR_BITS downto 0) := std_logic_vector(to_unsigned(36,ADDR_LSB + OPT_MEM_ADDR_BITS + 1));
-   constant NB_IMG_PRE_ADDR             : std_logic_vector(ADDR_LSB + OPT_MEM_ADDR_BITS downto 0) := std_logic_vector(to_unsigned(40,ADDR_LSB + OPT_MEM_ADDR_BITS + 1));
-   constant NB_IMG_POST_ADDR            : std_logic_vector(ADDR_LSB + OPT_MEM_ADDR_BITS downto 0) := std_logic_vector(to_unsigned(44,ADDR_LSB + OPT_MEM_ADDR_BITS + 1));
-   constant RD_SEQ_ID_ADDR              : std_logic_vector(ADDR_LSB + OPT_MEM_ADDR_BITS downto 0) := std_logic_vector(to_unsigned(48,ADDR_LSB + OPT_MEM_ADDR_BITS + 1));
-   constant RD_START_ID_ADDR            : std_logic_vector(ADDR_LSB + OPT_MEM_ADDR_BITS downto 0) := std_logic_vector(to_unsigned(52,ADDR_LSB + OPT_MEM_ADDR_BITS + 1));
-   constant RD_STOP_ID_ADDR             : std_logic_vector(ADDR_LSB + OPT_MEM_ADDR_BITS downto 0) := std_logic_vector(to_unsigned(56,ADDR_LSB + OPT_MEM_ADDR_BITS + 1));
+   constant MEM0_BASE_ADDR_LSB_ADDR       : std_logic_vector(ADDR_LSB + OPT_MEM_ADDR_BITS downto 0) := std_logic_vector(to_unsigned(0,ADDR_LSB + OPT_MEM_ADDR_BITS + 1));
+   constant MEM0_BASE_ADDR_MSB_ADDR       : std_logic_vector(ADDR_LSB + OPT_MEM_ADDR_BITS downto 0) := std_logic_vector(to_unsigned(4,ADDR_LSB + OPT_MEM_ADDR_BITS + 1));
+   constant MEM1_BASE_ADDR_LSB_ADDR       : std_logic_vector(ADDR_LSB + OPT_MEM_ADDR_BITS downto 0) := std_logic_vector(to_unsigned(8,ADDR_LSB + OPT_MEM_ADDR_BITS + 1));
+   constant MEM1_BASE_ADDR_MSB_ADDR       : std_logic_vector(ADDR_LSB + OPT_MEM_ADDR_BITS downto 0) := std_logic_vector(to_unsigned(12,ADDR_LSB + OPT_MEM_ADDR_BITS + 1));
+   constant NB_SEQUENCE_MAX_ADDR          : std_logic_vector(ADDR_LSB + OPT_MEM_ADDR_BITS downto 0) := std_logic_vector(to_unsigned(16,ADDR_LSB + OPT_MEM_ADDR_BITS + 1));
+   constant SEQ_IMG_TOTAL_ADDR            : std_logic_vector(ADDR_LSB + OPT_MEM_ADDR_BITS downto 0) := std_logic_vector(to_unsigned(20,ADDR_LSB + OPT_MEM_ADDR_BITS + 1));
+   constant FRAME_SIZE_ADDR               : std_logic_vector(ADDR_LSB + OPT_MEM_ADDR_BITS downto 0) := std_logic_vector(to_unsigned(24,ADDR_LSB + OPT_MEM_ADDR_BITS + 1));
+   constant BUFFER_MODE_ADDR              : std_logic_vector(ADDR_LSB + OPT_MEM_ADDR_BITS downto 0) := std_logic_vector(to_unsigned(28,ADDR_LSB + OPT_MEM_ADDR_BITS + 1));
+   constant HDR_BYTESSIZE_ADDR            : std_logic_vector(ADDR_LSB + OPT_MEM_ADDR_BITS downto 0) := std_logic_vector(to_unsigned(32,ADDR_LSB + OPT_MEM_ADDR_BITS + 1));
+   constant IMG_BYTESSIZE_ADDR            : std_logic_vector(ADDR_LSB + OPT_MEM_ADDR_BITS downto 0) := std_logic_vector(to_unsigned(36,ADDR_LSB + OPT_MEM_ADDR_BITS + 1));
+   constant NB_IMG_PRE_ADDR               : std_logic_vector(ADDR_LSB + OPT_MEM_ADDR_BITS downto 0) := std_logic_vector(to_unsigned(40,ADDR_LSB + OPT_MEM_ADDR_BITS + 1));
+   constant NB_IMG_POST_ADDR              : std_logic_vector(ADDR_LSB + OPT_MEM_ADDR_BITS downto 0) := std_logic_vector(to_unsigned(44,ADDR_LSB + OPT_MEM_ADDR_BITS + 1));
+   constant RD_SEQ_ID_ADDR                : std_logic_vector(ADDR_LSB + OPT_MEM_ADDR_BITS downto 0) := std_logic_vector(to_unsigned(48,ADDR_LSB + OPT_MEM_ADDR_BITS + 1));
+   constant RD_START_ID_ADDR              : std_logic_vector(ADDR_LSB + OPT_MEM_ADDR_BITS downto 0) := std_logic_vector(to_unsigned(52,ADDR_LSB + OPT_MEM_ADDR_BITS + 1));
+   constant RD_STOP_ID_ADDR               : std_logic_vector(ADDR_LSB + OPT_MEM_ADDR_BITS downto 0) := std_logic_vector(to_unsigned(56,ADDR_LSB + OPT_MEM_ADDR_BITS + 1));
 --   constant CLEAR_MEMORY_CONTENT_ADDR   : std_logic_vector(ADDR_LSB + OPT_MEM_ADDR_BITS downto 0) := std_logic_vector(to_unsigned(60,ADDR_LSB + OPT_MEM_ADDR_BITS + 1));
-   constant ACQ_STOP_ADDR               : std_logic_vector(ADDR_LSB + OPT_MEM_ADDR_BITS downto 0) := std_logic_vector(to_unsigned(64,ADDR_LSB + OPT_MEM_ADDR_BITS + 1));
-   constant CONFIG_VALID_ADDR           : std_logic_vector(ADDR_LSB + OPT_MEM_ADDR_BITS downto 0) := std_logic_vector(to_unsigned(68,ADDR_LSB + OPT_MEM_ADDR_BITS + 1));
-   constant AXIL_MEM_ADDR_WIDTH_ADDR    : std_logic_vector(ADDR_LSB + OPT_MEM_ADDR_BITS downto 0) := std_logic_vector(to_unsigned(72,ADDR_LSB + OPT_MEM_ADDR_BITS + 1));
-   constant NB_SEQ_IN_MEM_ADDR          : std_logic_vector(ADDR_LSB + OPT_MEM_ADDR_BITS downto 0) := std_logic_vector(to_unsigned(76,ADDR_LSB + OPT_MEM_ADDR_BITS + 1));
-   constant BUF_ERROR_ADDR              : std_logic_vector(ADDR_LSB + OPT_MEM_ADDR_BITS downto 0) := std_logic_vector(to_unsigned(80,ADDR_LSB + OPT_MEM_ADDR_BITS + 1));
-   constant MEM_READY_ADDR              : std_logic_vector(ADDR_LSB + OPT_MEM_ADDR_BITS downto 0) := std_logic_vector(to_unsigned(84,ADDR_LSB + OPT_MEM_ADDR_BITS + 1));
-   constant RD_MIN_FRAME_TIME_ADDR      : std_logic_vector(ADDR_LSB + OPT_MEM_ADDR_BITS downto 0) := std_logic_vector(to_unsigned(88,ADDR_LSB + OPT_MEM_ADDR_BITS + 1));
-   constant SEQ_COMPLETED_ADDR          : std_logic_vector(ADDR_LSB + OPT_MEM_ADDR_BITS downto 0) := std_logic_vector(to_unsigned(92,ADDR_LSB + OPT_MEM_ADDR_BITS + 1));
-   constant BUFFER_SWITCH_ADDR          : std_logic_vector(ADDR_LSB + OPT_MEM_ADDR_BITS downto 0) := std_logic_vector(to_unsigned(96,ADDR_LSB + OPT_MEM_ADDR_BITS + 1));
-   constant MOI_SOURCE_ADDR             : std_logic_vector(ADDR_LSB + OPT_MEM_ADDR_BITS downto 0) := std_logic_vector(to_unsigned(100,ADDR_LSB + OPT_MEM_ADDR_BITS + 1));
-   constant MOI_ACTIVATION_ADDR         : std_logic_vector(ADDR_LSB + OPT_MEM_ADDR_BITS downto 0) := std_logic_vector(to_unsigned(104,ADDR_LSB + OPT_MEM_ADDR_BITS + 1));
-   constant SOFT_MOI_ADDR               : std_logic_vector(ADDR_LSB + OPT_MEM_ADDR_BITS downto 0) := std_logic_vector(to_unsigned(108,ADDR_LSB + OPT_MEM_ADDR_BITS + 1));
-   constant EXT_BUF_PRSNT_ADDR          : std_logic_vector(ADDR_LSB + OPT_MEM_ADDR_BITS downto 0) := std_logic_vector(to_unsigned(112,ADDR_LSB + OPT_MEM_ADDR_BITS + 1));
-
-
-   
+   constant ACQ_STOP_ADDR                 : std_logic_vector(ADDR_LSB + OPT_MEM_ADDR_BITS downto 0) := std_logic_vector(to_unsigned(64,ADDR_LSB + OPT_MEM_ADDR_BITS + 1));
+   constant CONFIG_VALID_ADDR             : std_logic_vector(ADDR_LSB + OPT_MEM_ADDR_BITS downto 0) := std_logic_vector(to_unsigned(68,ADDR_LSB + OPT_MEM_ADDR_BITS + 1));
+   constant AXIL_MEM_ADDR_WIDTH_ADDR      : std_logic_vector(ADDR_LSB + OPT_MEM_ADDR_BITS downto 0) := std_logic_vector(to_unsigned(72,ADDR_LSB + OPT_MEM_ADDR_BITS + 1));
+   constant NB_SEQ_IN_MEM_ADDR            : std_logic_vector(ADDR_LSB + OPT_MEM_ADDR_BITS downto 0) := std_logic_vector(to_unsigned(76,ADDR_LSB + OPT_MEM_ADDR_BITS + 1));
+   constant BUF_ERROR_ADDR                : std_logic_vector(ADDR_LSB + OPT_MEM_ADDR_BITS downto 0) := std_logic_vector(to_unsigned(80,ADDR_LSB + OPT_MEM_ADDR_BITS + 1));
+   constant MEM_READY_ADDR                : std_logic_vector(ADDR_LSB + OPT_MEM_ADDR_BITS downto 0) := std_logic_vector(to_unsigned(84,ADDR_LSB + OPT_MEM_ADDR_BITS + 1));
+   constant RD_MIN_FRAME_TIME_ADDR        : std_logic_vector(ADDR_LSB + OPT_MEM_ADDR_BITS downto 0) := std_logic_vector(to_unsigned(88,ADDR_LSB + OPT_MEM_ADDR_BITS + 1));
+   constant SEQ_COMPLETED_ADDR            : std_logic_vector(ADDR_LSB + OPT_MEM_ADDR_BITS downto 0) := std_logic_vector(to_unsigned(92,ADDR_LSB + OPT_MEM_ADDR_BITS + 1));
+   constant BUFFER_SWITCH_ADDR            : std_logic_vector(ADDR_LSB + OPT_MEM_ADDR_BITS downto 0) := std_logic_vector(to_unsigned(96,ADDR_LSB + OPT_MEM_ADDR_BITS + 1));
+   constant MOI_SOURCE_ADDR               : std_logic_vector(ADDR_LSB + OPT_MEM_ADDR_BITS downto 0) := std_logic_vector(to_unsigned(100,ADDR_LSB + OPT_MEM_ADDR_BITS + 1));
+   constant MOI_ACTIVATION_ADDR           : std_logic_vector(ADDR_LSB + OPT_MEM_ADDR_BITS downto 0) := std_logic_vector(to_unsigned(104,ADDR_LSB + OPT_MEM_ADDR_BITS + 1));
+   constant SOFT_MOI_ADDR                 : std_logic_vector(ADDR_LSB + OPT_MEM_ADDR_BITS downto 0) := std_logic_vector(to_unsigned(108,ADDR_LSB + OPT_MEM_ADDR_BITS + 1));
+   constant EXT_BUF_PRSNT_ADDR            : std_logic_vector(ADDR_LSB + OPT_MEM_ADDR_BITS downto 0) := std_logic_vector(to_unsigned(112,ADDR_LSB + OPT_MEM_ADDR_BITS + 1));
+   constant FLOW_CTRLER_STALLED_CNT_ADDR  : std_logic_vector(ADDR_LSB + OPT_MEM_ADDR_BITS downto 0) := std_logic_vector(to_unsigned(116,ADDR_LSB + OPT_MEM_ADDR_BITS + 1));
+   constant FLOW_CTRLER_VALID_CNT_ADDR    : std_logic_vector(ADDR_LSB + OPT_MEM_ADDR_BITS downto 0) := std_logic_vector(to_unsigned(120,ADDR_LSB + OPT_MEM_ADDR_BITS + 1));
+   constant FLOW_CTRLER_DOWNLOAD_OUTPUT_ADDR : std_logic_vector(ADDR_LSB + OPT_MEM_ADDR_BITS downto 0) := std_logic_vector(to_unsigned(124,ADDR_LSB + OPT_MEM_ADDR_BITS + 1));
+   constant FLOW_CTRLER_DVAL_ADDR         : std_logic_vector(ADDR_LSB + OPT_MEM_ADDR_BITS downto 0) := std_logic_vector(to_unsigned(128,ADDR_LSB + OPT_MEM_ADDR_BITS + 1));
+   constant FLOW_CTRLER_WIDTH_ADDR        : std_logic_vector(ADDR_LSB + OPT_MEM_ADDR_BITS downto 0) := std_logic_vector(to_unsigned(132,ADDR_LSB + OPT_MEM_ADDR_BITS + 1));
+   constant FLOW_CTRLER_LVAL_PAUSE_MIN_ADDR : std_logic_vector(ADDR_LSB + OPT_MEM_ADDR_BITS downto 0) := std_logic_vector(to_unsigned(136,ADDR_LSB + OPT_MEM_ADDR_BITS + 1));
+   constant FLOW_CTRLER_FVAL_PAUSE_MIN_ADDR : std_logic_vector(ADDR_LSB + OPT_MEM_ADDR_BITS downto 0) := std_logic_vector(to_unsigned(140,ADDR_LSB + OPT_MEM_ADDR_BITS + 1));
+              
    ----------------------------   
    -- Component Declaration
    ----------------------------   
@@ -155,7 +161,7 @@ architecture RTL of Buffering_Ctrl is
 	Port (		
 		Clock:		in STD_LOGIC;		-- Clock signal
 		Reset:		in STD_LOGIC;		-- Resets all counters (Active High)
-		Trigger:		in STD_LOGIC;		-- Reference signal (input)
+		Trigger:    in STD_LOGIC;		-- Reference signal (input)
 		Pulse:		out STD_LOGIC);		-- Generated pulse (output)
    end component;
    
@@ -181,12 +187,12 @@ architecture RTL of Buffering_Ctrl is
 
    
     --! User Input Register Declarations
-    signal nb_seq_in_mem_i  : std_logic_vector(NB_SEQUENCE_MAX'length-1 downto 0);
+    signal nb_seq_in_mem_i     : std_logic_vector(NB_SEQUENCE_MAX'length-1 downto 0);
     signal nb_seq_in_mem_val_i : std_logic;
     signal nb_seq_in_mem_val_o : std_logic;
-    signal write_completed_i: std_logic;
-    signal read_completed_i : std_logic;
-    signal seq_completed_i : std_logic_vector(1 downto 0);
+    signal write_completed_i   : std_logic;
+    signal read_completed_i    : std_logic;
+    signal seq_completed_i     : std_logic_vector(1 downto 0);
 
     --! User Output Register Declarations
     signal mem0baseaddr_lsb_o  : std_logic_vector(31 downto 0);
@@ -194,50 +200,50 @@ architecture RTL of Buffering_Ctrl is
     signal mem1baseaddr_lsb_o  : std_logic_vector(31 downto 0);
     signal mem1baseaddr_msb_o  : std_logic_vector(31 downto 0);
     
-    signal nb_seq_max_o  : std_logic_vector(NB_SEQUENCE_MAX'length-1 downto 0);
-    signal seq_img_total_o  : std_logic_vector(31 downto 0);
-    signal framesize_o  : std_logic_vector(31 downto 0);
-    signal hdr_bytessize_o  : std_logic_vector(31 downto 0);
-    signal img_bytessize_o  : std_logic_vector(31 downto 0);
-    signal buffermode_o  : std_logic_vector(3 downto 0);
-    signal nb_img_pre_o  : std_logic_vector(31 downto 0);
-    signal nb_img_post_o  : std_logic_vector(31 downto 0);
-    signal rd_seq_id_o  : std_logic_vector(NB_SEQUENCE_MAX'length-1 downto 0);
-    signal rd_start_id_o  : std_logic_vector(31 downto 0);
-    signal rd_stop_id_o  : std_logic_vector(31 downto 0);
+    signal nb_seq_max_o        : std_logic_vector(NB_SEQUENCE_MAX'length-1 downto 0);
+    signal seq_img_total_o     : std_logic_vector(31 downto 0);
+    signal framesize_o         : std_logic_vector(31 downto 0);
+    signal hdr_bytessize_o     : std_logic_vector(31 downto 0);
+    signal img_bytessize_o     : std_logic_vector(31 downto 0);
+    signal buffermode_o        : std_logic_vector(3 downto 0);
+    signal nb_img_pre_o        : std_logic_vector(31 downto 0);
+    signal nb_img_post_o       : std_logic_vector(31 downto 0);
+    signal rd_seq_id_o         : std_logic_vector(NB_SEQUENCE_MAX'length-1 downto 0);
+    signal rd_start_id_o       : std_logic_vector(31 downto 0);
+    signal rd_stop_id_o        : std_logic_vector(31 downto 0);
     
-    signal config_valid_o  : std_logic;
-    signal acq_stop_o    : std_logic;
-    signal bufferswitch_o  : std_logic_vector(BUFFER_SWITCH'length-1 downto 0);
-    signal moi_mode_o   : std_logic_vector(1 downto 0);
-    signal ext_edge_o   : std_logic_vector(1 downto 0);
-    signal soft_moi_o    : std_logic;
-    signal MOI_MODE_int  : t_MOI_MODE;
-    signal EXT_EDGE_int  : t_EDGE_TYPE;
+    signal config_valid_o      : std_logic;
+    signal acq_stop_o          : std_logic;
+    signal bufferswitch_o      : std_logic_vector(BUFFER_SWITCH'length-1 downto 0);
+    signal moi_mode_o          : std_logic_vector(1 downto 0);
+    signal ext_edge_o          : std_logic_vector(1 downto 0);
+    signal soft_moi_o          : std_logic;
+    signal MOI_MODE_int        : t_MOI_MODE;
+    signal EXT_EDGE_int        : t_EDGE_TYPE;
     
     signal axil_mem_addr_width_o  : std_logic_vector(5 downto 0);
-    signal rd_min_frame_time_o  : std_logic_vector(31 downto 0);
+    signal rd_min_frame_time_o : std_logic_vector(31 downto 0);
     
-    signal regWrite     : std_logic;
-    signal regWrite_sync: std_logic;
+    signal regWrite            : std_logic;
+    signal regWrite_sync       : std_logic;
 
- 
+ 	signal flow_ctrler_config_i : flow_ctrler_config_type;
     -- AXI4LITE signals
     signal axi_awaddr	: std_logic_vector(C_S_AXI_ADDR_WIDTH-1 downto 0);
-    signal axi_awready   : std_logic;
+    signal axi_awready  : std_logic;
     signal axi_wready	: std_logic;
-    signal axi_bresp	    : std_logic_vector(1 downto 0);
+    signal axi_bresp	: std_logic_vector(1 downto 0);
     signal axi_bvalid	: std_logic;
     signal axi_araddr	: std_logic_vector(C_S_AXI_ADDR_WIDTH-1 downto 0);
-    signal axi_arready   : std_logic;
-    signal axi_rdata	    : std_logic_vector(C_S_AXI_DATA_WIDTH-1 downto 0);
-    signal axi_rresp	    : std_logic_vector(1 downto 0);
+    signal axi_arready  : std_logic;
+    signal axi_rdata	: std_logic_vector(C_S_AXI_DATA_WIDTH-1 downto 0);
+    signal axi_rresp	: std_logic_vector(1 downto 0);
     signal axi_rvalid	: std_logic;
-    signal axi_wstrb     : std_logic_vector(3 downto 0);
+    signal axi_wstrb    : std_logic_vector(3 downto 0);
     
-    signal slv_reg_rden  : std_logic;
-    signal slv_reg_wren  : std_logic;
-    signal reg_data_out  : std_logic_vector(C_S_AXI_DATA_WIDTH-1 downto 0);
+    signal slv_reg_rden : std_logic;
+    signal slv_reg_wren : std_logic;
+    signal reg_data_out : std_logic_vector(C_S_AXI_DATA_WIDTH-1 downto 0);
    
    attribute keep : string; 
    attribute keep of buffermode_o : signal is "TRUE";  
@@ -251,16 +257,19 @@ begin
     NB_SEQUENCE_MAX <= unsigned(nb_seq_max_o);
     SEQ_IMG_TOTAL   <= unsigned(seq_img_total_o);
     FRAME_SIZE      <= unsigned(framesize_o);
-    HDR_BYTESSIZE      <= unsigned(hdr_bytessize_o);
-    IMG_BYTESSIZE      <= unsigned(img_bytessize_o);
+    HDR_BYTESSIZE   <= unsigned(hdr_bytessize_o);
+    IMG_BYTESSIZE   <= unsigned(img_bytessize_o);
     NB_IMG_PRE      <= unsigned(nb_img_pre_o);
     NB_IMG_POST     <= unsigned(nb_img_post_o);
-    RD_SEQ_ID      <= unsigned(rd_seq_id_o);
+    RD_SEQ_ID       <= unsigned(rd_seq_id_o);
     RD_START_ID     <= unsigned(rd_start_id_o);
-    RD_STOP_ID     <= unsigned(rd_stop_id_o);
+    RD_STOP_ID      <= unsigned(rd_stop_id_o);
     AXIL_MEM_ADDR_WIDTH <= to_integer(unsigned(axil_mem_addr_width_o));
     RD_MIN_FRAME_TIME <= unsigned(rd_min_frame_time_o);
-    
+	
+	FLOW_CTRLER_CONFIG <= flow_ctrler_config_i;
+	
+	
     MEM0_BASE_ADDR <= mem0baseaddr_msb_o & mem0baseaddr_lsb_o;
     MEM1_BASE_ADDR <= mem1baseaddr_msb_o & mem1baseaddr_lsb_o;
     seq_completed_i <= read_completed_i & write_completed_i;
@@ -288,9 +297,9 @@ begin
       end if;
    end process;
     -- Output ctrl double Sync
-    U3B : double_sync port map(D => config_valid_o,         Q => CONFIG_VALID ,         RESET => sreset,    CLK => CLK_DATA);    
-    U3C : double_sync port map(D => soft_moi_o,              Q => SOFT_MOI ,         RESET => sreset,    CLK => CLK_DATA);    
-    U3D : double_sync port map(D => acq_stop_o,              Q => ACQ_STOP ,         RESET => sreset,    CLK => CLK_DATA);
+    U3B : double_sync port map(D => config_valid_o,         Q => CONFIG_VALID ,     RESET => sreset,    CLK => CLK_DATA);    
+    U3C : double_sync port map(D => soft_moi_o,             Q => SOFT_MOI ,         RESET => sreset,    CLK => CLK_DATA);    
+    U3D : double_sync port map(D => acq_stop_o,             Q => ACQ_STOP ,         RESET => sreset,    CLK => CLK_DATA);
 
    U3E : sync_pulse port map(Pulse => regWrite, Clk => CLK_DATA, Pulse_out_sync =>regWrite_sync);
    VECT_SYNC: process (CLK_DATA)
@@ -399,55 +408,61 @@ begin
             mem0baseaddr_msb_o <= (others => '0');
             mem1baseaddr_lsb_o <= (others => '0');
             mem1baseaddr_msb_o <= (others => '0');
-            nb_seq_max_o <= std_logic_vector(to_unsigned(1,nb_seq_max_o'length));
-            seq_img_total_o <= (others => '0');
-            framesize_o <= (others => '0');
-            hdr_bytessize_o <= (others => '0');
-            img_bytessize_o <= (others => '0');
-            buffermode_o <= (others => '0');
-            nb_img_pre_o <= (others => '0');
-            nb_img_post_o <= (others => '0');
-            rd_seq_id_o <= (others => '0');
-            rd_start_id_o <= (others => '0');
-            rd_stop_id_o <= (others => '0');
-            config_valid_o <='0';
-            acq_stop_o      <='0';
+            nb_seq_max_o       <= std_logic_vector(to_unsigned(1,nb_seq_max_o'length));
+            seq_img_total_o    <= (others => '0');
+            framesize_o        <= (others => '0');
+            hdr_bytessize_o    <= (others => '0');
+            img_bytessize_o    <= (others => '0');
+            buffermode_o       <= (others => '0');
+            nb_img_pre_o       <= (others => '0');
+            nb_img_post_o      <= (others => '0');
+            rd_seq_id_o        <= (others => '0');
+            rd_start_id_o      <= (others => '0');
+            rd_stop_id_o       <= (others => '0');
+            config_valid_o     <= '0';
+            acq_stop_o         <= '0';
             axil_mem_addr_width_o <= (others => '0');
             rd_min_frame_time_o <= (others => '0');
-            bufferswitch_o <= (others => '0');
-            moi_mode_o <= "10"; -- no source (acquisition start)
-            ext_edge_o <= (others => '0');
+            bufferswitch_o     <= (others => '0');
+            moi_mode_o         <= "10"; -- no source (acquisition start)
+            ext_edge_o         <= (others => '0');
             soft_moi_o         <= '0';
-            regWrite <= '0';
+            regWrite           <= '0';
          else
             regWrite <= '0';
             if (slv_reg_wren = '1') and axi_wstrb = "1111" then
                regWrite <= '1';
                case axi_awaddr(OPT_MEM_ADDR_BITS+ADDR_LSB downto 0) is      
-                  when MEM0_BASE_ADDR_LSB_ADDR    =>  mem0baseaddr_lsb_o  <= AXI4_LITE_MOSI.WDATA(mem0baseaddr_lsb_o'length-1 downto 0);
-                  when MEM0_BASE_ADDR_MSB_ADDR    =>  mem0baseaddr_msb_o  <= AXI4_LITE_MOSI.WDATA(mem0baseaddr_msb_o'length-1 downto 0);
-                  when MEM1_BASE_ADDR_LSB_ADDR    =>  mem1baseaddr_lsb_o  <= AXI4_LITE_MOSI.WDATA(mem1baseaddr_lsb_o'length-1 downto 0);
-                  when MEM1_BASE_ADDR_MSB_ADDR    =>  mem1baseaddr_msb_o  <= AXI4_LITE_MOSI.WDATA(mem1baseaddr_msb_o'length-1 downto 0);
-                  when NB_SEQUENCE_MAX_ADDR     =>  nb_seq_max_o      <= AXI4_LITE_MOSI.WDATA(nb_seq_max_o'length-1 downto 0);
-                  when SEQ_IMG_TOTAL_ADDR       =>  seq_img_total_o   <= AXI4_LITE_MOSI.WDATA(seq_img_total_o'length-1 downto 0); 
-                  when FRAME_SIZE_ADDR          =>  framesize_o       <= AXI4_LITE_MOSI.WDATA(framesize_o'length-1 downto 0);
-                  when HDR_BYTESSIZE_ADDR          =>  hdr_bytessize_o       <= AXI4_LITE_MOSI.WDATA(hdr_bytessize_o'length-1 downto 0);
-                  when IMG_BYTESSIZE_ADDR          =>  img_bytessize_o       <= AXI4_LITE_MOSI.WDATA(img_bytessize_o'length-1 downto 0);
-                  when BUFFER_MODE_ADDR         =>  buffermode_o      <= AXI4_LITE_MOSI.WDATA(buffermode_o'length-1 downto 0);
-                  when NB_IMG_PRE_ADDR          =>  nb_img_pre_o        <= AXI4_LITE_MOSI.WDATA(nb_img_pre_o'length-1 downto 0);
-                  when NB_IMG_POST_ADDR         =>  nb_img_post_o       <= AXI4_LITE_MOSI.WDATA(nb_img_post_o'length-1 downto 0);
-                  when RD_SEQ_ID_ADDR           =>  rd_seq_id_o         <= AXI4_LITE_MOSI.WDATA(rd_seq_id_o'length-1 downto 0); 
-                  when RD_START_ID_ADDR             =>  rd_start_id_o         <= AXI4_LITE_MOSI.WDATA(rd_start_id_o'length-1 downto 0);
-                  when RD_STOP_ID_ADDR               =>  rd_stop_id_o         <= AXI4_LITE_MOSI.WDATA(rd_stop_id_o'length-1 downto 0);
---                  when CLEAR_MEMORY_CONTENT_ADDR    =>  clear_mem_o     <= AXI4_LITE_MOSI.WDATA(0);
-                  when CONFIG_VALID_ADDR            =>  config_valid_o  <= AXI4_LITE_MOSI.WDATA(0);
-                  when ACQ_STOP_ADDR            =>  acq_stop_o  <= AXI4_LITE_MOSI.WDATA(0);
-                  when AXIL_MEM_ADDR_WIDTH_ADDR     =>  axil_mem_addr_width_o         <= AXI4_LITE_MOSI.WDATA(axil_mem_addr_width_o'length-1 downto 0);
-                  when RD_MIN_FRAME_TIME_ADDR       =>  rd_min_frame_time_o         <= AXI4_LITE_MOSI.WDATA(rd_min_frame_time_o'length-1 downto 0);
-                  when BUFFER_SWITCH_ADDR           =>  bufferswitch_o  <= AXI4_LITE_MOSI.WDATA(bufferswitch_o'length-1 downto 0); 
-                  when SOFT_MOI_ADDR                =>  soft_moi_o  <= AXI4_LITE_MOSI.WDATA(0);
-                  when MOI_SOURCE_ADDR              =>  moi_mode_o  <= AXI4_LITE_MOSI.WDATA(moi_mode_o'length-1 downto 0);
-                  when MOI_ACTIVATION_ADDR          =>  ext_edge_o  <= AXI4_LITE_MOSI.WDATA(ext_edge_o'length-1 downto 0);
+                  when MEM0_BASE_ADDR_LSB_ADDR   =>  mem0baseaddr_lsb_o   <= AXI4_LITE_MOSI.WDATA(mem0baseaddr_lsb_o'length-1 downto 0);
+                  when MEM0_BASE_ADDR_MSB_ADDR   =>  mem0baseaddr_msb_o   <= AXI4_LITE_MOSI.WDATA(mem0baseaddr_msb_o'length-1 downto 0);
+                  when MEM1_BASE_ADDR_LSB_ADDR   =>  mem1baseaddr_lsb_o   <= AXI4_LITE_MOSI.WDATA(mem1baseaddr_lsb_o'length-1 downto 0);
+                  when MEM1_BASE_ADDR_MSB_ADDR   =>  mem1baseaddr_msb_o   <= AXI4_LITE_MOSI.WDATA(mem1baseaddr_msb_o'length-1 downto 0);
+                  when NB_SEQUENCE_MAX_ADDR      =>  nb_seq_max_o         <= AXI4_LITE_MOSI.WDATA(nb_seq_max_o'length-1 downto 0);
+                  when SEQ_IMG_TOTAL_ADDR        =>  seq_img_total_o      <= AXI4_LITE_MOSI.WDATA(seq_img_total_o'length-1 downto 0); 
+                  when FRAME_SIZE_ADDR           =>  framesize_o          <= AXI4_LITE_MOSI.WDATA(framesize_o'length-1 downto 0);
+                  when HDR_BYTESSIZE_ADDR        =>  hdr_bytessize_o      <= AXI4_LITE_MOSI.WDATA(hdr_bytessize_o'length-1 downto 0);
+                  when IMG_BYTESSIZE_ADDR        =>  img_bytessize_o      <= AXI4_LITE_MOSI.WDATA(img_bytessize_o'length-1 downto 0);
+                  when BUFFER_MODE_ADDR          =>  buffermode_o         <= AXI4_LITE_MOSI.WDATA(buffermode_o'length-1 downto 0);
+                  when NB_IMG_PRE_ADDR           =>  nb_img_pre_o         <= AXI4_LITE_MOSI.WDATA(nb_img_pre_o'length-1 downto 0);
+                  when NB_IMG_POST_ADDR          =>  nb_img_post_o        <= AXI4_LITE_MOSI.WDATA(nb_img_post_o'length-1 downto 0);
+                  when RD_SEQ_ID_ADDR            =>  rd_seq_id_o          <= AXI4_LITE_MOSI.WDATA(rd_seq_id_o'length-1 downto 0); 
+                  when RD_START_ID_ADDR          =>  rd_start_id_o        <= AXI4_LITE_MOSI.WDATA(rd_start_id_o'length-1 downto 0);
+                  when RD_STOP_ID_ADDR           =>  rd_stop_id_o         <= AXI4_LITE_MOSI.WDATA(rd_stop_id_o'length-1 downto 0);
+--                when CLEAR_MEMORY_CONTENT_ADDR =>  clear_mem_o          <= AXI4_LITE_MOSI.WDATA(0);
+                  when CONFIG_VALID_ADDR         =>  config_valid_o       <= AXI4_LITE_MOSI.WDATA(0);
+                  when ACQ_STOP_ADDR             =>  acq_stop_o           <= AXI4_LITE_MOSI.WDATA(0);
+                  when AXIL_MEM_ADDR_WIDTH_ADDR  =>  axil_mem_addr_width_o <= AXI4_LITE_MOSI.WDATA(axil_mem_addr_width_o'length-1 downto 0);
+                  when RD_MIN_FRAME_TIME_ADDR    =>  rd_min_frame_time_o  <= AXI4_LITE_MOSI.WDATA(rd_min_frame_time_o'length-1 downto 0);
+                  when BUFFER_SWITCH_ADDR        =>  bufferswitch_o       <= AXI4_LITE_MOSI.WDATA(bufferswitch_o'length-1 downto 0); 
+                  when SOFT_MOI_ADDR             =>  soft_moi_o           <= AXI4_LITE_MOSI.WDATA(0);
+                  when MOI_SOURCE_ADDR           =>  moi_mode_o           <= AXI4_LITE_MOSI.WDATA(moi_mode_o'length-1 downto 0);
+                  when FLOW_CTRLER_STALLED_CNT_ADDR  =>  flow_ctrler_config_i.stalled_cnt   <= unsigned(AXI4_LITE_MOSI.WDATA(flow_ctrler_config_i.stalled_cnt'length-1 downto 0)); 
+   				   when FLOW_CTRLER_VALID_CNT_ADDR    =>  flow_ctrler_config_i.valid_cnt     <= unsigned(AXI4_LITE_MOSI.WDATA(flow_ctrler_config_i.valid_cnt'length-1 downto 0)); 
+   				   when FLOW_CTRLER_DOWNLOAD_OUTPUT_ADDR    =>  flow_ctrler_config_i.memory_buffer_download_output    <= AXI4_LITE_MOSI.WDATA(0); 
+   				   when FLOW_CTRLER_DVAL_ADDR               =>  flow_ctrler_config_i.dval           <= AXI4_LITE_MOSI.WDATA(0); 
+                  when FLOW_CTRLER_WIDTH_ADDR              =>  flow_ctrler_config_i.width          <= unsigned(AXI4_LITE_MOSI.WDATA(flow_ctrler_config_i.width'length-1 downto 0)); 
+   				   when FLOW_CTRLER_LVAL_PAUSE_MIN_ADDR     =>  flow_ctrler_config_i.lval_pause_min <= unsigned(AXI4_LITE_MOSI.WDATA(flow_ctrler_config_i.lval_pause_min'length-1 downto 0)); 
+   				   when FLOW_CTRLER_FVAL_PAUSE_MIN_ADDR     =>  flow_ctrler_config_i.fval_pause_min <= unsigned(AXI4_LITE_MOSI.WDATA(flow_ctrler_config_i.fval_pause_min'length-1 downto 0)); 
                   when others  =>                  
                end case;                                                                                          
             end if;                                        
@@ -519,11 +534,11 @@ begin
       if rising_edge(CLK_CTRL) then         
          case axi_araddr(OPT_MEM_ADDR_BITS+ADDR_LSB downto 0) is
             when  NB_SEQ_IN_MEM_ADDR     => reg_data_out <= std_logic_vector(resize(nb_seq_in_mem_i     , reg_data_out'length));                  
-            when  BUF_ERROR_ADDR     => reg_data_out <= resize(BUF_ERROR, reg_data_out'length);
-            when  MEM_READY_ADDR     => reg_data_out <= resize(MEM_READY, reg_data_out'length);
-            when  SEQ_COMPLETED_ADDR => reg_data_out <= resize(seq_completed_i, reg_data_out'length);
+            when  BUF_ERROR_ADDR         => reg_data_out <= resize(BUF_ERROR, reg_data_out'length);
+            when  MEM_READY_ADDR         => reg_data_out <= resize(MEM_READY, reg_data_out'length);
+            when  SEQ_COMPLETED_ADDR     => reg_data_out <= resize(seq_completed_i, reg_data_out'length);
             when  EXT_BUF_PRSNT_ADDR     => reg_data_out <= resize(ext_buf_prsnt, reg_data_out'length);
-            when others                     => reg_data_out <= (others => '0');
+            when others                  => reg_data_out <= (others => '0');
          end case;        
       end if;     
    end process;  

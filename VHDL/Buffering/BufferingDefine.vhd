@@ -5,8 +5,8 @@
 -- Hierarchy: Package file
 -- Use: 
 -- Project: TEL2000
--- By: JEan-Alexis Boulet
--- Date: 27 Janvier 2015  
+-- By: JEan-Alexis Boulet								  flow_ctrler_config_type
+-- Date: 27 Janvier 2015  	  flow_ctrler_config_type
 --
 --******************************************************************************
 
@@ -42,5 +42,15 @@ package BufferingDefine is
       dval                        : std_logic;                           -- Validité du BufferingFlag
    end record buffering_flag_type; 
    
-   
+   type flow_ctrler_config_type is
+   record 
+      stalled_cnt                         : unsigned(7 downto 0);     
+      valid_cnt                           : unsigned(7 downto 0); 
+      width                               : unsigned(10 downto 0);
+      lval_pause_min                      : unsigned(7 downto 0);
+      fval_pause_min                      : unsigned(7 downto 0);
+      memory_buffer_download_output       : std_logic;
+      dval								         : std_logic; 
+   end record flow_ctrler_config_type; 
+              
 end BufferingDefine;

@@ -28,6 +28,7 @@
 #include "Timer.h"
 #include "IRCamHeader.h"
 #include "GC_Events.h"
+#include "GeniCam.h"
 #include <math.h>
 
 
@@ -831,6 +832,7 @@ void BufferManager_SM()
          if(TimedOut(&timer))
          {
             BufferManager_HW_ConfigureMinFrameTime(&gBufManager, true);
+            BufferManager_UpdateFlowControllerConfig(&gcRegsData);
             if(gcRegsData.MemoryBufferSequenceDownloadMode == MBSDM_Sequence)
                BufferManager_HW_ReadSequence(&gBufManager, &gcRegsData);
             else // MBSDM_Image
@@ -1069,7 +1071,15 @@ static void BufferManager_HW_ConfigureMinFrameTime(t_bufferManager *pBufferCtrl,
    if(newDownload)
       frameSize = gcRegsData.Width * (gcRegsData.Height + 2);
 
-   maxBandWidth = gcRegsData.MemoryBufferSequenceDownloadBitRateMax; // Mb/s (1.0e6)
+         
+      if(TDCFlags2Tst(BufferClinkDownloadIsImplementedMask) && IsActiveFlagsTst(BufferClinkDownloadIsActiveMask))
+      {
+         maxBandWidth = BM_CLINK_MAX_BITRATE; // Mb/s (340Mpix/s x 2 x 8)
+      } 
+      else      
+      {
+         maxBandWidth = gcRegsData.MemoryBufferSequenceDownloadBitRateMax; // Mb/s (1.0e6)
+      }      
    timeout_delay_us = frameSize * BM_BITS_PER_PIXEL / maxBandWidth;
    timeout_delay_us = MIN(timeout_delay_us, BM_MAX_FRAME_PERIOD_US);
    cnt = timeout_delay_us * clk_freq_MHz;
@@ -1302,11 +1312,26 @@ void BufferManager_UpdateSuggestedFrameImageCount(gcRegistersData_t *pGCRegs)
 {
    uint32_t NbPixPerSubFrame;
    uint32_t suggestedFrameImageCount;
+   uint32_t frameImageCountAFR = 1;
+   uint32_t frameImageCountPC = 1;
 
    if (BM_MemoryBufferSequence)
    {
       NbPixPerSubFrame = (pGCRegs->MemoryBufferSequenceHeight + 2)*pGCRegs->MemoryBufferSequenceWidth;
-      suggestedFrameImageCount = MAX(MIN(BM_FRAME_IMG_COUNT_PAYLOAD_SIZE_MIN/NbPixPerSubFrame, pGCRegs->MemoryBufferSequenceDownloadFrameCount), 1);
+      if(NbPixPerSubFrame == 0)
+         NbPixPerSubFrame = (pGCRegs->Height + 2)*pGCRegs->Width;
+
+      if(TDCFlags2Tst(BufferClinkDownloadIsImplementedMask) && IsActiveFlagsTst(BufferClinkDownloadIsActiveMask))
+      {
+         frameImageCountAFR = (uint32_t) ceilf(((BM_CLINK_MAX_BITRATE*1E6F)/(16.0f*NbPixPerSubFrame)) / pGCRegs->AcquisitionFrameRateMaxFG);
+         frameImageCountPC = (uint32_t) ceilf((float) 49920.0F / (float) (NbPixPerSubFrame * 2));
+         //frameImageCountPC = (uint32_t) ceilf((float) pGCRegs->PayloadSizeMinFG / (float) (NbPixPerSubFrame * 2));
+         suggestedFrameImageCount = MAX(MIN(MAX(frameImageCountAFR, frameImageCountPC), pGCRegs->MemoryBufferSequenceDownloadFrameCount), 1);
+      }
+      else
+      {  
+         suggestedFrameImageCount = MAX(MIN(BM_FRAME_IMG_COUNT_PAYLOAD_SIZE_MIN/NbPixPerSubFrame, pGCRegs->MemoryBufferSequenceDownloadFrameCount), 1);
+      }
    }
    else
    {
@@ -1340,4 +1365,60 @@ void BufferManager_HW_MoiHandlerConfig(t_bufferManager *pBufferCtrl, uint32_t ac
 	   }
    }
 	#endif
+}
+
+void BufferManager_UpdateFlowControllerConfig(gcRegistersData_t *pGCRegs)
+{
+
+AXI4L_write32(0, XPAR_M_BUFFERING_CTRL_BASEADDR + BM_DVAL);
+
+if(TDCFlags2Tst(BufferClinkDownloadIsImplementedMask) && IsActiveFlagsTst(BufferClinkDownloadIsActiveMask)){
+
+   AXI4L_write32(1, XPAR_M_BUFFERING_CTRL_BASEADDR + BM_DOWNLOAD_OUTPUT);
+   AXI4L_write32(pGCRegs->Width, XPAR_M_BUFFERING_CTRL_BASEADDR + BM_WIDTH);
+
+   if(TDCFlagsTst(ClBaseIsImplementedMask) && DeviceClockFrequencyAry[DCS_CameraLink] == CLINK_OUT_CLK_SLOW){
+      // 50Mpix/s
+      AXI4L_write32(29, XPAR_M_BUFFERING_CTRL_BASEADDR + BM_STALLED_CNT);
+      AXI4L_write32(5, XPAR_M_BUFFERING_CTRL_BASEADDR + BM_VALID_CNT);
+      AXI4L_write32(CL_LVAL_PAUSE_SLOW, XPAR_M_BUFFERING_CTRL_BASEADDR + BM_LVAL_PAUSE_MIN);
+      AXI4L_write32(CL_FVAL_PAUSE_SLOW, XPAR_M_BUFFERING_CTRL_BASEADDR + BM_FVAL_PAUSE_MIN);
+
+   }
+   else if (TDCFlagsTst(ClBaseIsImplementedMask) && DeviceClockFrequencyAry[DCS_CameraLink] == CLINK_OUT_CLK_FAST){
+      // 85Mpix/s
+      AXI4L_write32(3, XPAR_M_BUFFERING_CTRL_BASEADDR + BM_STALLED_CNT);
+      AXI4L_write32(1, XPAR_M_BUFFERING_CTRL_BASEADDR + BM_VALID_CNT);
+      AXI4L_write32(CL_LVAL_PAUSE_FAST, XPAR_M_BUFFERING_CTRL_BASEADDR + BM_LVAL_PAUSE_MIN);
+      AXI4L_write32(CL_FVAL_PAUSE_FAST, XPAR_M_BUFFERING_CTRL_BASEADDR + BM_FVAL_PAUSE_MIN);
+
+   }
+   else if (TDCFlagsTst(ClFullIsImplementedMask) && DeviceClockFrequencyAry[DCS_CameraLink] == CLINK_OUT_CLK_SLOW){
+      // 200Mpix/s
+      AXI4L_write32(7, XPAR_M_BUFFERING_CTRL_BASEADDR + BM_STALLED_CNT);
+      AXI4L_write32(10, XPAR_M_BUFFERING_CTRL_BASEADDR + BM_VALID_CNT);
+      AXI4L_write32(CL_LVAL_PAUSE_SLOW, XPAR_M_BUFFERING_CTRL_BASEADDR + BM_LVAL_PAUSE_MIN);
+      AXI4L_write32(CL_FVAL_PAUSE_SLOW, XPAR_M_BUFFERING_CTRL_BASEADDR + BM_FVAL_PAUSE_MIN);
+
+   }
+   else if (TDCFlagsTst(ClFullIsImplementedMask) && DeviceClockFrequencyAry[DCS_CameraLink] == CLINK_OUT_CLK_FAST){
+      // 340Mpix/s
+      AXI4L_write32(0, XPAR_M_BUFFERING_CTRL_BASEADDR + BM_STALLED_CNT);
+      AXI4L_write32(1, XPAR_M_BUFFERING_CTRL_BASEADDR + BM_VALID_CNT);
+      AXI4L_write32(CL_LVAL_PAUSE_FAST, XPAR_M_BUFFERING_CTRL_BASEADDR + BM_LVAL_PAUSE_MIN);
+      AXI4L_write32(CL_FVAL_PAUSE_FAST, XPAR_M_BUFFERING_CTRL_BASEADDR + BM_FVAL_PAUSE_MIN);
+   }
+}
+else
+{
+   AXI4L_write32(0, XPAR_M_BUFFERING_CTRL_BASEADDR + BM_DOWNLOAD_OUTPUT);
+   AXI4L_write32(3, XPAR_M_BUFFERING_CTRL_BASEADDR + BM_STALLED_CNT);
+   AXI4L_write32(1, XPAR_M_BUFFERING_CTRL_BASEADDR + BM_VALID_CNT);
+   AXI4L_write32(0, XPAR_M_BUFFERING_CTRL_BASEADDR + BM_WIDTH);
+   AXI4L_write32(0, XPAR_M_BUFFERING_CTRL_BASEADDR + BM_LVAL_PAUSE_MIN);
+   AXI4L_write32(0, XPAR_M_BUFFERING_CTRL_BASEADDR + BM_FVAL_PAUSE_MIN);
+}
+
+ AXI4L_write32(1, XPAR_M_BUFFERING_CTRL_BASEADDR + BM_DVAL);
+
 }

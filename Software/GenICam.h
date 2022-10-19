@@ -147,6 +147,7 @@
 #define VideoOutputIsImplementedMask                     0x00000002  /**< TDCFlags2 register bit mask for VideoOutputIsImplemented field */
 #define ManufacturerStaticImageIsImplementedMask         0x00000004  /**< TDCFlags2 register bit mask for ManufacturerStaticImageIsImplemented field */
 #define Mem4DDRIsImplementedMask                         0x00000008  /**< TDCFlags2 register bit mask for Mem4DDRIsImplementedMask field */
+#define BufferClinkDownloadIsImplementedMask             0x00000010  /**< TDCFlags2 register bit mask for BufferClinkDownloadIsImplementedMask field */
 
 #define TDCFlags2Set(mask) BitMaskSet(gcRegsData.TDCFlags2, mask)  /**< Set masked bits in TDCFlags2 register */
 #define TDCFlags2Clr(mask) BitMaskClr(gcRegsData.TDCFlags2, mask)  /**< Clear masked bits in TDCFlags2 register */
@@ -212,6 +213,7 @@
 #define FlaggingTriggerIsActiveMask             0x00000002  /**< IsActiveFlags register bit mask for FlaggingTriggerIsActive field */
 #define GatingTriggerIsActiveMask               0x00000004  /**< IsActiveFlags register bit mask for GatingTriggerIsActive field */
 #define AutofocusIsActiveMask                   0x00000008  /**< IsActiveFlags register bit mask for AutofocusIsActive field */
+#define BufferClinkDownloadIsActiveMask         0x00000010  /**< IsActiveFlags register bit mask for BufferClinkDownload field (0: gige, 1: clink)*/
 
 #define IsActiveFlagsSet(mask) BitMaskSet(gcRegsData.IsActiveFlags, mask)  /**< Set masked bits in IsActiveFlags register */
 #define IsActiveFlagsClr(mask) BitMaskClr(gcRegsData.IsActiveFlags, mask)  /**< Clear masked bits in IsActiveFlags register */
@@ -223,6 +225,10 @@
  */
 #define CLINK_OUT_CLK_SLOW    50E+6F   /**< Hz */
 #define CLINK_OUT_CLK_FAST    85E+6F   /**< Hz */
+#define CL_LVAL_PAUSE_SLOW    4
+#define CL_LVAL_PAUSE_FAST    1
+#define CL_FVAL_PAUSE_SLOW    3
+#define CL_FVAL_PAUSE_FAST    3
 
 
 /**
