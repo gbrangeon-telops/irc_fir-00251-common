@@ -633,8 +633,12 @@ void CtrlIntf_MBSD_OutputDetection(networkCommand_t netCmd, gcRegister_t *p_regi
                {
                   IsActiveFlagsSet(BufferClinkDownloadIsActiveMask);
                   GC_SetIsActiveFlags(gcRegsData.IsActiveFlags);
-                  BufferManager_UpdateSuggestedFrameImageCount(&gcRegsData);
-                  GC_UpdateJumboFrameHeight(&gcRegsData, false);
+
+                  if(!GC_ExternalMemoryBufferIsImplemented)
+                  {
+                     BufferManager_UpdateSuggestedFrameImageCount(&gcRegsData);
+                     GC_UpdateJumboFrameHeight(&gcRegsData, false);
+                  }
                   current_mode = netCmd.f1f2.srcPort;
                   CI_INF("Memory Buffer Download port has switch to CLINK \n");
                }
@@ -644,8 +648,11 @@ void CtrlIntf_MBSD_OutputDetection(networkCommand_t netCmd, gcRegister_t *p_regi
                // gige download detected.
                IsActiveFlagsClr(BufferClinkDownloadIsActiveMask);
                GC_SetIsActiveFlags(gcRegsData.IsActiveFlags);
-               BufferManager_UpdateSuggestedFrameImageCount(&gcRegsData);
-               GC_UpdateJumboFrameHeight(&gcRegsData, false);
+               if(!GC_ExternalMemoryBufferIsImplemented)
+               {
+                  BufferManager_UpdateSuggestedFrameImageCount(&gcRegsData);
+                  GC_UpdateJumboFrameHeight(&gcRegsData, false);
+               }
                current_mode = netCmd.f1f2.srcPort;
                CI_INF("Memory Buffer Download port has switch to GIGE \n");
                break;

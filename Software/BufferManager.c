@@ -1318,6 +1318,7 @@ void BufferManager_UpdateSuggestedFrameImageCount(gcRegistersData_t *pGCRegs)
    if (BM_MemoryBufferSequence)
    {
       NbPixPerSubFrame = (pGCRegs->MemoryBufferSequenceHeight + 2)*pGCRegs->MemoryBufferSequenceWidth;
+
       if(NbPixPerSubFrame == 0)
          NbPixPerSubFrame = (pGCRegs->Height + 2)*pGCRegs->Width;
 
