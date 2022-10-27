@@ -640,7 +640,7 @@ void CtrlIntf_MBSD_OutputDetection(networkCommand_t netCmd, gcRegister_t *p_regi
                      GC_UpdateJumboFrameHeight(&gcRegsData, false);
                   }
                   current_mode = netCmd.f1f2.srcPort;
-                  CI_INF("Memory Buffer Download port has switch to CLINK \n");
+                  CI_INF("Memory Buffer Download port has switched to CLINK \n");
                }
                break;
 
@@ -654,7 +654,7 @@ void CtrlIntf_MBSD_OutputDetection(networkCommand_t netCmd, gcRegister_t *p_regi
                   GC_UpdateJumboFrameHeight(&gcRegsData, false);
                }
                current_mode = netCmd.f1f2.srcPort;
-               CI_INF("Memory Buffer Download port has switch to GIGE \n");
+               CI_INF("Memory Buffer Download port has switched to GIGE \n");
                break;
 
             default:
