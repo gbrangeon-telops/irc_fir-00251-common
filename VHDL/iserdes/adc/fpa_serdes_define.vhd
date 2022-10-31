@@ -35,6 +35,8 @@ package fpa_serdes_define is
       done     : std_logic_vector(3 downto 0);
    end record;
    
+   constant C_DELAY_RESOLUTION_NS : real := 0.078; -- 78ps when IDELAYCTRL REF_CLK is 200MHz
+   
 end fpa_serdes_define;
 
 
