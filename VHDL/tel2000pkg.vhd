@@ -681,6 +681,8 @@ package TEL2000 is
    function resize(a: std_logic_vector; len: natural) return std_logic_vector;
    function resize(a: std_logic; len: natural) return std_logic_vector;
    function BooltoStd(x:boolean) return std_logic;
+   function MIN(a, b: integer) return integer;
+   function MAX(a, b: integer) return integer;
    
    ------------------------------------------
    -- AXI functions
@@ -737,6 +739,26 @@ package body TEL2000 is
       end if;
       return y;
    end BooltoStd;
+   
+   function MIN(a, b: integer) return integer is
+      -- Returns the minimum of the 2 arguments
+   begin
+      if a < b then
+         return a;
+      else
+         return b;
+      end if;
+   end MIN;
+   
+   function MAX(a, b: integer) return integer is
+      -- Returns the maximum of the 2 arguments
+   begin
+      if a > b then
+         return a;
+      else
+         return b;
+      end if;
+   end MAX;
    
    -- procedure write_axi_l
    procedure write_axi_lite (signal Clk : in std_logic; Addr : in std_logic_vector(31 downto 0); Value : in std_logic_vector(31 downto 0);signal  miso : in  t_axi4_lite_miso;signal  mosi : out t_axi4_lite_mosi) is
