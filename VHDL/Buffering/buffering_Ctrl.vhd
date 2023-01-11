@@ -447,7 +447,7 @@ begin
                   when NB_IMG_POST_ADDR          =>  nb_img_post_o        <= AXI4_LITE_MOSI.WDATA(nb_img_post_o'length-1 downto 0);
                   when RD_SEQ_ID_ADDR            =>  rd_seq_id_o          <= AXI4_LITE_MOSI.WDATA(rd_seq_id_o'length-1 downto 0); 
                   when RD_START_ID_ADDR          =>  rd_start_id_o        <= AXI4_LITE_MOSI.WDATA(rd_start_id_o'length-1 downto 0);
-                  when RD_STOP_ID_ADDR           =>  rd_stop_id_o         <= AXI4_LITE_MOSI.WDATA(rd_stop_id_o'length-1 downto 0);
+                  when RD_STOP_ID_ADDR           =>  rd_stop_id_o         <= AXI4_LITE_MOSI.WDATA(rd_stop_id_o'length-1 downto 0); 
 --                when CLEAR_MEMORY_CONTENT_ADDR =>  clear_mem_o          <= AXI4_LITE_MOSI.WDATA(0);
                   when CONFIG_VALID_ADDR         =>  config_valid_o       <= AXI4_LITE_MOSI.WDATA(0);
                   when ACQ_STOP_ADDR             =>  acq_stop_o           <= AXI4_LITE_MOSI.WDATA(0);
@@ -456,13 +456,14 @@ begin
                   when BUFFER_SWITCH_ADDR        =>  bufferswitch_o       <= AXI4_LITE_MOSI.WDATA(bufferswitch_o'length-1 downto 0); 
                   when SOFT_MOI_ADDR             =>  soft_moi_o           <= AXI4_LITE_MOSI.WDATA(0);
                   when MOI_SOURCE_ADDR           =>  moi_mode_o           <= AXI4_LITE_MOSI.WDATA(moi_mode_o'length-1 downto 0);
+				  when MOI_ACTIVATION_ADDR          =>  ext_edge_o  <= AXI4_LITE_MOSI.WDATA(ext_edge_o'length-1 downto 0);
                   when FLOW_CTRLER_STALLED_CNT_ADDR  =>  flow_ctrler_config_i.stalled_cnt   <= unsigned(AXI4_LITE_MOSI.WDATA(flow_ctrler_config_i.stalled_cnt'length-1 downto 0)); 
-   				   when FLOW_CTRLER_VALID_CNT_ADDR    =>  flow_ctrler_config_i.valid_cnt     <= unsigned(AXI4_LITE_MOSI.WDATA(flow_ctrler_config_i.valid_cnt'length-1 downto 0)); 
-   				   when FLOW_CTRLER_DOWNLOAD_OUTPUT_ADDR    =>  flow_ctrler_config_i.memory_buffer_download_output    <= AXI4_LITE_MOSI.WDATA(0); 
-   				   when FLOW_CTRLER_DVAL_ADDR               =>  flow_ctrler_config_i.dval           <= AXI4_LITE_MOSI.WDATA(0); 
+   				  when FLOW_CTRLER_VALID_CNT_ADDR    =>  flow_ctrler_config_i.valid_cnt     <= unsigned(AXI4_LITE_MOSI.WDATA(flow_ctrler_config_i.valid_cnt'length-1 downto 0)); 
+   				  when FLOW_CTRLER_DOWNLOAD_OUTPUT_ADDR    =>  flow_ctrler_config_i.memory_buffer_download_output    <= AXI4_LITE_MOSI.WDATA(0); 
+   				  when FLOW_CTRLER_DVAL_ADDR               =>  flow_ctrler_config_i.dval           <= AXI4_LITE_MOSI.WDATA(0); 
                   when FLOW_CTRLER_WIDTH_ADDR              =>  flow_ctrler_config_i.width          <= unsigned(AXI4_LITE_MOSI.WDATA(flow_ctrler_config_i.width'length-1 downto 0)); 
-   				   when FLOW_CTRLER_LVAL_PAUSE_MIN_ADDR     =>  flow_ctrler_config_i.lval_pause_min <= unsigned(AXI4_LITE_MOSI.WDATA(flow_ctrler_config_i.lval_pause_min'length-1 downto 0)); 
-   				   when FLOW_CTRLER_FVAL_PAUSE_MIN_ADDR     =>  flow_ctrler_config_i.fval_pause_min <= unsigned(AXI4_LITE_MOSI.WDATA(flow_ctrler_config_i.fval_pause_min'length-1 downto 0)); 
+   				  when FLOW_CTRLER_LVAL_PAUSE_MIN_ADDR     =>  flow_ctrler_config_i.lval_pause_min <= unsigned(AXI4_LITE_MOSI.WDATA(flow_ctrler_config_i.lval_pause_min'length-1 downto 0)); 
+   				  when FLOW_CTRLER_FVAL_PAUSE_MIN_ADDR     =>  flow_ctrler_config_i.fval_pause_min <= unsigned(AXI4_LITE_MOSI.WDATA(flow_ctrler_config_i.fval_pause_min'length-1 downto 0)); 
                   when others  =>                  
                end case;                                                                                          
             end if;                                        
