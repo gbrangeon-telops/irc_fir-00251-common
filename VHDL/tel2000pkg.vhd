@@ -100,7 +100,7 @@ package TEL2000 is
       TLAST : std_logic; --! Stream Data Last
       TID : std_logic_vector(0 downto 0); --! Stream ID
       TDEST : std_logic_vector(2 downto 0); --! Stream Destination
-      TUSER : std_logic_vector(31 downto 0); --! Stream User Data (32 bits)
+      TUSER : std_logic_vector(15 downto 0); --! Stream User Data (32 bits)
    end record;
    
    type t_axi4_stream_mosi72 is record
