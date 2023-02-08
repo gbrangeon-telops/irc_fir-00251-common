@@ -59,7 +59,7 @@ architecture rtl of t_axi4_stream128_fifo is
 		    s_axis_tlast : in STD_LOGIC;
 		    s_axis_tid : in STD_LOGIC_VECTOR ( 0 to 0 );
 		    s_axis_tdest : in STD_LOGIC_VECTOR ( 2 downto 0 );
-		    s_axis_tuser : in STD_LOGIC_VECTOR ( 15 downto 0 );
+		    s_axis_tuser : in STD_LOGIC_VECTOR ( 31 downto 0 );
 		    m_axis_tvalid : out STD_LOGIC;
 		    m_axis_tready : in STD_LOGIC;
 		    m_axis_tdata : out STD_LOGIC_VECTOR ( 127 downto 0 );
@@ -68,7 +68,7 @@ architecture rtl of t_axi4_stream128_fifo is
 		    m_axis_tlast : out STD_LOGIC;
 		    m_axis_tid : out STD_LOGIC_VECTOR ( 0 to 0 );
 		    m_axis_tdest : out STD_LOGIC_VECTOR ( 2 downto 0 );
-		    m_axis_tuser : out STD_LOGIC_VECTOR ( 15 downto 0 )		   
+		    m_axis_tuser : out STD_LOGIC_VECTOR ( 31 downto 0 )		   
          );
    END COMPONENT;
    
