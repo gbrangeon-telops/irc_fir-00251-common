@@ -796,7 +796,7 @@ IRC_Status_t DebugTerminalParseRDM(circByteBuffer_t *cbuf)
    uint32_t dataPerLine = 8;
 
    // Read Address
-   arglen = GetNextArg(cbuf, argStr, 10);
+   arglen = GetNextArg(cbuf, argStr, sizeof(argStr) - 1);
    if (ParseNumArg((char *)argStr, arglen, &addr) != IRC_SUCCESS)
    {
       DT_ERR("Invalid address.");
@@ -829,7 +829,7 @@ IRC_Status_t DebugTerminalParseRDM(circByteBuffer_t *cbuf)
             DT_ERR("Invalid data type.");
             return IRC_FAILURE;
       }
-      arglen = GetNextArg(cbuf, argStr, 2);
+      arglen = GetNextArg(cbuf, argStr, sizeof(argStr) - 1);
       if (((isInteger == 0) && (arglen > 0)) || ((isInteger == 1) && (arglen == 0)))
       {
          DT_ERR("Invalid data type.");
@@ -850,7 +850,7 @@ IRC_Status_t DebugTerminalParseRDM(circByteBuffer_t *cbuf)
       }
 
       // Read data length
-      arglen = GetNextArg(cbuf, argStr, 10);
+      arglen = GetNextArg(cbuf, argStr, sizeof(argStr) - 1);
       if (ParseNumArg((char *)argStr, arglen, &length) != IRC_SUCCESS)
       {
          DT_ERR("Invalid data length.");
@@ -944,7 +944,7 @@ IRC_Status_t DebugTerminalParseWRM(circByteBuffer_t *cbuf)
    uint32_t arglen;
 
    // Read Address
-   arglen = GetNextArg(cbuf, argStr, 10);
+   arglen = GetNextArg(cbuf, argStr, sizeof(argStr) - 1);
    if (ParseNumArg((char *)argStr, arglen, &addr) != IRC_SUCCESS)
    {
       DT_ERR("Invalid address.");
@@ -959,7 +959,7 @@ IRC_Status_t DebugTerminalParseWRM(circByteBuffer_t *cbuf)
    }
 
    // Read data value
-   arglen = GetNextArg(cbuf, argStr, 10);
+   arglen = GetNextArg(cbuf, argStr, sizeof(argStr) - 1);
    if (ParseNumArg((char *)argStr, arglen, &value) != IRC_SUCCESS)
    {
       DT_ERR("Invalid data value.");
@@ -1001,7 +1001,7 @@ IRC_Status_t DebugTerminalParseNET(circByteBuffer_t *cbuf)
    if (!DebugTerminal_CommandIsEmpty(cbuf))
    {
       // Read show packet value
-      arglen = GetNextArg(cbuf, argStr, 1);
+      arglen = GetNextArg(cbuf, argStr, sizeof(argStr) - 1);
       if ((ParseNumArg((char *)argStr, arglen, &showPacketsMode) != IRC_SUCCESS) ||
             ((showPacketsMode != 0) && (showPacketsMode != 1)))
       {
@@ -1012,7 +1012,7 @@ IRC_Status_t DebugTerminalParseNET(circByteBuffer_t *cbuf)
       if ((showPacketsMode) && (!DebugTerminal_CommandIsEmpty(cbuf)))
       {
          // Read show packet port filter
-         arglen = GetNextArg(cbuf, argStr, 2);
+         arglen = GetNextArg(cbuf, argStr, sizeof(argStr) - 1);
          if ((ParseNumArg((char *)argStr, arglen, &showPacketsPortFilter) != IRC_SUCCESS) ||
                (showPacketsPortFilter > NI_MAX_NUM_OF_PORTS))
          {
