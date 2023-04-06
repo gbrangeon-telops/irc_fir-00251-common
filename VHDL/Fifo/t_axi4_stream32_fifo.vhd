@@ -503,7 +503,7 @@ begin
    end generate;
    
    -- Asynchrnonous fifo types...
-   agen_d15 : if (FifoSize > 256 and FifoSize <= 512 and ASYNC) generate
+   agen_d512 : if (FifoSize > 256 and FifoSize <= 512 and ASYNC) generate
       begin                  
       FoundGenCase <= true; 
       t_axi4_stream32_afifo_d512_inst : t_axi4_stream32_afifo_d512

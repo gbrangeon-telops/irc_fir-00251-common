@@ -73,7 +73,9 @@ architecture rtl of t_axi4_stream_wr64_rd128_fifo is
           dout : out STD_LOGIC_VECTOR ( 131 downto 0 );
           full : out STD_LOGIC;
           empty : out STD_LOGIC;
-          valid : out STD_LOGIC
+          valid : out STD_LOGIC;
+          wr_rst_busy : out STD_LOGIC;
+          rd_rst_busy : out STD_LOGIC
          );
       END COMPONENT;
 	  
@@ -150,7 +152,7 @@ begin
     TX_MOSI.TDEST <= (others => '0'); -- non géré
     TX_MOSI.TUSER <= (others => '0'); -- non géré                        
 
-   sgen_wr64_rd128_d32_async :  if (WR_FIFO_DEPTH > 16 and WR_FIFO_DEPTH <= 32 and ASYNC) generate 
+   agen_wr64_rd128_d32 :  if (WR_FIFO_DEPTH > 16 and WR_FIFO_DEPTH <= 32 and ASYNC) generate 
    begin  
 	   
       FoundGenCase <= true;  
@@ -191,12 +193,12 @@ begin
          );
    end generate;
 
-   sgen_wr64_rd128_d512 :  if (WR_FIFO_DEPTH > 256 and WR_FIFO_DEPTH <= 512 and ASYNC) generate  
+   agen_wr64_rd128_d512 :  if (WR_FIFO_DEPTH > 256 and WR_FIFO_DEPTH <= 512 and ASYNC) generate  
    begin  
       
       FoundGenCase <= true;  
 
-      fwft_sfifo_wr66_rd132_d512_inst : fwft_afifo_wr66_rd132_d512
+      fwft_afifo_wr66_rd132_d512_inst : fwft_afifo_wr66_rd132_d512
       PORT MAP (
           wr_clk => RX_CLK,
           rd_clk => TX_CLK,
@@ -207,7 +209,9 @@ begin
           dout => fifo_dout,
           full => fifo_full,
           empty => fifo_empty,
-          valid => fifo_valid
+          valid => fifo_valid,
+		    wr_rst_busy => open,
+		    rd_rst_busy => open
          );
    end generate;
    

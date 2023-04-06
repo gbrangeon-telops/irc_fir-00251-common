@@ -80,7 +80,7 @@ begin
    TX_MOSI.TKEEP <= "1";
    
    -- synchrnonous fifo types...
-   sgen_d16 : if (FifoSize > 0 and FifoSize <= 2048 and not ASYNC) generate
+   sgen_d2048 : if (FifoSize > 0 and FifoSize <= 2048 and not ASYNC) generate
       begin                  
       FoundGenCase <= true; 
       t_axi4_stream8_sfifo_d2048_inst : t_axi4_stream8_sfifo_d2048

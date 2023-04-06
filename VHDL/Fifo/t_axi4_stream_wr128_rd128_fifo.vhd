@@ -114,7 +114,7 @@ begin
 
    		
    
-   sgen_wr128_rd128_d128_sync : if (WR_FIFO_DEPTH > 64 and WR_FIFO_DEPTH <= 128 and not ASYNC) generate  
+   sgen_wr128_rd128_d128 : if (WR_FIFO_DEPTH > 64 and WR_FIFO_DEPTH <= 128 and not ASYNC) generate  
    begin  
       
       FoundGenCase <= true;  

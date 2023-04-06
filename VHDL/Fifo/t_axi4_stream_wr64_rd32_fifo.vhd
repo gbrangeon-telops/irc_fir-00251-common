@@ -155,7 +155,7 @@ begin
       TX_MOSI.TUSER <= (others => '0'); -- non géré  
 	  
 	  
-   sgen_wr64_rd32_d512_sync : if (WR_FIFO_DEPTH > 0 and WR_FIFO_DEPTH <= 512 and not ASYNC) generate  
+   sgen_wr64_rd32_d512 : if (WR_FIFO_DEPTH > 0 and WR_FIFO_DEPTH <= 512 and not ASYNC) generate  
    -- Fifo generator (13.1) synthesis setting : 
    -- Interface type -> Native, Fifo implementation -> Common clock block ram, Read mode -> Fist Word Fall Through,
    -- Data Port Parameters : Write width -> 68, Write Depth -> 512, Read width -> 34, 
@@ -182,7 +182,7 @@ begin
       end generate;
 	  
 
-	sgen_wr64_rd32_d16_async : if (WR_FIFO_DEPTH > 0 and WR_FIFO_DEPTH <= 16 and ASYNC) generate    
+	agen_wr64_rd32_d16 : if (WR_FIFO_DEPTH > 0 and WR_FIFO_DEPTH <= 16 and ASYNC) generate    
 	-- Fifo generator (13.1) synthesis setting : 
 	-- Interface type -> Native, Fifo implementation -> Idependent clock block ram, Read mode -> Fist Word Fall Through,
 	-- Data Port Parameters : Write width -> 68, Write Depth -> 16, Read width -> 34, 
@@ -212,7 +212,7 @@ begin
    end generate;
    
    
-   	sgen_wr64_rd32_d512_async : if (WR_FIFO_DEPTH > 16 and WR_FIFO_DEPTH <= 512 and  ASYNC) generate    
+   	agen_wr64_rd32_d512 : if (WR_FIFO_DEPTH > 16 and WR_FIFO_DEPTH <= 512 and  ASYNC) generate    
 	-- Fifo generator (13.1) synthesis setting : 
 	-- Interface type -> Native, Fifo implementation -> Idependent clock block ram, Read mode -> Fist Word Fall Through,
 	-- Data Port Parameters : Write width -> 68, Write Depth -> 512, Read width -> 34, 

@@ -122,7 +122,7 @@ begin
    TX_MOSI.TDEST <= (others => '0'); -- non géré
    TX_MOSI.TUSER <= (others => '0'); -- non géré       
    
-   sgen_wr64_rd16_d256_async : if (WR_FIFO_DEPTH > 0 and WR_FIFO_DEPTH <= 256 and ASYNC) generate  
+   agen_wr64_rd16_d256 : if (WR_FIFO_DEPTH > 0 and WR_FIFO_DEPTH <= 256 and ASYNC) generate  
       
       -- Fifo generator (13.1) synthesis setting : 
       -- Interface type -> Native, Fifo implementation -> Idependent clock block ram, Read mode -> Fist Word Fall Through,

@@ -152,7 +152,7 @@ begin
    TX_MOSI.TUSER <= (others => '0'); -- non géré                        
    
    
-   sgen_wr32_rd64_d1024_async :  if (WR_FIFO_DEPTH > 512 and WR_FIFO_DEPTH <= 1024 and ASYNC) generate 
+   agen_wr32_rd64_d1024 :  if (WR_FIFO_DEPTH > 512 and WR_FIFO_DEPTH <= 1024 and ASYNC) generate 
       
       -- Fifo generator (13.1) synthesis setting : 
       -- Interface type -> Native, Fifo implementation -> Idependent clock block ram, Read mode -> Fist Word Fall Through,
@@ -184,7 +184,7 @@ begin
    
    
    
-   sgen_wr32_rd64_d512_async :  if (WR_FIFO_DEPTH > 32 and WR_FIFO_DEPTH <= 512 and ASYNC) generate 
+   agen_wr32_rd64_d512 :  if (WR_FIFO_DEPTH > 32 and WR_FIFO_DEPTH <= 512 and ASYNC) generate 
       
       -- Fifo generator (13.1) synthesis setting : 
       -- Interface type -> Native, Fifo implementation -> Idependent clock block ram, Read mode -> Fist Word Fall Through,
@@ -215,7 +215,7 @@ begin
    end generate;
    
    
-   sgen_wr32_rd64_d32_sync :  if (WR_FIFO_DEPTH > 0 and WR_FIFO_DEPTH <= 32 and not ASYNC) generate 
+   sgen_wr32_rd64_d32 :  if (WR_FIFO_DEPTH > 0 and WR_FIFO_DEPTH <= 32 and not ASYNC) generate 
       
       begin  
       

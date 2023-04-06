@@ -140,7 +140,7 @@ begin
    RX_MISO.RRESP   <= AXI_SLVERR;
    
    -- asynchrnonous fifo types...
-   asgen_d15 : if (FifoSize > 0 and FifoSize <= 16 and ASYNC) generate
+   agen_d16 : if (FifoSize > 0 and FifoSize <= 16 and ASYNC) generate
       begin                  
       FoundGenCase <= true;  
       t_axi4_lite32_w_afifo_d16_inst : t_axi4_lite32_w_afifo_d16      
@@ -174,10 +174,10 @@ begin
          axi_w_overflow => axi_w_overflow,
          axi_b_overflow => axi_b_overflow
          );      
-   end generate asgen_d15;
+   end generate agen_d16;
    
    
-   asgen_d64 : if (FifoSize > 32 and FifoSize <= 64 and ASYNC) generate
+   agen_d64 : if (FifoSize > 32 and FifoSize <= 64 and ASYNC) generate
       begin                  
       FoundGenCase <= true;     
       t_axi4_lite32_w_afifo_d64_inst : t_axi4_lite32_w_afifo_d64      
@@ -211,7 +211,7 @@ begin
          axi_w_overflow => axi_w_overflow,
          axi_b_overflow => axi_b_overflow
          );      
-   end generate asgen_d64;
+   end generate agen_d64;
    
    ovfl_proc : process(RX_CLK, ARESETN)
    begin	

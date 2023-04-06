@@ -142,7 +142,7 @@ begin
       TX_MOSI.TUSER <= (others => '0'); -- non géré  
 	  
 
-   sgen_wr64_rd64_d128_sync : if (WR_FIFO_DEPTH > 0 and WR_FIFO_DEPTH <= 128 and not ASYNC) generate 
+   sgen_wr64_rd64_d128 : if (WR_FIFO_DEPTH > 0 and WR_FIFO_DEPTH <= 128 and not ASYNC) generate 
    begin  
       
       FoundGenCase <= true;  
@@ -162,7 +162,7 @@ begin
    end generate; 
    
    
-   sgen_wr64_rd64_d512_sync : if (WR_FIFO_DEPTH > 128 and WR_FIFO_DEPTH <= 512 and not ASYNC) generate  
+   sgen_wr64_rd64_d512 : if (WR_FIFO_DEPTH > 128 and WR_FIFO_DEPTH <= 512 and not ASYNC) generate  
    begin  
       
       FoundGenCase <= true;  
@@ -181,7 +181,7 @@ begin
          );
    end generate; 
    
-   sgen_wr64_rd64_d512_async : if (WR_FIFO_DEPTH > 0 and WR_FIFO_DEPTH <= 512 and ASYNC) generate 
+   agen_wr64_rd64_d512 : if (WR_FIFO_DEPTH > 0 and WR_FIFO_DEPTH <= 512 and ASYNC) generate 
    begin  
       
       FoundGenCase <= true;  
