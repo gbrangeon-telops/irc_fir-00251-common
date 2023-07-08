@@ -11,13 +11,13 @@ HEADER
   #DEFAULT_RANGE0="<range<name=\"aoi_eol_pos\"><left=\"10\"><direction=\"downto\"><right=\"0\"><initial_value=\"\"><delay=\"\">>"
   #DEFAULT_RANGE1="<range<name=\"aoi_sol_pos\"><left=\"10\"><direction=\"downto\"><right=\"0\"><initial_value=\"\"><delay=\"\">>"
   #DEFAULT_RANGE2="<range<name=\"full_width\"><left=\"10\"><direction=\"downto\"><right=\"0\"><initial_value=\"\"><delay=\"\">>"
-  #ENTITY="afpa_cropping"
+  #ENTITY="axis64_xcropping"
   #LANGUAGE="VHDL"
   AUTHOR="Unknown",BOTH
   COMPANY="Unknown",BOTH
   CREATIONDATE="11/30/2020",BOTH
   PAGECOUNT="2"
-  TITLE="afpa_cropping",BOTH
+  TITLE="axis64_xcropping",BOTH
  }
  SYMBOL "#default" "axis64_data_pos" "axis64_data_pos"
  {
