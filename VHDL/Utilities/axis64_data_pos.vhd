@@ -23,7 +23,7 @@ entity axis64_data_pos is
       RX_MOSI        : in t_axi4_stream_mosi64;
       RX_MISO        : out t_axi4_stream_miso;
       
-      FULL_WIDTH     : in std_logic_vector(10 downto 0);          -- position de la fin de ligne. Attention, la premiere donnée de ligne occupe la position
+      M_FULL_WIDTH   : in std_logic_vector(10 downto 0);          -- position de la fin de ligne. Attention, la premiere donnée de ligne occupe la position
       
       
       TX_MOSI        : out t_axi4_stream_mosi64;
@@ -50,7 +50,7 @@ architecture rtl of axis64_data_pos is
    end component;
    
    signal sreset          : std_logic; 
-   signal tx_mosi_pos_i   : unsigned(FULL_WIDTH'LENGTH-1 downto 0); 
+   signal tx_mosi_pos_i   : unsigned(M_FULL_WIDTH'LENGTH-1 downto 0); 
    signal err_i           : std_logic;
    signal tx_mosi_i       : t_axi4_stream_mosi64;
    
@@ -83,7 +83,7 @@ begin
       if rising_edge(CLK) then 
          if sreset = '1' then 
             tx_mosi_i.tvalid <= '0'; 
-            tx_mosi_pos_i <= to_unsigned(1, tx_mosi_pos_i'length); 
+            tx_mosi_pos_i <= (others => '0'); 
             err_i <= '0';  
             
          else 
@@ -96,7 +96,7 @@ begin
                -- sortie des numeros des données
                if RX_MOSI.TVALID = '1' then 
                   
-                  if tx_mosi_pos_i = unsigned(FULL_WIDTH)/4 then             -- division par 4 car 4 données par coups d'horloge
+                  if tx_mosi_pos_i = unsigned(M_FULL_WIDTH) then         
                      tx_mosi_pos_i <= to_unsigned(1, tx_mosi_pos_i'length);
                   else
                      tx_mosi_pos_i <= tx_mosi_pos_i + 1;        -- 

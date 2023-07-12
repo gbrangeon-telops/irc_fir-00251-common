@@ -21,10 +21,10 @@ entity axis64_data_sel is
       ARESET         : in std_logic;
       CLK            : in std_logic;      
       
-      FULL_WIDTH     : in std_logic_vector(10 downto 0);
+      M_FULL_WIDTH   : in std_logic_vector(10 downto 0);
       
-      AOI_SOL_POS    : in std_logic_vector(10 downto 0);
-      AOI_EOL_POS    : in std_logic_vector(10 downto 0);
+      M_AOI_SOL_POS  : in std_logic_vector(10 downto 0);
+      M_AOI_EOL_POS  : in std_logic_vector(10 downto 0);
       
       RX_MOSI        : in t_axi4_stream_mosi64;
       RX_MISO        : out t_axi4_stream_miso; 
@@ -102,13 +102,13 @@ begin
                
                tx_mosi_pipe(0) <= RX_MOSI;
                
-               if  unsigned(DATA_POS) >= unsigned(AOI_SOL_POS) then
+               if  unsigned(DATA_POS) >= unsigned(M_AOI_SOL_POS) then
                   sample_valid_set1 <= RX_MOSI.TVALID;
                else
                   sample_valid_set1 <= '0';
                end if;
                
-               if  unsigned(LINE_POS) = unsigned(FULL_WIDTH) then
+               if  unsigned(LINE_POS) = unsigned(M_FULL_WIDTH) then
                   last_line_valid(0) <= '1';
                else
                   last_line_valid(0) <= '0';
@@ -119,7 +119,7 @@ begin
                -- pipe 1                  
                ----------------------------               
                
-               if  unsigned(DATA_POS) <= unsigned(AOI_EOL_POS) then
+               if  unsigned(DATA_POS) <= unsigned(M_AOI_EOL_POS) then
                   sample_valid_set2 <= RX_MOSI.TVALID;
                else
                   sample_valid_set2 <= '0';  
@@ -129,7 +129,7 @@ begin
                tx_mosi_pipe(1).tvalid <=sample_valid_set1 and sample_valid_set2;
                
                -- tlast
-               if  unsigned(DATA_POS) = unsigned(AOI_EOL_POS) then
+               if  unsigned(DATA_POS) = unsigned(M_AOI_EOL_POS) then
                   tx_mosi_pipe(1).tlast <= last_line_valid(0);
                end if;                 
                

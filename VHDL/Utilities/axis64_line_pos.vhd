@@ -52,6 +52,7 @@ architecture rtl of axis64_line_pos is
    signal line_pos_i      : unsigned(LINE_POS'LENGTH-1 downto 0);
    signal err_i           : std_logic;
    signal tx_mosi_i       : t_axi4_stream_mosi64;
+   signal frm_end_i       : std_logic;
    
 begin
    
@@ -84,7 +85,8 @@ begin
             tx_mosi_i.tvalid <= '0'; 
             data_pos_i <= (others => '0'); 
             line_pos_i <= (others => '0');
-            err_i <= '0';  
+            err_i <= '0';
+            frm_end_i <= '0';
             
          else 
             
@@ -95,15 +97,19 @@ begin
                data_pos_i <=  RX_MOSI_POS;
                
                -- sortie des numeros des données
-               if RX_MOSI.TVALID = '1' then 
+               if RX_MOSI.TVALID = '1' then   
+                  
+                  if RX_MOSI.TLAST = '1' then 
+                     frm_end_i <= '1';
+                  end if;
                   
                   if unsigned(RX_MOSI_POS) = 1 then 
                      line_pos_i <= line_pos_i + 1;       -- 
-                  end if;
-                  
-                  if RX_MOSI.TLAST = '1' then 
-                     line_pos_i <= (others => '0');
-                  end if;                
+                     if frm_end_i = '1' then
+                        line_pos_i <= to_unsigned(1, line_pos_i'length); 
+                        frm_end_i <= '0';
+                     end if;
+                  end if;         
                   
                end if; 
                
