@@ -26,6 +26,10 @@ entity axis64_data_sel is
       M_AOI_SOL_POS  : in std_logic_vector(10 downto 0);
       M_AOI_EOL_POS  : in std_logic_vector(10 downto 0);
       
+      M_AOI_FLI_POS  : in std_logic_vector(10 downto 0);  -- position de la 1ere ligne (First LIne) du AOI
+      M_AOI_LLI_POS  : in std_logic_vector(10 downto 0);  -- position de la derniere ligne (Last LIne) du AOI
+      
+      
       RX_MOSI        : in t_axi4_stream_mosi64;
       RX_MISO        : out t_axi4_stream_miso; 
       
@@ -51,14 +55,18 @@ architecture rtl of axis64_data_sel is
          );
    end component;
    
-   type tx_mosi_pipe_type is array (0 to 1) of t_axi4_stream_mosi64;
+   type tx_mosi_pipe_type is array (0 to 2) of t_axi4_stream_mosi64; 
+   
+   type pos_pipe_type is array (0 to 2) of unsigned(DATA_POS'LENGTH-1 downto 0);
    
    signal sreset              : std_logic; 
    signal err_i               : std_logic;
    signal tx_mosi_pipe        : tx_mosi_pipe_type;
-   signal sample_valid_set1   : std_logic;
-   signal sample_valid_set2   : std_logic;
-   signal last_line_valid     : std_logic_vector(1 downto 0);
+   signal line_valid          : std_logic_vector(2 downto 0);
+   signal column_valid        : std_logic_vector(2 downto 0);
+   signal last_line_valid     : std_logic_vector(2 downto 0); 
+   signal data_pos_pipe       : pos_pipe_type; 
+   signal line_pos_pipe       : pos_pipe_type;
    
 begin
    
@@ -83,15 +91,15 @@ begin
    begin
       if rising_edge(CLK) then 
          if sreset = '1' then
-            sample_valid_set1 <= '0';
+            --sample_valid_set1 <= '0';
             tx_mosi_pipe(0).tvalid <= '0';
             tx_mosi_pipe(1).tvalid <= '0';
-            sample_valid_set2 <= '0'; 
-            last_line_valid <= (others => '0');
+            --sample_valid_set2 <= '0'; 
+            line_valid <= (others => '0');
+            column_valid <= (others => '0');
+            data_pos_pipe <= ((others => '0'), (others => '0'), (others => '0')); 
             
          else
-            
-            
             
             
             if  TX_MISO.TREADY = '1' then
@@ -100,18 +108,20 @@ begin
                -- pipe 0                  
                ----------------------------
                
-               tx_mosi_pipe(0) <= RX_MOSI;
+               tx_mosi_pipe(0)  <= RX_MOSI;
+               data_pos_pipe(0) <= unsigned(DATA_POS);
+               line_pos_pipe(0) <= unsigned(LINE_POS); 
                
-               if  unsigned(DATA_POS) >= unsigned(M_AOI_SOL_POS) then
-                  sample_valid_set1 <= RX_MOSI.TVALID;
+               if unsigned(DATA_POS) >= unsigned(M_AOI_SOL_POS) then
+                  column_valid(0) <= RX_MOSI.TVALID;
                else
-                  sample_valid_set1 <= '0';
+                  column_valid(0)  <= '0';
                end if;
                
-               if  unsigned(LINE_POS) = unsigned(M_FULL_WIDTH) then
-                  last_line_valid(0) <= '1';
+               if unsigned(LINE_POS) >= unsigned(M_AOI_FLI_POS) then
+                  line_valid(0) <= RX_MOSI.TVALID;
                else
-                  last_line_valid(0) <= '0';
+                  line_valid(0) <= '0';
                end if;
                
                
@@ -119,19 +129,34 @@ begin
                -- pipe 1                  
                ----------------------------               
                
-               if  unsigned(DATA_POS) <= unsigned(M_AOI_EOL_POS) then
-                  sample_valid_set2 <= RX_MOSI.TVALID;
+               tx_mosi_pipe(1)  <= tx_mosi_pipe(0);
+               data_pos_pipe(1) <= data_pos_pipe(0);
+               line_pos_pipe(1) <= line_pos_pipe(0); 
+               
+               if data_pos_pipe(0) <= unsigned(M_AOI_EOL_POS) then
+                  column_valid(1) <= column_valid(0);
                else
-                  sample_valid_set2 <= '0';  
-               end if;
+                  column_valid(1) <= '0';  
+               end if;                
                
-               tx_mosi_pipe(1) <= tx_mosi_pipe(0);
-               tx_mosi_pipe(1).tvalid <=sample_valid_set1 and sample_valid_set2;
+               if line_pos_pipe(0) <= unsigned(M_AOI_LLI_POS) then
+                  line_valid(1) <= line_valid(0);
+               else
+                  line_valid(1) <= '0';
+               end if; 
                
-               -- tlast
-               if  unsigned(DATA_POS) = unsigned(M_AOI_EOL_POS) then
-                  tx_mosi_pipe(1).tlast <= last_line_valid(0);
-               end if;                 
+               ----------------------------
+               -- pipe 2                  
+               ---------------------------- 
+               
+               column_valid(2) <= column_valid(1);
+               line_valid(2) <= line_valid(1);                
+               tx_mosi_pipe(2) <= tx_mosi_pipe(1);
+               tx_mosi_pipe(2).tlast <= (line_valid(1) and column_valid(1)) and not (line_valid(2) and column_valid(2));               
+               data_pos_pipe(2) <= data_pos_pipe(1);
+               line_pos_pipe(2) <= line_pos_pipe(1); 
+               
+               
                
             end if;
             
