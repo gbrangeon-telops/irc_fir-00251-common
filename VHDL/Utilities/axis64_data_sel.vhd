@@ -70,7 +70,7 @@ architecture rtl of axis64_data_sel is
    
 begin
    
-   TX_MOSI <= tx_mosi_pipe(1);   
+   TX_MOSI <= tx_mosi_pipe(2);   
    ERR <= err_i;
    RX_MISO <= TX_MISO; 
    
@@ -151,8 +151,9 @@ begin
                
                column_valid(2) <= column_valid(1);
                line_valid(2) <= line_valid(1);                
-               tx_mosi_pipe(2) <= tx_mosi_pipe(1);
-               tx_mosi_pipe(2).tlast <= (line_valid(1) and column_valid(1)) and not (line_valid(2) and column_valid(2));               
+               tx_mosi_pipe(2) <= tx_mosi_pipe(1); 
+               tx_mosi_pipe(2).tvalid <= line_valid(1) and column_valid(1);
+               tx_mosi_pipe(2).tlast  <= (line_valid(1)and not line_valid(0)) and (column_valid(1)and not column_valid(0));               
                data_pos_pipe(2) <= data_pos_pipe(1);
                line_pos_pipe(2) <= line_pos_pipe(1); 
                
