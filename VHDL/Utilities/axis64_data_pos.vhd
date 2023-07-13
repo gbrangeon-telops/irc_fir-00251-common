@@ -23,7 +23,7 @@ entity axis64_data_pos is
       RX_MOSI        : in t_axi4_stream_mosi64;
       RX_MISO        : out t_axi4_stream_miso;
       
-      M_FULL_WIDTH   : in std_logic_vector(10 downto 0);          -- position de la fin de ligne. Attention, la premiere donnée de ligne occupe la position
+      M_FULL_WIDTH   : in std_logic_vector(10 downto 0);         
       
       
       TX_MOSI        : out t_axi4_stream_mosi64;

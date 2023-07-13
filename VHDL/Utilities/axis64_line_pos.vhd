@@ -28,7 +28,7 @@ entity axis64_line_pos is
       TX_MISO        : in t_axi4_stream_miso;
       
       DATA_POS       : out std_logic_vector(10 downto 0);        -- position de la donnée sur une ligne (attention commence à 1)
-      LINE_POS       : out std_logic_vector(10 downto 0);        -- position de la donnée sur une ligne (attention commence à 1)
+      LINE_POS       : out std_logic_vector(10 downto 0);        -- position de la ligne (attention commence à 1)
       -- 
       
       ERR            : out  std_logic

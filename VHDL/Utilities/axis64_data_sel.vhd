@@ -67,6 +67,7 @@ architecture rtl of axis64_data_sel is
    signal last_line_valid     : std_logic_vector(2 downto 0); 
    signal data_pos_pipe       : pos_pipe_type; 
    signal line_pos_pipe       : pos_pipe_type;
+   signal tlast_enable        : std_logic; 
    
 begin
    
@@ -91,13 +92,13 @@ begin
    begin
       if rising_edge(CLK) then 
          if sreset = '1' then
-            --sample_valid_set1 <= '0';
             tx_mosi_pipe(0).tvalid <= '0';
             tx_mosi_pipe(1).tvalid <= '0';
-            --sample_valid_set2 <= '0'; 
+            tx_mosi_pipe(2).tvalid <= '0';
             line_valid <= (others => '0');
             column_valid <= (others => '0');
             data_pos_pipe <= ((others => '0'), (others => '0'), (others => '0')); 
+            tlast_enable <= '0';
             
          else
             
@@ -124,6 +125,12 @@ begin
                   line_valid(0) <= '0';
                end if;
                
+               if unsigned(DATA_POS) = unsigned(M_AOI_EOL_POS) then  
+                  tlast_enable <= RX_MOSI.TVALID;               -- premice de tlast (ce n'est pas encore tlast)
+               else
+                  tlast_enable <= '0';
+               end if;
+               
                
                ----------------------------
                -- pipe 1                  
@@ -145,19 +152,25 @@ begin
                   line_valid(1) <= '0';
                end if; 
                
+               -- tlast
+               if line_pos_pipe(0) = unsigned(M_AOI_LLI_POS) then
+                  tx_mosi_pipe(1).tlast <= tlast_enable;
+               else
+                  tx_mosi_pipe(1).tlast <= '0';
+               end if;
+               
+               
                ----------------------------
                -- pipe 2                  
                ---------------------------- 
                
-               column_valid(2) <= column_valid(1);
-               line_valid(2) <= line_valid(1);                
-               tx_mosi_pipe(2) <= tx_mosi_pipe(1); 
-               tx_mosi_pipe(2).tvalid <= line_valid(1) and column_valid(1);
-               tx_mosi_pipe(2).tlast  <= (line_valid(1)and not line_valid(0)) and (column_valid(1)and not column_valid(0));               
-               data_pos_pipe(2) <= data_pos_pipe(1);
-               line_pos_pipe(2) <= line_pos_pipe(1); 
-               
-               
+               column_valid(2)   <= column_valid(1);
+               line_valid(2)     <= line_valid(1);                
+               tx_mosi_pipe(2)   <= tx_mosi_pipe(1); 
+               tx_mosi_pipe(2).tvalid <= line_valid(1) and column_valid(1);                            
+               data_pos_pipe(2)  <= data_pos_pipe(1);
+               line_pos_pipe(2)  <= line_pos_pipe(1);                       
+                
                
             end if;
             

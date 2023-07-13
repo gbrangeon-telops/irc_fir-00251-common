@@ -139,4 +139,11 @@ acom \
  "$COMMON\VHDL\Lut\lut_axil_absolute_add.vhd" \
  "$COMMON\VHDL\Lut\param_lut_fifo.bde" \
  "$COMMON\VHDL\Lut\axis_lut_X_to_ADD.bde" \
- "$COMMON\VHDL\Lut\axis_lut_core_a32_d32.bde"
+ "$COMMON\VHDL\Lut\axis_lut_core_a32_d32.bde"  
+ 
+ # Xcropping
+acom \
+ "$COMMON\VHDL\Utilities\axis64_line_pos.vhd" \
+ "$COMMON\VHDL\Utilities\axis64_data_sel.vhd" \
+ "$COMMON\VHDL\Utilities\axis64_data_pos.vhd" \
+ "$COMMON\VHDL\Utilities\axis64_xcropping.bde"
