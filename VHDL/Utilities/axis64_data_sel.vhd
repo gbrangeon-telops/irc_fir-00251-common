@@ -33,11 +33,14 @@ entity axis64_data_sel is
       RX_MOSI        : in t_axi4_stream_mosi64;
       RX_MISO        : out t_axi4_stream_miso; 
       
-      DATA_POS       : in std_logic_vector(10 downto 0);
-      LINE_POS       : in std_logic_vector(10 downto 0);
+      RX_DATA_POS    : in std_logic_vector(10 downto 0);
+      RX_LINE_POS    : in std_logic_vector(10 downto 0);
       
       TX_MOSI        : out t_axi4_stream_mosi64;
-      TX_MISO        : in t_axi4_stream_miso;   
+      TX_MISO        : in t_axi4_stream_miso;  
+      
+      TX_DATA_POS    : out std_logic_vector(10 downto 0);
+      TX_LINE_POS    : out std_logic_vector(10 downto 0);
       
       ERR            : out std_logic
       );
@@ -57,7 +60,7 @@ architecture rtl of axis64_data_sel is
    
    type tx_mosi_pipe_type is array (0 to 2) of t_axi4_stream_mosi64; 
    
-   type pos_pipe_type is array (0 to 2) of unsigned(DATA_POS'LENGTH-1 downto 0);
+   type pos_pipe_type is array (0 to 2) of unsigned(RX_DATA_POS'LENGTH-1 downto 0);
    
    signal sreset              : std_logic; 
    signal err_i               : std_logic;
@@ -73,7 +76,10 @@ begin
    
    TX_MOSI <= tx_mosi_pipe(2);   
    ERR <= err_i;
-   RX_MISO <= TX_MISO; 
+   RX_MISO <= TX_MISO;  
+   TX_DATA_POS <= std_logic_vector(data_pos_pipe(2));
+   TX_LINE_POS <= std_logic_vector(line_pos_pipe(2));   
+   
    
    ------------------------------------------------------
    -- Sync reset
@@ -85,9 +91,11 @@ begin
       SRESET => sreset
       );
    
+      
    ------------------------------------------------------
    -- choix des données
    ------------------------------------------------------
+   
    U2 : process(CLK)
    begin
       if rising_edge(CLK) then 
@@ -110,22 +118,22 @@ begin
                ----------------------------
                
                tx_mosi_pipe(0)  <= RX_MOSI;
-               data_pos_pipe(0) <= unsigned(DATA_POS);
-               line_pos_pipe(0) <= unsigned(LINE_POS); 
+               data_pos_pipe(0) <= unsigned(RX_DATA_POS);
+               line_pos_pipe(0) <= unsigned(RX_LINE_POS); 
                
-               if unsigned(DATA_POS) >= unsigned(M_AOI_SOL_POS) then
+               if unsigned(RX_DATA_POS) >= unsigned(M_AOI_SOL_POS) then
                   column_valid(0) <= RX_MOSI.TVALID;
                else
                   column_valid(0)  <= '0';
                end if;
                
-               if unsigned(LINE_POS) >= unsigned(M_AOI_FLI_POS) then
+               if unsigned(RX_LINE_POS) >= unsigned(M_AOI_FLI_POS) then
                   line_valid(0) <= RX_MOSI.TVALID;
                else
                   line_valid(0) <= '0';
                end if;
                
-               if unsigned(DATA_POS) = unsigned(M_AOI_EOL_POS) then  
+               if unsigned(RX_DATA_POS) = unsigned(M_AOI_EOL_POS) then  
                   tlast_enable <= RX_MOSI.TVALID;               -- premice de tlast (ce n'est pas encore tlast)
                else
                   tlast_enable <= '0';
@@ -170,7 +178,7 @@ begin
                tx_mosi_pipe(2).tvalid <= line_valid(1) and column_valid(1);                            
                data_pos_pipe(2)  <= data_pos_pipe(1);
                line_pos_pipe(2)  <= line_pos_pipe(1);                       
-                
+               
                
             end if;
             
