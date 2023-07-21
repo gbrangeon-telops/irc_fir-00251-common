@@ -21,27 +21,25 @@ use work.tel2000.all;
 use work.BufferingDefine.all;
 
 entity flow_controller is	  
-		 port(                                
+         port(                                
       
       ARESETN        : in STD_LOGIC;           
       CLK_DIN        : in std_logic;  	
        
       AXIS_MOSI_RX   : in t_axi4_stream_mosi64;     
       AXIS_MISO_RX   : out t_axi4_stream_miso;	   
-	        
+        
       AXIS_MOSI_TX   : out t_axi4_stream_mosi64;     
       AXIS_MISO_TX   : in t_axi4_stream_miso;
-	  
+  
       FLOW_CTRLER_CFG : in flow_ctrler_config_type; 
       
-	   WATERLEVEL_IN   : in std_logic;
-	   WATERLEVEL_OUT  : out std_logic
+      WATERLEVEL_IN   : in std_logic;
+      WATERLEVEL_OUT  : out std_logic
       );
 end flow_controller;
 
---}} End of automatically maintained section
 
-	
 architecture behav of flow_controller is
 
 component sync_resetn is
@@ -56,12 +54,12 @@ component double_sync
    generic(
       INIT_VALUE : bit := '0'
    );
-	port(
-		D : in STD_LOGIC;
-		Q : out STD_LOGIC := '0';
-		RESET : in STD_LOGIC;
-		CLK : in STD_LOGIC
-		);
+    port(
+        D : in STD_LOGIC;
+        Q : out STD_LOGIC := '0';
+        RESET : in STD_LOGIC;
+        CLK : in STD_LOGIC
+        );
 end component;
   
 type   flow_control_state is (idle_st, pause_st);
@@ -76,18 +74,12 @@ signal lval_cnt       : unsigned(flow_ctrler_cfg_i.width'range) ;
 signal width          : unsigned(flow_ctrler_cfg_i.width'range) ;
 signal pause_cnt      : unsigned(flow_ctrler_cfg_i.lval_pause_min'range) ;
 signal pause_cnt_min  : unsigned(flow_ctrler_cfg_i.lval_pause_min'range) ;
-	
+
 signal valid_cfg_last    : std_logic := '0';
 signal waterlevel_i  : std_logic;
 
-attribute KEEP : string;
-attribute KEEP of valid_cnt      : signal is "true";
-attribute KEEP of flow_control_s      : signal is "true";
-attribute KEEP of rx_tready      : signal is "true";
-attribute KEEP of flow_ctrler_cfg_i  : signal is "true";
-attribute KEEP of lval_cnt  : signal is "true";
-attribute KEEP of pause_cnt  : signal is "true";
-attribute KEEP of pause_cnt_min  : signal is "true";
+--attribute KEEP : string;
+--attribute KEEP of valid_cnt      : signal is "true";
 
 begin
 	
@@ -97,9 +89,9 @@ begin
    sreset <= not sresetn_i;
    
    U1B : double_sync port map(D => FLOW_CTRLER_CFG.dval, Q => flow_ctrler_cfg_i.dval, RESET => sreset, CLK => CLK_DIN);
-   
-   waterlevel_i <= WATERLEVEL_IN;
+   U1C : double_sync port map(D => WATERLEVEL_IN, Q => waterlevel_i, RESET => sreset, CLK => CLK_DIN);
 
+   WATERLEVEL_OUT <= waterlevel_i  when FLOW_CTRLER_CFG.memory_buffer_download_output = '0' else '0';
    
    U2 : process(CLK_DIN)
    begin
@@ -110,14 +102,14 @@ begin
             flow_ctrler_cfg_i.width                         <= to_unsigned(0,flow_ctrler_cfg_i.width'length);
             flow_ctrler_cfg_i.lval_pause_min                <= to_unsigned(0,flow_ctrler_cfg_i.lval_pause_min'length);
             flow_ctrler_cfg_i.fval_pause_min                <= to_unsigned(0,flow_ctrler_cfg_i.fval_pause_min'length);
-			   flow_ctrler_cfg_i.memory_buffer_download_output <= '0';
+            flow_ctrler_cfg_i.memory_buffer_download_output <= '0';
             valid_cfg_last <= '0';
          else
             valid_cfg_last <= flow_ctrler_cfg_i.dval;
             if flow_ctrler_cfg_i.dval = '1' and valid_cfg_last = '0' then
                flow_ctrler_cfg_i.stalled_cnt                   <= FLOW_CTRLER_CFG.stalled_cnt;
                flow_ctrler_cfg_i.valid_cnt                     <= FLOW_CTRLER_CFG.valid_cnt;
-			      flow_ctrler_cfg_i.memory_buffer_download_output <= FLOW_CTRLER_CFG.memory_buffer_download_output;
+               flow_ctrler_cfg_i.memory_buffer_download_output <= FLOW_CTRLER_CFG.memory_buffer_download_output;
                flow_ctrler_cfg_i.width                         <= FLOW_CTRLER_CFG.width;
                flow_ctrler_cfg_i.lval_pause_min                <= FLOW_CTRLER_CFG.lval_pause_min;
                flow_ctrler_cfg_i.fval_pause_min                <= FLOW_CTRLER_CFG.fval_pause_min;
@@ -127,18 +119,6 @@ begin
       end if;
    end process;
        
-   U3 : process(CLK_DIN)
-   begin
-      if rising_edge(CLK_DIN) then
-         if FLOW_CTRLER_CFG.memory_buffer_download_output = '0' then
-           WATERLEVEL_OUT <= waterlevel_i;
-         else
-		     WATERLEVEL_OUT <= '0';
-         end if;  
-      end if;
-   end process;
-
-			
    AXIS_MOSI_TX.TKEEP    <=  (others => '1');
    AXIS_MOSI_TX.TSTRB    <=  (others => '1');
    AXIS_MOSI_TX.TUSER    <=  (others => '0');

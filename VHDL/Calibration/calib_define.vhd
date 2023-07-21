@@ -75,6 +75,7 @@ package calib_define is
       block_act_posix   : std_logic_vector(31 downto 0);
       low_cut           : std_logic_vector(31 downto 0);
       high_cut          : std_logic_vector(31 downto 0);
+      delta_temp_fp32   : std_logic_vector(31 downto 0);
    end record;
    
    -- Calibration block infos
@@ -85,14 +86,14 @@ package calib_define is
    end record;
    type calib_block_array_type is array (0 to NB_CALIB_BLOCK_MAX-1) of calib_block_info_type;
    constant CALIB_BLOCK_ARRAY_TYPE_DEF : calib_block_array_type := ( 
-      ((others => '0'), (CAL_BLOCK_INDEX_0, (others => '0'), (others => '0'), (others => '0'), (others => '0'), (others => '0'), (others => '0'))),
-      ((others => '0'), (CAL_BLOCK_INDEX_1, (others => '0'), (others => '0'), (others => '0'), (others => '0'), (others => '0'), (others => '0'))),
-      ((others => '0'), (CAL_BLOCK_INDEX_2, (others => '0'), (others => '0'), (others => '0'), (others => '0'), (others => '0'), (others => '0'))),
-      ((others => '0'), (CAL_BLOCK_INDEX_3, (others => '0'), (others => '0'), (others => '0'), (others => '0'), (others => '0'), (others => '0'))),
-      ((others => '0'), (CAL_BLOCK_INDEX_4, (others => '0'), (others => '0'), (others => '0'), (others => '0'), (others => '0'), (others => '0'))),
-      ((others => '0'), (CAL_BLOCK_INDEX_5, (others => '0'), (others => '0'), (others => '0'), (others => '0'), (others => '0'), (others => '0'))),
-      ((others => '0'), (CAL_BLOCK_INDEX_6, (others => '0'), (others => '0'), (others => '0'), (others => '0'), (others => '0'), (others => '0'))),
-      ((others => '0'), (CAL_BLOCK_INDEX_7, (others => '0'), (others => '0'), (others => '0'), (others => '0'), (others => '0'), (others => '0'))) );
+      ((others => '0'), (CAL_BLOCK_INDEX_0, (others => '0'), (others => '0'), (others => '0'), (others => '0'), (others => '0'), (others => '0'), (others => '0'))),
+      ((others => '0'), (CAL_BLOCK_INDEX_1, (others => '0'), (others => '0'), (others => '0'), (others => '0'), (others => '0'), (others => '0'), (others => '0'))),
+      ((others => '0'), (CAL_BLOCK_INDEX_2, (others => '0'), (others => '0'), (others => '0'), (others => '0'), (others => '0'), (others => '0'), (others => '0'))),
+      ((others => '0'), (CAL_BLOCK_INDEX_3, (others => '0'), (others => '0'), (others => '0'), (others => '0'), (others => '0'), (others => '0'), (others => '0'))),
+      ((others => '0'), (CAL_BLOCK_INDEX_4, (others => '0'), (others => '0'), (others => '0'), (others => '0'), (others => '0'), (others => '0'), (others => '0'))),
+      ((others => '0'), (CAL_BLOCK_INDEX_5, (others => '0'), (others => '0'), (others => '0'), (others => '0'), (others => '0'), (others => '0'), (others => '0'))),
+      ((others => '0'), (CAL_BLOCK_INDEX_6, (others => '0'), (others => '0'), (others => '0'), (others => '0'), (others => '0'), (others => '0'), (others => '0'))),
+      ((others => '0'), (CAL_BLOCK_INDEX_7, (others => '0'), (others => '0'), (others => '0'), (others => '0'), (others => '0'), (others => '0'), (others => '0'))) );
    
    -- Calibration data flow config
    type calib_flow_config_type is
@@ -125,8 +126,6 @@ package calib_define is
       nlc_pow2_b_exp_fp32        : std_logic_vector(31 downto 0);
       nlc_pow2_b_exp_fp32_wr_en  : std_logic;
       -- FSU
-      delta_temp_fp32            : std_logic_vector(31 downto 0);
-      delta_temp_fp32_wr_en      : std_logic;
       alpha_offset_fp32          : std_logic_vector(31 downto 0);
       alpha_offset_fp32_wr_en    : std_logic;
       pow2_alpha_exp_fp32        : std_logic_vector(31 downto 0);

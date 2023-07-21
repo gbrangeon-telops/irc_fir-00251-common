@@ -16,7 +16,7 @@
 
 /* AUTO-CODE BEGIN */
 // Auto-generated IRCam header library.
-// Generated from the IRCam header definition XLS file version 13.2
+// Generated from the IRCam header definition XLS file version 13.3
 // using generateIRCamHeaderCLib.m Matlab script.
 
 #define SignatureHdrAddr                              0x00  /**< Signature header field address */
@@ -26,6 +26,7 @@
 #define FrameIDHdrAddr                                0x08  /**< FrameID header field address */
 #define DataOffsetHdrAddr                             0x0C  /**< DataOffset header field address */
 #define DataExpHdrAddr                                0x10  /**< DataExp header field address */
+#define DeltaTempHdrAddr                              0x14  /**< DeltaTemp header field address */
 #define ExposureTimeHdrAddr                           0x18  /**< ExposureTime header field address */
 #define CalibrationModeHdrAddr                        0x1C  /**< CalibrationMode header field address */
 #define BPRAppliedHdrAddr                             0x1D  /**< BPRApplied header field address */

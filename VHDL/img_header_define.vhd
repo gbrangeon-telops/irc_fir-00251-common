@@ -22,7 +22,7 @@ use ieee.numeric_std.all;
 
 -- AUTO-CODE BEGIN
 -- Auto-generated IRCam image header definition package.
--- Generated from the IRCam header definition XLS file version 13.2
+-- Generated from the IRCam header definition XLS file version 13.3
 -- using generateIRCamHeaderVHDLLib.m Matlab script.
 
 package img_header_define is
@@ -58,6 +58,11 @@ package img_header_define is
    constant DataExpAdd32                                 : std_logic_vector(5 downto 0) := std_logic_vector(to_unsigned(4,6));   --! DataExp field's 32-bit address
    constant DataExpBWE                                   : std_logic_vector(3 downto 0) := "1000";                               --! DataExp field's word mask
    constant DataExpShift                                 : natural := 24;                                                        --! DataExp field's shift value
+
+   constant DeltaTempAdd8                                : std_logic_vector(7 downto 0) := x"14";                                --! DeltaTemp field's 8-bit address
+   constant DeltaTempAdd32                               : std_logic_vector(5 downto 0) := std_logic_vector(to_unsigned(5,6));   --! DeltaTemp field's 32-bit address
+   constant DeltaTempBWE                                 : std_logic_vector(3 downto 0) := "1111";                               --! DeltaTemp field's word mask
+   constant DeltaTempShift                               : natural := 0;                                                         --! DeltaTemp field's shift value
 
    constant ExposureTimeAdd8                             : std_logic_vector(7 downto 0) := x"18";                                --! ExposureTime field's 8-bit address
    constant ExposureTimeAdd32                            : std_logic_vector(5 downto 0) := std_logic_vector(to_unsigned(6,6));   --! ExposureTime field's 32-bit address

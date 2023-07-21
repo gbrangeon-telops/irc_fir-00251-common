@@ -16,6 +16,11 @@
 #include "DebugTerminal.h"
 #include "StackUtils.h"
 #include <string.h>
+#include <math.h>
+
+#ifndef pow10f
+#define pow10f(a) powf(a,10.0)
+#endif
 
 static IRC_Status_t DebugTerminalParser(debugTerminal_t *debugTerminal, circByteBuffer_t *cbuf);
 static void DebugTerminal_Input(debugTerminal_t *debugTerminal);

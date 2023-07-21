@@ -966,7 +966,7 @@ int lcm(int x, int y)
    return x * (y/gcd(x,y));
 }
 
-uint32_t select(uint32_t* list, int left, int right, int n)
+uint32_t __select(uint32_t* list, int left, int right, int n)
 {
      while (1)
      {

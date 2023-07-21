@@ -23,6 +23,7 @@ acom \
  "$COMMON\VHDL\Fifo\t_axi4_stream16_fifo.vhd" \
  "$COMMON\VHDL\Fifo\t_axi4_stream32_fifo.vhd" \
  "$COMMON\VHDL\Fifo\t_axi4_stream64_fifo.vhd" \
+ "$COMMON\VHDL\Fifo\t_axi4_stream128_fifo.vhd" \
  "$COMMON\VHDL\Fifo\t_axi4_stream_wr16_rd64_fifo.vhd" \
  "$COMMON\VHDL\Fifo\t_axi4_stream_wr32_rd64_fifo.vhd" \
  "$COMMON\VHDL\Fifo\t_axi4_stream_wr32_rd16_fifo.vhd" \
@@ -30,13 +31,15 @@ acom \
  "$COMMON\VHDL\Fifo\t_axi4_stream_wr64_rd32_fifo.vhd" \
  "$COMMON\VHDL\Fifo\t_axi4_stream_wr64_rd64_fifo.vhd" \
  "$COMMON\VHDL\Fifo\t_axi4_stream_wr64_rd128_fifo.vhd" \
- "$COMMON\VHDL\Fifo\t_axi4_stream_wr128_rd64_fifo.vhd"
+ "$COMMON\VHDL\Fifo\t_axi4_stream_wr128_rd64_fifo.vhd" \
+ "$COMMON\VHDL\Fifo\t_axi4_stream_wr128_rd128_fifo.vhd" 
  
 #hdr extractor
 acom -relax \
  "$COMMON\VHDL\hdr_extractor\axis16_hder_extractor.vhd" \
  "$COMMON\VHDL\hdr_extractor\axis32_hder_extractor.vhd" \
- "$COMMON\VHDL\hdr_extractor\axis64_hder_extractor.vhd"
+ "$COMMON\VHDL\hdr_extractor\axis64_hder_extractor.vhd"	\
+ "$COMMON\VHDL\hdr_extractor\axis128_hder_extractor.vhd"
 
 # Utilities
 acom \
@@ -55,10 +58,13 @@ acom \
  "$COMMON\VHDL\Utilities\axis32_hole.vhd"   \
  "$COMMON\VHDL\Utilities\axis32_img_boundaries.vhd"   \
  "$COMMON\VHDL\Utilities\axis64_img_boundaries.vhd"   \
+ "$COMMON\VHDL\Utilities\axis128_img_boundaries.vhd"   \
  "$COMMON\VHDL\Utilities\axis32_reg.vhd" \
  "$COMMON\VHDL\Utilities\axis64_reg.vhd" \
+ "$COMMON\VHDL\Utilities\axis128_reg.vhd" \
  "$COMMON\VHDL\Utilities\axis32_hole_sync.vhd"   \
  "$COMMON\VHDL\Utilities\axis64_hole_sync.vhd"   \
+ "$COMMON\VHDL\Utilities\axis128_hole_sync.vhd"   \
  "$COMMON\VHDL\Utilities\axis32_sw_1_2.vhd" \
  "$COMMON\VHDL\Utilities\axis64_sw_1_2.vhd" \
  "$COMMON\VHDL\Utilities\axis32_sw_2_1.vhd" \
@@ -79,6 +85,7 @@ acom \
  "$COMMON\VHDL\Utilities\axil32_mux2.vhd" \
  "$COMMON\VHDL\Utilities\axil32_addr_demux4.vhd" \
  "$COMMON\VHDL\Utilities\axis32_sw_3_1.vhd" \
+ "$COMMON\VHDL\axis128_pixel_cnt.vhd" \
  "$COMMON\VHDL\axis64_pixel_cnt.vhd" \
  "$COMMON\VHDL\axis32_pixel_cnt.vhd" \
  "$COMMON\VHDL\axis16_pixel_cnt.vhd" \

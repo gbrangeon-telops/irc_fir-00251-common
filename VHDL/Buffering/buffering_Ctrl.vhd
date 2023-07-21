@@ -66,9 +66,9 @@ entity Buffering_Ctrl is
     --------------------------------
     -- BUFFERING DATA PATH
     --------------------------------
-    BUFFER_SWITCH   : out std_logic_vector(3 downto 0); -- Bit 0 => SW0, Bit 1 => SW1 Bit 2 => SW2
-    MOI_MODE_OUT    : out t_MOI_MODE;
-    EXT_EDGE        : out t_EDGE_TYPE;
+    BUFFER_SWITCH      : out external_buffer_switch_type;	
+    MOI_MODE_OUT       : out t_MOI_MODE;
+    EXT_EDGE           : out t_EDGE_TYPE;
 
     --------------------------------
     -- MISC
@@ -80,7 +80,7 @@ entity Buffering_Ctrl is
     EXT_BUF_PRSNT_N : in  std_logic;
     MEM_READY       : in  std_logic;
     AXIL_MEM_ADDR_WIDTH : out integer;    -- 1 to 32  
-	 FLOW_CTRLER_CONFIG : out  flow_ctrler_config_type;
+    FLOW_CTRLER_CONFIG : out  flow_ctrler_config_type;
 
     -- CLK_CTRL
     ARESETN         : in  std_logic;
@@ -145,24 +145,24 @@ architecture RTL of Buffering_Ctrl is
    generic(
       INIT_VALUE : bit := '0'
    );
-	port(
-		D : in STD_LOGIC;
-		Q : out STD_LOGIC := '0';
-		RESET : in STD_LOGIC;
-		CLK : in STD_LOGIC
-		);
+    port(
+        D : in STD_LOGIC;
+        Q : out STD_LOGIC := '0';
+        RESET : in STD_LOGIC;
+        CLK : in STD_LOGIC
+        );
    end component;
    
    component Pulse_gen
-	Generic(
-		Delay:		integer := 3;		-- Delay before pulse generation
-		Duration:	integer := 2;		-- Pulse width
-		Polarity:	boolean := true);	-- Pulse Polarity  
-	Port (		
-		Clock:		in STD_LOGIC;		-- Clock signal
-		Reset:		in STD_LOGIC;		-- Resets all counters (Active High)
-		Trigger:    in STD_LOGIC;		-- Reference signal (input)
-		Pulse:		out STD_LOGIC);		-- Generated pulse (output)
+    Generic(
+        Delay:        integer := 3;    -- Delay before pulse generation
+        Duration:    integer := 2;    -- Pulse width
+        Polarity:    boolean := true);    -- Pulse Polarity  
+    Port (
+        Clock:        in STD_LOGIC;    -- Clock signal
+        Reset:        in STD_LOGIC;    -- Resets all counters (Active High)
+        Trigger:    in STD_LOGIC;    -- Reference signal (input)
+        Pulse:        out STD_LOGIC);    -- Generated pulse (output)
    end component;
    
    component sync_resetn is
@@ -174,11 +174,21 @@ architecture RTL of Buffering_Ctrl is
    end component;
    
    component sync_pulse is
-   	 port(
-   		 Pulse : in STD_LOGIC;
-   		 Clk : in STD_LOGIC;
-   		 Pulse_out_sync : out STD_LOGIC
-   	     );
+        port(
+        Pulse : in STD_LOGIC;
+        Clk : in STD_LOGIC;
+        Pulse_out_sync : out STD_LOGIC
+        );
+   end component; 
+   
+   component gh_stretch 
+      GENERIC (stretch_count: integer :=1023);
+      port(
+         CLK : in STD_LOGIC;
+         rst : in STD_LOGIC;
+         D : in STD_LOGIC;
+         Q : out STD_LOGIC
+         );
    end component;
    
    signal sresetn       : std_logic;
@@ -214,7 +224,8 @@ architecture RTL of Buffering_Ctrl is
     
     signal config_valid_o      : std_logic;
     signal acq_stop_o          : std_logic;
-    signal bufferswitch_o      : std_logic_vector(BUFFER_SWITCH'length-1 downto 0);
+    signal buff_sw_dval        : std_logic;
+    signal bufferswitch_o      : std_logic_vector(BUFFER_SWITCH.sel'length-1 downto 0);
     signal moi_mode_o          : std_logic_vector(1 downto 0);
     signal ext_edge_o          : std_logic_vector(1 downto 0);
     signal soft_moi_o          : std_logic;
@@ -247,7 +258,9 @@ architecture RTL of Buffering_Ctrl is
    
    attribute keep : string; 
    attribute keep of buffermode_o : signal is "TRUE";  
-
+   attribute keep of buff_sw_dval : signal is "TRUE"; 
+   
+   
 begin
   
     sreset <= not  sresetn;
@@ -280,12 +293,10 @@ begin
     -- Input ctrl double Sync
     U1B : double_sync port map(D => WRITE_COMPLETED, Q => write_completed_i, RESET => sreset, CLK => CLK_CTRL);
     U1C : double_sync port map(D => READ_COMPLETED,  Q => read_completed_i,  RESET => sreset, CLK => CLK_CTRL);
-    U1D : Pulse_gen
-       Generic map(Delay => 0, Duration => 2, Polarity => true)
-	    Port map(Clock => CLK_DATA, Reset => '0', Trigger => NB_SEQ_IN_MEM_VAL, Pulse => nb_seq_in_mem_val_o);
+    U1D : Pulse_gen Generic map(Delay => 0, Duration => 2, Polarity => true) port map(Clock => CLK_DATA, Reset => '0', Trigger => NB_SEQ_IN_MEM_VAL, Pulse => nb_seq_in_mem_val_o);
     U1E : double_sync port map(D => nb_seq_in_mem_val_o, Q => nb_seq_in_mem_val_i, RESET => sreset, CLK => CLK_CTRL);
-   U1F: process (CLK_CTRL)
-   begin
+    U1F: process (CLK_CTRL)
+    begin
       if rising_edge(CLK_CTRL) then 
          if sresetn = '0' then
             nb_seq_in_mem_i <= (others => '0');
@@ -295,23 +306,27 @@ begin
             end if;
          end if;
       end if;
-   end process;
+    end process;
     -- Output ctrl double Sync
     U3B : double_sync port map(D => config_valid_o,         Q => CONFIG_VALID ,     RESET => sreset,    CLK => CLK_DATA);    
     U3C : double_sync port map(D => soft_moi_o,             Q => SOFT_MOI ,         RESET => sreset,    CLK => CLK_DATA);    
     U3D : double_sync port map(D => acq_stop_o,             Q => ACQ_STOP ,         RESET => sreset,    CLK => CLK_DATA);
 
-   U3E : sync_pulse port map(Pulse => regWrite, Clk => CLK_DATA, Pulse_out_sync =>regWrite_sync);
-   VECT_SYNC: process (CLK_DATA)
-   begin
+    U3E : sync_pulse port map(Pulse => regWrite, Clk => CLK_DATA, Pulse_out_sync =>regWrite_sync);
+    U3F : gh_stretch generic map (stretch_count => 10) port map(CLK => CLK_DATA, rst => sreset, D => buff_sw_dval , Q => BUFFER_SWITCH.dval);
+  
+    VECT_SYNC: process (CLK_DATA)
+    begin
       if rising_edge(CLK_DATA) then
+         buff_sw_dval <= '0';
          if regWrite_sync = '1' then
-            BUFFER_SWITCH  <= bufferswitch_o;
+            buff_sw_dval <= '1';
+            BUFFER_SWITCH.sel  <= bufferswitch_o;
             MOI_MODE_OUT   <= MOI_MODE_int;
             EXT_EDGE       <= EXT_EDGE_int;
          end if;
       end if;
-   end process;
+    end process;
 
    -- I/O Connections assignments
    AXI4_LITE_MISO.AWREADY  <= axi_awready;
@@ -456,14 +471,14 @@ begin
                   when BUFFER_SWITCH_ADDR        =>  bufferswitch_o       <= AXI4_LITE_MOSI.WDATA(bufferswitch_o'length-1 downto 0); 
                   when SOFT_MOI_ADDR             =>  soft_moi_o           <= AXI4_LITE_MOSI.WDATA(0);
                   when MOI_SOURCE_ADDR           =>  moi_mode_o           <= AXI4_LITE_MOSI.WDATA(moi_mode_o'length-1 downto 0);
-				  when MOI_ACTIVATION_ADDR          =>  ext_edge_o  <= AXI4_LITE_MOSI.WDATA(ext_edge_o'length-1 downto 0);
+                  when MOI_ACTIVATION_ADDR          =>  ext_edge_o  <= AXI4_LITE_MOSI.WDATA(ext_edge_o'length-1 downto 0);
                   when FLOW_CTRLER_STALLED_CNT_ADDR  =>  flow_ctrler_config_i.stalled_cnt   <= unsigned(AXI4_LITE_MOSI.WDATA(flow_ctrler_config_i.stalled_cnt'length-1 downto 0)); 
-   				  when FLOW_CTRLER_VALID_CNT_ADDR    =>  flow_ctrler_config_i.valid_cnt     <= unsigned(AXI4_LITE_MOSI.WDATA(flow_ctrler_config_i.valid_cnt'length-1 downto 0)); 
-   				  when FLOW_CTRLER_DOWNLOAD_OUTPUT_ADDR    =>  flow_ctrler_config_i.memory_buffer_download_output    <= AXI4_LITE_MOSI.WDATA(0); 
-   				  when FLOW_CTRLER_DVAL_ADDR               =>  flow_ctrler_config_i.dval           <= AXI4_LITE_MOSI.WDATA(0); 
+                  when FLOW_CTRLER_VALID_CNT_ADDR    =>  flow_ctrler_config_i.valid_cnt     <= unsigned(AXI4_LITE_MOSI.WDATA(flow_ctrler_config_i.valid_cnt'length-1 downto 0)); 
+                  when FLOW_CTRLER_DOWNLOAD_OUTPUT_ADDR    =>  flow_ctrler_config_i.memory_buffer_download_output    <= AXI4_LITE_MOSI.WDATA(0); 
+                  when FLOW_CTRLER_DVAL_ADDR               =>  flow_ctrler_config_i.dval           <= AXI4_LITE_MOSI.WDATA(0); 
                   when FLOW_CTRLER_WIDTH_ADDR              =>  flow_ctrler_config_i.width          <= unsigned(AXI4_LITE_MOSI.WDATA(flow_ctrler_config_i.width'length-1 downto 0)); 
-   				  when FLOW_CTRLER_LVAL_PAUSE_MIN_ADDR     =>  flow_ctrler_config_i.lval_pause_min <= unsigned(AXI4_LITE_MOSI.WDATA(flow_ctrler_config_i.lval_pause_min'length-1 downto 0)); 
-   				  when FLOW_CTRLER_FVAL_PAUSE_MIN_ADDR     =>  flow_ctrler_config_i.fval_pause_min <= unsigned(AXI4_LITE_MOSI.WDATA(flow_ctrler_config_i.fval_pause_min'length-1 downto 0)); 
+                  when FLOW_CTRLER_LVAL_PAUSE_MIN_ADDR     =>  flow_ctrler_config_i.lval_pause_min <= unsigned(AXI4_LITE_MOSI.WDATA(flow_ctrler_config_i.lval_pause_min'length-1 downto 0)); 
+                  when FLOW_CTRLER_FVAL_PAUSE_MIN_ADDR     =>  flow_ctrler_config_i.fval_pause_min <= unsigned(AXI4_LITE_MOSI.WDATA(flow_ctrler_config_i.fval_pause_min'length-1 downto 0)); 
                   when others  =>                  
                end case;                                                                                          
             end if;                                        

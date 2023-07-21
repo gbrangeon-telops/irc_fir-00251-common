@@ -71,8 +71,25 @@ architecture rtl of t_axi4_stream_wr64_rd32_fifo is
           full : out STD_LOGIC;
           empty : out STD_LOGIC;
           valid : out STD_LOGIC;
- 		  wr_rst_busy : out STD_LOGIC;
-		  rd_rst_busy : out STD_LOGIC
+          wr_rst_busy : out STD_LOGIC;
+          rd_rst_busy : out STD_LOGIC
+         );
+   END COMPONENT; 
+
+   COMPONENT fwft_afifo_wr68_rd34_d32
+      PORT (      
+          rst : in STD_LOGIC;
+          wr_clk : in STD_LOGIC;
+          rd_clk : in STD_LOGIC;
+          din : in STD_LOGIC_VECTOR ( 67 downto 0 );
+          wr_en : in STD_LOGIC;
+          rd_en : in STD_LOGIC;
+          dout : out STD_LOGIC_VECTOR ( 33 downto 0 );
+          full : out STD_LOGIC;
+          empty : out STD_LOGIC;
+          valid : out STD_LOGIC;
+          wr_rst_busy : out STD_LOGIC;
+          rd_rst_busy : out STD_LOGIC
          );
    END COMPONENT; 
    
@@ -88,8 +105,8 @@ architecture rtl of t_axi4_stream_wr64_rd32_fifo is
           full : out STD_LOGIC;
           empty : out STD_LOGIC;
           valid : out STD_LOGIC;
-		  wr_rst_busy : out STD_LOGIC;
-		  rd_rst_busy : out STD_LOGIC
+          wr_rst_busy : out STD_LOGIC;
+          rd_rst_busy : out STD_LOGIC
          );
    END COMPONENT;
    
@@ -117,145 +134,133 @@ architecture rtl of t_axi4_stream_wr64_rd32_fifo is
 	
 begin  
       
-     areset <= not ARESETN ; 
-	  OVFL <= fifo_overflow;
-
-	  -- Write control
-	  rx_tready <= (not fifo_full);
-     RX_MISO.TREADY <= rx_tready;
-     fifo_wr_en <= RX_MOSI.TVALID and rx_tready;
-
-	  -- Read control
-	  TX_MOSI.TVALID <= fifo_valid;
-     fifo_rd_en <=  TX_MISO.TREADY and fifo_valid and (not fifo_empty) ; 
-	  
-     ---------------------------- INPUT MAPPING ----------------------------------
-     -- Note : Transaction ordering of asymetrical fifo IP (parallel to serial): 
-     -- input side -> [Transaction 3, Transaction 2, Transaction 1, Transaction 0] (1x 72 bits)
-    
-                       ------------------------- time ------------------------------>
-     -- output side -> [Transaction 3],[Transaction 2],[Transaction 1],[Transaction 0]  (4x 18 bits)
-    
-     -- Thus, we have to reorder the transaction to have the first transaction to get out to be the LSB position.
-     --                                  TDATA                 TID                TLAST      
-      fifo_din(67 downto 0)  <= RX_MOSI.TDATA(31 downto 0)  &  '0'              &   '0'           &
-                                RX_MOSI.TDATA(63 downto 32) &  RX_MOSI.TID(0)   &   RX_MOSI.TLAST ;
-
-                          
-                          
-                          
-      ---------------------------- OUTPUT MAPPING ----------------------------------
-      TX_MOSI.TDATA <= fifo_dout(33 downto 2); 
-	   TX_MOSI.TID(0) <= fifo_dout(1);
-      TX_MOSI.TLAST <= fifo_dout(0);
-	  
-      TX_MOSI.TKEEP <=  (others => '1');
-      TX_MOSI.TSTRB <= (others => '1');
-      TX_MOSI.TDEST <= (others => '0'); -- non géré
-      TX_MOSI.TUSER <= (others => '0'); -- non géré  
+   areset <= not ARESETN ; 
+   OVFL <= fifo_overflow;
+   
+   -- Write control
+   rx_tready <= (not fifo_full);
+   RX_MISO.TREADY <= rx_tready;
+   fifo_wr_en <= RX_MOSI.TVALID and rx_tready;
+   
+   -- Read control
+   TX_MOSI.TVALID <= fifo_valid;
+   fifo_rd_en <=  TX_MISO.TREADY and fifo_valid and (not fifo_empty) ; 
+   
+   ---------------------------- INPUT MAPPING ----------------------------------
+   -- Note : Transaction ordering of asymetrical fifo IP (parallel to serial): 
+   -- input side -> [Transaction 3, Transaction 2, Transaction 1, Transaction 0] (1x 72 bits)
+   
+                    ------------------------- time ------------------------------>
+   -- output side -> [Transaction 3],[Transaction 2],[Transaction 1],[Transaction 0]  (4x 18 bits)
+   
+   -- Thus, we have to reorder the transaction to have the first transaction to get out to be the LSB position.
+   --                                  TDATA                 TID                TLAST      
+   fifo_din(67 downto 0)  <= RX_MOSI.TDATA(31 downto 0)  &  '0'              &   '0'           &
+                             RX_MOSI.TDATA(63 downto 32) &  RX_MOSI.TID(0)   &   RX_MOSI.TLAST ;
+                      
+   ---------------------------- OUTPUT MAPPING ----------------------------------
+   TX_MOSI.TDATA <= fifo_dout(33 downto 2); 
+   TX_MOSI.TID(0) <= fifo_dout(1);
+   TX_MOSI.TLAST <= fifo_dout(0);
+   
+   TX_MOSI.TKEEP <=  (others => '1');
+   TX_MOSI.TSTRB <= (others => '1');
+   TX_MOSI.TDEST <= (others => '0'); -- non géré
+   TX_MOSI.TUSER <= (others => '0'); -- non géré  
 	  
 	  
    sgen_wr64_rd32_d512 : if (WR_FIFO_DEPTH > 0 and WR_FIFO_DEPTH <= 512 and not ASYNC) generate  
-   -- Fifo generator (13.1) synthesis setting : 
-   -- Interface type -> Native, Fifo implementation -> Common clock block ram, Read mode -> Fist Word Fall Through,
-   -- Data Port Parameters : Write width -> 68, Write Depth -> 512, Read width -> 34, 
-   -- ECC, Output register and Power Gating Options : ECC -> OFF, Output register -> ON (Embedded register), 
-   -- Initialization  -> DEFAULT VALUES (Safety circuit -> OFF)
-   -- Status Flag -> ALL DEFAULT, except : Overflow -> OFF, Valid Flag -> ON
-   -- Data count option -> DEFAULT VALUES.
-   begin  
-      
-      FoundGenCase <= true;  
-
-      fwft_sfifo_wr68_rd34_d512_inst : fwft_sfifo_wr68_rd34_d512
-      PORT MAP (
-          clk => TX_CLK,
-          srst => areset,
-          din => fifo_din,
-          wr_en => fifo_wr_en,
-          rd_en => fifo_rd_en,
-          dout => fifo_dout,
-          full => fifo_full,
-          empty => fifo_empty,
-          valid => fifo_valid
-         );
-      end generate;
-	  
-
-	agen_wr64_rd32_d16 : if (WR_FIFO_DEPTH > 0 and WR_FIFO_DEPTH <= 16 and ASYNC) generate    
-	-- Fifo generator (13.1) synthesis setting : 
-	-- Interface type -> Native, Fifo implementation -> Idependent clock block ram, Read mode -> Fist Word Fall Through,
-	-- Data Port Parameters : Write width -> 68, Write Depth -> 16, Read width -> 34, 
-	-- ECC, Output register and Power Gating Options : ECC -> OFF, Output register -> ON (Embedded register), 
-	-- Initialization  -> DEFAULT VALUES (Safety circuit -> OFF)
-	-- Status Flag -> ALL DEFAULT, except : Overflow -> OFF, Valid Flag -> ON
-	-- Data count option -> DEFAULT VALUES.
-   begin  
-      
-      FoundGenCase <= true;  
-
-      fwft_afifo_wr68_rd34_d16_inst : fwft_afifo_wr68_rd34_d16
-      PORT MAP (
-          wr_clk => RX_CLK,
-          rd_clk => TX_CLK,
-          rst => areset,
-          din => fifo_din,
-          wr_en => fifo_wr_en,
-          rd_en => fifo_rd_en,
-          dout => fifo_dout,
-          full => fifo_full,
-          empty => fifo_empty,
-          valid => fifo_valid,
-		  wr_rst_busy => open,
-		  rd_rst_busy => open
-         );
+   begin   
+   FoundGenCase <= true;  
+   fwft_sfifo_wr68_rd34_d512_inst : fwft_sfifo_wr68_rd34_d512
+   PORT MAP (
+       clk => TX_CLK,
+       srst => areset,
+       din => fifo_din,
+       wr_en => fifo_wr_en,
+       rd_en => fifo_rd_en,
+       dout => fifo_dout,
+       full => fifo_full,
+       empty => fifo_empty,
+       valid => fifo_valid
+      );
    end generate;
-   
-   
-   	agen_wr64_rd32_d512 : if (WR_FIFO_DEPTH > 16 and WR_FIFO_DEPTH <= 512 and  ASYNC) generate    
-	-- Fifo generator (13.1) synthesis setting : 
-	-- Interface type -> Native, Fifo implementation -> Idependent clock block ram, Read mode -> Fist Word Fall Through,
-	-- Data Port Parameters : Write width -> 68, Write Depth -> 512, Read width -> 34, 
-	-- ECC, Output register and Power Gating Options : ECC -> OFF, Output register -> ON (Embedded register), 
-	-- Initialization  -> DEFAULT VALUES (Safety circuit -> OFF)
-	-- Status Flag -> ALL DEFAULT, except : Overflow -> OFF, Valid Flag -> ON
-	-- Data count option -> DEFAULT VALUES.
-   begin  
-      
-      FoundGenCase <= true;  
+  
 
+   agen_wr64_rd32_d16 : if (WR_FIFO_DEPTH > 0 and WR_FIFO_DEPTH <= 16 and ASYNC) generate    
+   begin  
+   FoundGenCase <= true;  
+   fwft_afifo_wr68_rd34_d16_inst : fwft_afifo_wr68_rd34_d16
+   PORT MAP (
+       wr_clk => RX_CLK,
+       rd_clk => TX_CLK,
+       rst => areset,
+       din => fifo_din,
+       wr_en => fifo_wr_en,
+       rd_en => fifo_rd_en,
+       dout => fifo_dout,
+       full => fifo_full,
+       empty => fifo_empty,
+       valid => fifo_valid,
+       wr_rst_busy => open,
+       rd_rst_busy => open
+      );
+   end generate;   
+   
+   agen_wr64_rd32_d32 : if (WR_FIFO_DEPTH > 16 and WR_FIFO_DEPTH <= 32 and ASYNC) generate    
+   begin 
+   fwft_afifo_wr68_rd34_d32_inst : fwft_afifo_wr68_rd34_d32
+   PORT MAP (
+       wr_clk => RX_CLK,
+       rd_clk => TX_CLK,
+       rst => areset,
+       din => fifo_din,
+       wr_en => fifo_wr_en,
+       rd_en => fifo_rd_en,
+       dout => fifo_dout,
+       full => fifo_full,
+       empty => fifo_empty,
+       valid => fifo_valid,
+        wr_rst_busy => open,
+        rd_rst_busy => open
+      );
+   end generate; 
+   
+   agen_wr64_rd32_d512_async : if (WR_FIFO_DEPTH > 32 and WR_FIFO_DEPTH <= 512 and  ASYNC) generate    
+   begin  
+      FoundGenCase <= true;  
       fwft_afifo_wr68_rd34_d512_inst : fwft_afifo_wr68_rd34_d512
       PORT MAP (
-          wr_clk => RX_CLK,
-          rd_clk => TX_CLK,
-          rst => areset,
-          din => fifo_din,
-          wr_en => fifo_wr_en,
-          rd_en => fifo_rd_en,
-          dout => fifo_dout,
-          full => fifo_full,
-          empty => fifo_empty,
-          valid => fifo_valid,
-		  wr_rst_busy => open,
-		  rd_rst_busy => open
+         wr_clk => RX_CLK,
+         rd_clk => TX_CLK,
+         rst => areset,
+         din => fifo_din,
+         wr_en => fifo_wr_en,
+         rd_en => fifo_rd_en,
+         dout => fifo_dout,
+         full => fifo_full,
+         empty => fifo_empty,
+         valid => fifo_valid,
+         wr_rst_busy => open,
+         rd_rst_busy => open
          );
    end generate;
 
       ovfl_proc : process(RX_CLK, ARESETN)
-	   begin	
-		  if ARESETN = '0' then 
-			 fifo_overflow <= '0';
-		  elsif rising_edge(RX_CLK) then
-			 if (rx_tready = '0' and RX_MOSI.TVALID = '1') then
-				fifo_overflow <= '1';
-			 end if;
-			 
-			 -- pragma translate_off
-			 assert (FoundGenCase or WR_FIFO_DEPTH = 0) report "Invalid LocalLink fifo generic settings!" severity FAILURE;
-			 if FoundGenCase then
-				assert (fifo_overflow = '0') report "AxiStream fifo overflow!!!" severity ERROR;
-			 end if;
-			 -- pragma translate_on	
-		  end if;
-	   end process; 	  
+       begin	
+         if ARESETN = '0' then 
+           fifo_overflow <= '0';
+         elsif rising_edge(RX_CLK) then
+           if (rx_tready = '0' and RX_MOSI.TVALID = '1') then
+           fifo_overflow <= '1';
+         end if;
+ 
+             -- pragma translate_off
+             assert (FoundGenCase or WR_FIFO_DEPTH = 0) report "Invalid LocalLink fifo generic settings!" severity FAILURE;
+             if FoundGenCase then
+                assert (fifo_overflow = '0') report "AxiStream fifo overflow!!!" severity ERROR;
+             end if;
+             -- pragma translate_on	
+          end if;
+       end process; 	  
 end rtl;

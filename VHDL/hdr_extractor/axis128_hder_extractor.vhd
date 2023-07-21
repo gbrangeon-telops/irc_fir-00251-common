@@ -1,5 +1,5 @@
 ------------------------------------------------------------------
---!   @file : axis64_hder_extractor.vhd
+--!   @file : axis128_hder_extractor.vhd
 --!   @brief : extract important header information for downstream block
 --!
 --!   $Rev $
@@ -18,13 +18,13 @@ use work.tel2000.all;
 use work.calib_define.all; 
 use work.BufferingDefine.all;
    
-entity axis64_hder_extractor is
+entity axis128_hder_extractor is
    port(
       
       ARESET                : in std_logic;
       CLK                   : in std_logic; 
       
-      IMG_DATA_MOSI         : in t_axi4_stream_mosi64;
+      IMG_DATA_MOSI         : in t_axi4_stream_mosi128;
       IMG_DATA_MISO         : in t_axi4_stream_miso;
       
       DECODED_HDR           : out decoded_hdr_type;
@@ -36,11 +36,11 @@ entity axis64_hder_extractor is
       
       );
    attribute KEEP_HIERARCHY : string;
-   attribute KEEP_HIERARCHY of axis64_hder_extractor : entity is "yes";
-end axis64_hder_extractor;
+   attribute KEEP_HIERARCHY of axis128_hder_extractor : entity is "yes";
+end axis128_hder_extractor;
 
 
-architecture rtl of axis64_hder_extractor is
+architecture rtl of axis128_hder_extractor is
    
    component sync_reset
       port(
@@ -55,7 +55,6 @@ architecture rtl of axis64_hder_extractor is
    
    signal img_exposuretime_o     : std_logic_vector(DECODED_HDR.exposure_time'range);
    signal img_deltatemp_o        : std_logic_vector(DECODED_HDR.delta_temp'range);
-   signal img_bpr_applied_o      : std_logic_vector(DECODED_HDR.cal_bpr_mode'range);
    signal img_width_o            : std_logic_vector(DECODED_HDR.width'range);
    signal img_height_o           : std_logic_vector(DECODED_HDR.height'range);
    signal img_offsetx_o          : std_logic_vector(DECODED_HDR.offsetx'range);
@@ -70,11 +69,11 @@ architecture rtl of axis64_hder_extractor is
    signal write_frame_i          : std_logic := '0';
    signal moi_signal_i           : std_logic := '0';
    
-   --attribute dont_touch : string;
-   --attribute dont_touch of hdr_info_valid_o                : signal is "true";
-
+      attribute KEEP : string;
+   attribute KEEP of img_deltatemp_o      : signal is "true";
+   attribute KEEP of hdr_info_valid_o      : signal is "true";
    
-begin         
+begin
    
    -- outputs
    CAL_BLOCK_INDEX <= cal_block_index_type(cal_block_index_o);
@@ -92,9 +91,7 @@ begin
    DECODED_HDR.fw_position    <= img_FWPosition_o;
    DECODED_HDR.ndf_position   <= img_NDFPosition_o;
    DECODED_HDR.ehdri_index    <= img_ehdriindex_o;
-   DECODED_HDR.cal_bpr_mode   <= img_bpr_applied_o;
-   
-   
+      
    --Reset management
    r0: sync_reset port map(ARESET => ARESET, CLK => CLK, SRESET => sreset);
    
@@ -116,12 +113,12 @@ begin
           
             if(IMG_DATA_MISO.TREADY = '1' and IMG_DATA_MOSI.TVALID = '1' and tid = '1') then-- we are in a valid hdr transmit
                
-               if(IMG_DATA_MOSI.TLAST = '1' and (shift_right(img_hdr_len_o,2)-2 = uHdr_addr_loc32) ) then  --we divide by 4 because im_hdr_len is in bytes and uHdr_addr_loc is in 32 bit
+               if(IMG_DATA_MOSI.TLAST = '1' and (shift_right(img_hdr_len_o,2)-4 = uHdr_addr_loc32) ) then  --we divide by 4 because im_hdr_len is in bytes and uHdr_addr_loc is in 32 bit
                   uHdr_addr_loc32 <= (others => '0');
                   hdr_info_valid_o <= '1';
                   tid <= not tid;
                else
-                  uHdr_addr_loc32 <= uHdr_addr_loc32 + 2;
+                  uHdr_addr_loc32 <= uHdr_addr_loc32 + 4;
                end if;
                
                case std_logic_vector(uHdr_addr_loc32) is
@@ -131,15 +128,11 @@ begin
                   
                   when resize(SignatureAdd32, uHdr_addr_loc32'length) =>
                      img_hdr_len_o  <= unsigned(IMG_DATA_MOSI.TDATA(47 downto 32));	
-  
+ 
                   when resize(DataExpAdd32, uHdr_addr_loc32'length) =>
                      img_deltatemp_o         <= IMG_DATA_MOSI.TDATA(63 downto 32);
-  
- 
-                  when resize(ExposureTimeAdd32, uHdr_addr_loc32'length) =>
-                     img_exposuretime_o      <= IMG_DATA_MOSI.TDATA(31 downto 0);
-                     cal_block_index_o       <= resize(IMG_DATA_MOSI.TDATA(63 downto 56), cal_block_index_o'length);
-                     img_bpr_applied_o       <= IMG_DATA_MOSI.TDATA(42 downto 40);
+                     img_exposuretime_o      <= IMG_DATA_MOSI.TDATA(95 downto 64);
+                     cal_block_index_o       <= resize(IMG_DATA_MOSI.TDATA(127 downto 120), cal_block_index_o'length);
                      cal_block_index_valid_o <= '1';
                   
                   when resize(WidthAdd32, uHdr_addr_loc32'length) =>
@@ -148,9 +141,9 @@ begin
                      img_offsetx_o    <= IMG_DATA_MOSI.TDATA(47 downto 32);
                      img_offsety_o    <= IMG_DATA_MOSI.TDATA(63 downto 48);
   
-                  when resize(BufferingFlagAdd32, uHdr_addr_loc32'length) =>
+                  when resize(AECImageFractionAdd32, uHdr_addr_loc32'length) =>
                      write_frame_i <= '1';
-                     if IMG_DATA_MOSI.TDATA(23 downto 16) = MOI_FLAG then
+                     if IMG_DATA_MOSI.TDATA(87 downto 80) = MOI_FLAG then
                         moi_signal_i <= '1';
                      end if;
                      

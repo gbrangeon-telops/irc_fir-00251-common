@@ -146,8 +146,8 @@
 #define GPSIsImplementedMask                             0x00000001  /**< TDCFlags2 register bit mask for GPSIsImplemented field */
 #define VideoOutputIsImplementedMask                     0x00000002  /**< TDCFlags2 register bit mask for VideoOutputIsImplemented field */
 #define ManufacturerStaticImageIsImplementedMask         0x00000004  /**< TDCFlags2 register bit mask for ManufacturerStaticImageIsImplemented field */
-#define Mem4DDRIsImplementedMask                         0x00000008  /**< TDCFlags2 register bit mask for Mem4DDRIsImplementedMask field */
-#define BufferClinkDownloadIsImplementedMask             0x00000010  /**< TDCFlags2 register bit mask for BufferClinkDownloadIsImplementedMask field */
+#define Mem4DDRIsImplementedMask                         0x00000008  /**< TDCFlags2 register bit mask for Mem4DDRIsImplemented field */
+#define MemoryBufferClinkDownloadIsImplementedMask       0x00000010  /**< TDCFlags2 register bit mask for MemoryBufferClinkDownloadIsImplemented field */
 
 #define TDCFlags2Set(mask) BitMaskSet(gcRegsData.TDCFlags2, mask)  /**< Set masked bits in TDCFlags2 register */
 #define TDCFlags2Clr(mask) BitMaskClr(gcRegsData.TDCFlags2, mask)  /**< Clear masked bits in TDCFlags2 register */
@@ -213,7 +213,7 @@
 #define FlaggingTriggerIsActiveMask             0x00000002  /**< IsActiveFlags register bit mask for FlaggingTriggerIsActive field */
 #define GatingTriggerIsActiveMask               0x00000004  /**< IsActiveFlags register bit mask for GatingTriggerIsActive field */
 #define AutofocusIsActiveMask                   0x00000008  /**< IsActiveFlags register bit mask for AutofocusIsActive field */
-#define BufferClinkDownloadIsActiveMask         0x00000010  /**< IsActiveFlags register bit mask for BufferClinkDownload field (0: gige, 1: clink)*/
+#define MemoryBufferClinkDownloadIsActiveMask   0x00000010  /**< IsActiveFlags register bit mask for MemoryBufferClinkDownloadIsActive field (0: gige, 1: clink)*/
 
 #define IsActiveFlagsSet(mask) BitMaskSet(gcRegsData.IsActiveFlags, mask)  /**< Set masked bits in IsActiveFlags register */
 #define IsActiveFlagsClr(mask) BitMaskClr(gcRegsData.IsActiveFlags, mask)  /**< Clear masked bits in IsActiveFlags register */
@@ -308,11 +308,11 @@ typedef struct gcRegister gcRegister_t;
 
 /* AUTO-CODE BEGIN */
 // Auto-generated GeniCam library.
-// Generated from XML camera definition file version 13.2.0
+// Generated from XML camera definition file version 13.3.0
 // using generateGenICamCommonCLib.m Matlab script.
 
 #define GC_XMLMAJORVERSION    13
-#define GC_XMLMINORVERSION    2
+#define GC_XMLMINORVERSION    3
 #define GC_XMLSUBMINORVERSION 0
 
 // Enumerations values and data types
@@ -898,6 +898,23 @@ enum MemoryBufferMOIActivationEnum {
  * MemoryBufferMOIActivation enumeration values data type
  */
 typedef enum MemoryBufferMOIActivationEnum MemoryBufferMOIActivation_t;
+
+/**
+ * MemoryBufferSequenceCalibrationMode enumeration values
+ */
+enum MemoryBufferSequenceCalibrationModeEnum {
+   MBSCM_Raw0 = 0,
+   MBSCM_Raw = 255,
+   MBSCM_NUC = 1,
+   MBSCM_RT = 2,
+   MBSCM_IBR = 3,
+   MBSCM_IBI = 4
+};
+
+/**
+ * MemoryBufferSequenceCalibrationMode enumeration values data type
+ */
+typedef enum MemoryBufferSequenceCalibrationModeEnum MemoryBufferSequenceCalibrationMode_t;
 
 /**
  * MemoryBufferSequenceDownloadMode enumeration values
@@ -1729,6 +1746,8 @@ typedef enum DeviceLedIndicatorStateEnum DeviceLedIndicatorState_t;
 #define MemoryBufferSequenceDownloadFrameImageCountAddr           0x0000EC48  /**< MemoryBufferSequenceDownloadFrameImageCount register address */
 #define MemoryBufferNumberOfSequencesMinAddr                      0x0000EC4C  /**< MemoryBufferNumberOfSequencesMin register address */
 #define TDCFlags2Addr                                             0x0000EC50  /**< TDCFlags2 register address */
+#define MemoryBufferSequenceCalibrationModeAddr                   0x0000EC54  /**< MemoryBufferSequenceCalibrationMode register address */
+#define MemoryBufferSequenceBadPixelReplacementAddr               0x0000EC58  /**< MemoryBufferSequenceBadPixelReplacement register address */
 
 // Registers definition array indices
 ////////////////////////////////////////////////////////////////////////////////
@@ -2028,11 +2047,13 @@ typedef enum DeviceLedIndicatorStateEnum DeviceLedIndicatorState_t;
 #define MemoryBufferSequenceDownloadFrameImageCountIdx            292
 #define MemoryBufferNumberOfSequencesMinIdx                       293
 #define TDCFlags2Idx                                              294
+#define MemoryBufferSequenceCalibrationModeIdx                    295
+#define MemoryBufferSequenceBadPixelReplacementIdx                296
 
 // Registers general macros
 ////////////////////////////////////////////////////////////////////////////////
 
-#define GC_REG_COUNT 295 /**< Number of GenICam registers */
+#define GC_REG_COUNT 297 /**< Number of GenICam registers */
 #define GC_REG_MAX_LENGTH 512 /**< GenICam registers maximum length (in bytes) */
 #define GC_REG_MAX_READ_LENGTH 512 /**< GenICam readable registers maximum length (in bytes) */
 #define GC_REG_MAX_WRITE_LENGTH 4 /**< GenICam writable registers maximum length (in bytes) */

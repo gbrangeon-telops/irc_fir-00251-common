@@ -620,6 +620,7 @@ package TEL2000 is
    type decoded_hdr_type is record
       dval           : std_logic;
       exposure_time  : std_logic_vector(31 downto 0);
+      delta_temp     : std_logic_vector(31 downto 0);
       width          : std_logic_vector(15 downto 0);
       height         : std_logic_vector(15 downto 0);
       offsetx        : std_logic_vector(15 downto 0);
@@ -627,6 +628,7 @@ package TEL2000 is
       fw_position    : std_logic_vector(7 downto 0);
       ndf_position   : std_logic_vector(7 downto 0);
       ehdri_index    : std_logic_vector(7 downto 0);
+      cal_bpr_mode   : std_logic_vector(2 downto 0);
    end record;
    
    -- axis_frame_rate stats

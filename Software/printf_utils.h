@@ -18,9 +18,14 @@
 
 #include <stdio.h>
 #include "xparameters.h"
+#include <math.h>
 
 #define DUMMY_PRINTF(...)        ((void)0)
 #define DUMMY_PRINT(...)         ((void)0)
+
+#ifndef pow10f
+#define pow10f(a) powf(a,10.0)
+#endif
 
 #ifdef ENABLE_PRINTF
    #ifdef SIM

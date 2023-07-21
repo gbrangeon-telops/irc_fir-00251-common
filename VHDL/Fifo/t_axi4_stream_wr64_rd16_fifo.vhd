@@ -149,27 +149,27 @@ fifo_din(71 downto 0)  <= RX_MOSI.TDATA(15 downto 0)  &  '0'              &   '0
           full => fifo_full,
           empty => fifo_empty,
           valid => fifo_valid,
-		  wr_rst_busy => open,
-		  rd_rst_busy => open
+          wr_rst_busy => open,
+          rd_rst_busy => open
          );
       end generate;
-	  
+  
       ovfl_proc : process(RX_CLK, ARESETN)
-	   begin	
-		  if ARESETN = '0' then 
-			 fifo_overflow <= '0';
-		  elsif rising_edge(RX_CLK) then
-			 if (rx_tready = '0' and RX_MOSI.TVALID = '1') then
-				fifo_overflow <= '1';
-			 end if;
-			 
-			 -- pragma translate_off
-			 assert (FoundGenCase or WR_FIFO_DEPTH = 0) report "Invalid LocalLink fifo generic settings!" severity FAILURE;
-			 if FoundGenCase then
-				assert (fifo_overflow = '0') report "AxiStream fifo overflow!!!" severity ERROR;
-			 end if;
-			 -- pragma translate_on	
-		  end if;
-	   end process; 
+       begin	
+          if ARESETN = '0' then 
+             fifo_overflow <= '0';
+          elsif rising_edge(RX_CLK) then
+             if (rx_tready = '0' and RX_MOSI.TVALID = '1') then
+                fifo_overflow <= '1';
+             end if;
+ 
+             -- pragma translate_off
+             assert (FoundGenCase or WR_FIFO_DEPTH = 0) report "Invalid LocalLink fifo generic settings!" severity FAILURE;
+             if FoundGenCase then
+                assert (fifo_overflow = '0') report "AxiStream fifo overflow!!!" severity ERROR;
+             end if;
+             -- pragma translate_on	
+          end if;
+       end process; 
    
 end rtl;

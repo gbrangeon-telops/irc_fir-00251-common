@@ -173,6 +173,12 @@
 #define BM_MemoryBufferSequence    (gcRegsData.MemoryBufferMode == MBM_On && gcRegsData.MemoryBufferSequenceDownloadMode == MBSDM_Sequence)
 #define BM_MemoryBufferImage       (gcRegsData.MemoryBufferMode == MBM_On && gcRegsData.MemoryBufferSequenceDownloadMode == MBSDM_Image)
 
+//Switch Configuration
+#define BM_SWITCH_INTERNAL_LIVE         0x00000000 // external buffer switch = passthrought, internal buffer input switch = Raw0 data,  internal buffer output switch = live data
+#define BM_SWITCH_INTERNAL_PLAYBACK     0x00000001 // external buffer switch = passthrought, internal buffer input switch = Raw0 data,  internal buffer output switch = playback data
+#define BM_SWITCH_INTERNAL_LIVE_ACT     0x00000002 // external buffer switch = passthrought, internal buffer input switch = calibrated data,  internal buffer output switch = live data
+#define BM_SWITCH_EXTERNAL_LIVE         0x00000004 // external buffer switch = fanout, internal buffer input switch = Raw0 data,  internal buffer output switch = live data
+#define BM_SWITCH_EXTERNAL_PLAYBACK     0x00000008 // external buffer switch = playback, internal buffer input switch = Raw0 data,  internal buffer output switch = live data
 
 /**************************** Type Definitions ******************************/
 /**
@@ -231,10 +237,11 @@ struct seqInfo{
    uint32_t       startAddress;  // 8- or 64- byte aligned (MEM_BUFFER_BYTES_ALIGN), 0 = memory start (not address mapping)
    uint16_t       imageWidth;    // pixels
    uint16_t       imageHeight;   // pixels (header NOT included)
-   uint16_t       OffsetX;    // pixels
-   uint16_t       OffsetY;   // pixels
+   uint16_t       OffsetX;       // pixels
+   uint16_t       OffsetY;       // pixels
    uint32_t       bufferLength;  // nb images in sequence (total for both DIMMs) (if 0 : sequence deleted)
    t_bufferTable  bufImgIdx;
+   uint8_t        CalibrationMode;
 };
 struct s_memoryTable
 {
@@ -261,15 +268,6 @@ struct s_bufferStatus
    bool     ext_buf_prsnt;
 };
 typedef struct s_bufferStatus t_bufferStatus;
-
-//Switch Configuration
-enum BM_Switch_enum {
-   BM_SWITCH_EXTERNAL_LIVE,
-   BM_SWITCH_EXTERNAL_PLAYBACK,
-   BM_SWITCH_INTERNAL_LIVE,
-   BM_SWITCH_INTERNAL_PLAYBACK,
-};
-typedef enum BM_Switch_enum t_bufferSwitch;
 
 //MOI Configuration
 enum BM_MOI_SRC_enum {

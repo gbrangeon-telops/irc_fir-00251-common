@@ -107,7 +107,7 @@ int gcd(int a, int b); /*< greatest common divisor of a and b */
 int lcm(int a, int b); /*< lowest common multiple of a and b */
 
 // quick selection algorithm
-uint32_t select(uint32_t* list, int left, int right, int n);
+uint32_t __select(uint32_t* list, int left, int right, int n);
 // used by select()
 int partition(uint32_t* list, int left, int right, int pivotIndex);
 char *dec2bin(const int decimal, uint8_t nbBit);

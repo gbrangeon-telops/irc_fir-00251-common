@@ -16,7 +16,7 @@
 
 /* AUTO-CODE BEGIN */
 // Auto-generated GeniCam library.
-// Generated from XML camera definition file version 13.2.0
+// Generated from XML camera definition file version 13.3.0
 // using generateGenICamCommonCLib.m Matlab script.
 
 // GenICam global variables definition
@@ -228,7 +228,7 @@ gcRegister_t gcRegsDef[GC_REG_COUNT] = {
    /* MemoryBufferSequenceDownloadBitRateMax */                {0x0000EAD4, NULL, NULL, 4, 4, GCRO_Storage_FPGA, REG_UNLOCKED|REG_FLOAT|REG_RW|REG_NOTSHARED|REG_BIGENDIAN},
    /* AcquisitionFrameRateMin */                               {0x0000EAD8, NULL, NULL, 4, 4, GCRO_Processing_FPGA, REG_UNLOCKED|REG_FLOAT|REG_RO|REG_NOTSHARED|REG_BIGENDIAN},
    /* VideoDigitalZoomFactorMax */                             {0x0000EADC, NULL, NULL, 4, 4, GCRO_Output_FPGA, REG_UNLOCKED|REG_INT|REG_RO|REG_NOTSHARED|REG_BIGENDIAN},
-   /* PayloadSizeMinFG */                                      {0x0000EAE0, NULL, NULL, 4, 4, GCRO_Output_FPGA, REG_UNLOCKED|REG_INT|REG_RW|REG_NOTSHARED|REG_BIGENDIAN},
+   /* PayloadSizeMinFG */                                      {0x0000EAE0, NULL, NULL, 4, 4, GCRO_Output_FPGA, REG_UNLOCKED|REG_INT|REG_RW|REG_SHARED|REG_BIGENDIAN},
    /* CalibrationCollectionActiveType */                       {0x0000EAE4, NULL, NULL, 4, 4, GCRO_Processing_FPGA, REG_UNLOCKED|REG_INT|REG_RO|REG_NOTSHARED|REG_BIGENDIAN},
    /* ExposureTime5 */                                         {0x0000EAE8, NULL, NULL, 4, 4, GCRO_Processing_FPGA, REG_UNLOCKED|REG_FLOAT|REG_RW|REG_NOTSHARED|REG_BIGENDIAN},
    /* ExposureTime6 */                                         {0x0000EAEC, NULL, NULL, 4, 4, GCRO_Processing_FPGA, REG_UNLOCKED|REG_FLOAT|REG_RW|REG_NOTSHARED|REG_BIGENDIAN},
@@ -260,7 +260,7 @@ gcRegister_t gcRegsDef[GC_REG_COUNT] = {
    /* DeviceKeyValidationLow */                                {0x0000EB54, NULL, NULL, 4, 4, GCRO_Processing_FPGA, REG_UNLOCKED|REG_INT|REG_RO|REG_NOTSHARED|REG_BIGENDIAN},
    /* DeviceKeyValidationHigh */                               {0x0000EB58, NULL, NULL, 4, 4, GCRO_Processing_FPGA, REG_UNLOCKED|REG_INT|REG_RO|REG_NOTSHARED|REG_BIGENDIAN},
    /* NDFilterArmedPositionSetpoint */                         {0x0000EB5C, NULL, NULL, 4, 4, GCRO_Processing_FPGA, REG_UNLOCKED|REG_INT|REG_RW|REG_NOTSHARED|REG_BIGENDIAN},
-   /* BadPixelReplacement */                                   {0x0000EB60, NULL, NULL, 4, 4, GCRO_Processing_FPGA, REG_UNLOCKED|REG_INT|REG_RW|REG_NOTSHARED|REG_BIGENDIAN},
+   /* BadPixelReplacement */                                   {0x0000EB60, NULL, NULL, 4, 4, GCRO_Processing_FPGA, REG_UNLOCKED|REG_INT|REG_RW|REG_SHARED|REG_BIGENDIAN},
    /* DeviceDetectorElectricalTapsRef */                       {0x0000EB64, NULL, NULL, 4, 4, GCRO_Processing_FPGA, REG_UNLOCKED|REG_FLOAT|REG_RO|REG_NOTSHARED|REG_BIGENDIAN},
    /* DeviceDetectorElectricalRefOffset */                     {0x0000EB68, NULL, NULL, 4, 4, GCRO_Processing_FPGA, REG_UNLOCKED|REG_FLOAT|REG_RO|REG_NOTSHARED|REG_BIGENDIAN},
    /* ExposureTimeSetToMin */                                  {0x0000EB6C, NULL, NULL, 4, 4, GCRO_Processing_FPGA, REG_UNLOCKED|REG_INT|REG_WO|REG_NOTSHARED|REG_BIGENDIAN},
@@ -320,7 +320,9 @@ gcRegister_t gcRegsDef[GC_REG_COUNT] = {
    /* MemoryBufferSequenceDownloadSuggestedFrameImageCount */  {0x0000EC44, NULL, NULL, 4, 4, GCRO_Storage_FPGA, REG_UNLOCKED|REG_INT|REG_RO|REG_SHARED|REG_BIGENDIAN},
    /* MemoryBufferSequenceDownloadFrameImageCount */           {0x0000EC48, NULL, NULL, 4, 4, GCRO_Processing_FPGA, REG_UNLOCKED|REG_INT|REG_RO|REG_SHARED|REG_BIGENDIAN},
    /* MemoryBufferNumberOfSequencesMin */                      {0x0000EC4C, NULL, NULL, 4, 4, GCRO_Storage_FPGA, REG_UNLOCKED|REG_INT|REG_RO|REG_NOTSHARED|REG_BIGENDIAN},
-   /* TDCFlags2 */                                             {0x0000EC50, NULL, NULL, 4, 4, GCRO_Processing_FPGA, REG_UNLOCKED|REG_INT|REG_RO|REG_SHARED|REG_BIGENDIAN}
+   /* TDCFlags2 */                                             {0x0000EC50, NULL, NULL, 4, 4, GCRO_Processing_FPGA, REG_UNLOCKED|REG_INT|REG_RO|REG_SHARED|REG_BIGENDIAN},
+   /* MemoryBufferSequenceCalibrationMode */                   {0x0000EC54, NULL, NULL, 4, 4, GCRO_Storage_FPGA, REG_UNLOCKED|REG_INT|REG_RO|REG_SHARED|REG_BIGENDIAN},
+   /* MemoryBufferSequenceBadPixelReplacement */               {0x0000EC58, NULL, NULL, 4, 4, GCRO_Storage_FPGA, REG_UNLOCKED|REG_INT|REG_RO|REG_SHARED|REG_BIGENDIAN}
 };
 
 /* AUTO-CODE END */

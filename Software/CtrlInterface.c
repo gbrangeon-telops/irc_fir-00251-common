@@ -629,9 +629,9 @@ void CtrlIntf_MBSD_OutputDetection(networkCommand_t netCmd, gcRegister_t *p_regi
          {
             case NIP_CI_CLINK:
                // clink download detected.
-               if(TDCFlags2Tst(BufferClinkDownloadIsImplementedMask))
+               if(TDCFlags2Tst(MemoryBufferClinkDownloadIsImplementedMask))
                {
-                  IsActiveFlagsSet(BufferClinkDownloadIsActiveMask);
+                  IsActiveFlagsSet(MemoryBufferClinkDownloadIsActiveMask);
                   GC_SetIsActiveFlags(gcRegsData.IsActiveFlags);
 
                   if(!GC_ExternalMemoryBufferIsImplemented)
@@ -646,7 +646,7 @@ void CtrlIntf_MBSD_OutputDetection(networkCommand_t netCmd, gcRegister_t *p_regi
 
             case NIP_CI_PLEORA:
                // gige download detected.
-               IsActiveFlagsClr(BufferClinkDownloadIsActiveMask);
+               IsActiveFlagsClr(MemoryBufferClinkDownloadIsActiveMask);
                GC_SetIsActiveFlags(gcRegsData.IsActiveFlags);
                if(!GC_ExternalMemoryBufferIsImplemented)
                {

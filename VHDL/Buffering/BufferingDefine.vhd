@@ -16,7 +16,7 @@ use IEEE.numeric_std.all;
 
 package BufferingDefine is  
    
-   type BufferWrState is (STANDBY_WR, WR_PRE_MOI, WR_WAIT_MOI, WR_POST_MOI, WAIT_WR_HDR_CMD_ACK,WAIT_WR_IMG_CMD_ACK,ERROR_WR);
+   type BufferWrState is (STANDBY_WR, WR_PRE_MOI, WR_WAIT_MOI, WR_POST_MOI, WAIT_WR_HDR_CMD_ACK,WAIT_WR_IMG_CMD_ACK,ERROR_WR);	 
    type BufferRdState is (STANDBY_RD, RD_IMG, RD_SEQ_END, RD_WAIT_SINK_RDY, WAIT_RD_HDR_ACK,WAIT_RD_IMG_ACK, WAIT_RD_HDR_STS_ACK,WAIT_RD_IMG_STS_ACK, ERROR_RD);
    type BufferMode is (BUF_OFF, BUF_WR_SEQ, BUF_RD_IMG);
    type MOI_MODE    is (EXT_SRC, SOFT_SRC, NO_SRC);
@@ -52,5 +52,12 @@ package BufferingDefine is
       memory_buffer_download_output       : std_logic;
       dval								         : std_logic; 
    end record flow_ctrler_config_type; 
-              
+   
+   type external_buffer_switch_type is
+   record 
+      sel                         : std_logic_vector(3 downto 0);    
+      dval                        : std_logic;                          
+   end record external_buffer_switch_type;
+   
+   
 end BufferingDefine;

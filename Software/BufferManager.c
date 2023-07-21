@@ -640,6 +640,7 @@ static void BufferManager_UpdateFirstOrSelectedSequenceParameters(gcRegistersDat
       pGCRegs->MemoryBufferSequenceOffsetY = pGCRegs->OffsetY;
       pGCRegs->MemoryBufferSequenceWidth = pGCRegs->Width;
       GC_SetMemoryBufferSequenceHeight(pGCRegs->Height);
+      GC_SetMemoryBufferSequenceCalibrationMode(pGCRegs->CalibrationMode);
    }
    else
    {
@@ -650,6 +651,7 @@ static void BufferManager_UpdateFirstOrSelectedSequenceParameters(gcRegistersDat
       pGCRegs->MemoryBufferSequenceOffsetY = gMemoryTable.data[pGCRegs->MemoryBufferSequenceSelector].OffsetY;
       pGCRegs->MemoryBufferSequenceWidth = gMemoryTable.data[pGCRegs->MemoryBufferSequenceSelector].imageWidth;
       GC_SetMemoryBufferSequenceHeight(gMemoryTable.data[pGCRegs->MemoryBufferSequenceSelector].imageHeight);
+      GC_SetMemoryBufferSequenceCalibrationMode(gMemoryTable.data[pGCRegs->MemoryBufferSequenceSelector].CalibrationMode);
    }
 
    if(!bufferLength)
@@ -661,6 +663,7 @@ static void BufferManager_UpdateFirstOrSelectedSequenceParameters(gcRegistersDat
       pGCRegs->MemoryBufferSequenceOffsetY = 0;
       pGCRegs->MemoryBufferSequenceWidth = 0;
       GC_SetMemoryBufferSequenceHeight(0);
+      GC_SetMemoryBufferSequenceCalibrationMode(0);
       pGCRegs->MemoryBufferSequenceDownloadImageFrameID = 0;
       pGCRegs->MemoryBufferSequenceDownloadFrameID = 0;
       pGCRegs->MemoryBufferSequenceDownloadFrameCount = gcRegsDataFactory.MemoryBufferSequenceDownloadFrameCount;
@@ -1036,6 +1039,7 @@ static void BufferManager_HW_DownloadBufferTable(t_bufferManager *pBufferCtrl, g
       gMemoryTable.data[n].bufferLength = pBufferCtrl->nbImagePerSeq;
       gMemoryTable.data[n].OffsetX = pGCRegs->OffsetX;
       gMemoryTable.data[n].OffsetY = pGCRegs->OffsetY;
+      gMemoryTable.data[n].CalibrationMode = pGCRegs->CalibrationMode;
       BufferManager_HW_ReadBufferTable(i, &gMemoryTable.data[n].bufImgIdx);
    }
    BM_HW_SetLocalDisableBuffer(pBufferCtrl); // Also clears hardware table
@@ -1072,14 +1076,14 @@ static void BufferManager_HW_ConfigureMinFrameTime(t_bufferManager *pBufferCtrl,
       frameSize = gcRegsData.Width * (gcRegsData.Height + 2);
 
          
-      if(TDCFlags2Tst(BufferClinkDownloadIsImplementedMask) && IsActiveFlagsTst(BufferClinkDownloadIsActiveMask))
-      {
-         maxBandWidth = BM_CLINK_MAX_BITRATE; // Mb/s (340Mpix/s x 2 x 8)
-      } 
-      else      
-      {
-         maxBandWidth = gcRegsData.MemoryBufferSequenceDownloadBitRateMax; // Mb/s (1.0e6)
-      }      
+   if(TDCFlags2Tst(MemoryBufferClinkDownloadIsImplementedMask) && IsActiveFlagsTst(MemoryBufferClinkDownloadIsActiveMask))
+   {
+      maxBandWidth = BM_CLINK_MAX_BITRATE; // Mb/s (340Mpix/s x 2 x 8)
+   }
+   else
+   {
+      maxBandWidth = gcRegsData.MemoryBufferSequenceDownloadBitRateMax; // Mb/s (1.0e6)
+   }
    timeout_delay_us = frameSize * BM_BITS_PER_PIXEL / maxBandWidth;
    timeout_delay_us = MIN(timeout_delay_us, BM_MAX_FRAME_PERIOD_US);
    cnt = timeout_delay_us * clk_freq_MHz;
@@ -1151,13 +1155,18 @@ void BufferManager_HW_SetSwitchConfig(t_bufferManager *pBufferCtrl)
       else
          AXI4L_write32(BM_SWITCH_INTERNAL_PLAYBACK, pBufferCtrl->ADD + BM_SWITCH_CONFIG);
    }
-   else
+   else if(BM_MemoryBufferWrite)
    {
       if (GC_ExternalMemoryBufferIsImplemented)
          AXI4L_write32(BM_SWITCH_EXTERNAL_LIVE, pBufferCtrl->ADD + BM_SWITCH_CONFIG);
       else
          AXI4L_write32(BM_SWITCH_INTERNAL_LIVE, pBufferCtrl->ADD + BM_SWITCH_CONFIG);
    }
+   else
+   {
+      AXI4L_write32(BM_SWITCH_INTERNAL_LIVE, pBufferCtrl->ADD + BM_SWITCH_CONFIG);
+   }
+
    BUFFERING_DBG("SetSwitchConfig");
 }
 
@@ -1282,7 +1291,7 @@ void BufferManager_HW_ForceDirectInternalBufferWriteConfig(t_bufferManager *pBuf
       pGCRegs->MemoryBufferMode = MBM_Off;
 
       // Force data routing to internal buffer live
-      AXI4L_write32(BM_SWITCH_INTERNAL_LIVE, pBufferCtrl->ADD + BM_SWITCH_CONFIG);
+      AXI4L_write32(BM_SWITCH_INTERNAL_LIVE_ACT, pBufferCtrl->ADD + BM_SWITCH_CONFIG);
 
       // Disable buffer and clear hardware table
       BM_HW_SetLocalDisableBuffer(pBufferCtrl);
@@ -1322,11 +1331,10 @@ void BufferManager_UpdateSuggestedFrameImageCount(gcRegistersData_t *pGCRegs)
       if(NbPixPerSubFrame == 0)
          NbPixPerSubFrame = (pGCRegs->Height + 2)*pGCRegs->Width;
 
-      if(TDCFlags2Tst(BufferClinkDownloadIsImplementedMask) && IsActiveFlagsTst(BufferClinkDownloadIsActiveMask))
+      if(TDCFlags2Tst(MemoryBufferClinkDownloadIsImplementedMask) && IsActiveFlagsTst(MemoryBufferClinkDownloadIsActiveMask))
       {
          frameImageCountAFR = (uint32_t) ceilf(((BM_CLINK_MAX_BITRATE*1E6F)/(16.0f*NbPixPerSubFrame)) / pGCRegs->AcquisitionFrameRateMaxFG);
-         frameImageCountPC = (uint32_t) ceilf((float) 49920.0F / (float) (NbPixPerSubFrame * 2));
-         //frameImageCountPC = (uint32_t) ceilf((float) pGCRegs->PayloadSizeMinFG / (float) (NbPixPerSubFrame * 2));
+         frameImageCountPC = (uint32_t) ceilf((float) pGCRegs->PayloadSizeMinFG / (float) (NbPixPerSubFrame * 2));
          suggestedFrameImageCount = MAX(MIN(MAX(frameImageCountAFR, frameImageCountPC), pGCRegs->MemoryBufferSequenceDownloadFrameCount), 1);
       }
       else
@@ -1373,7 +1381,7 @@ void BufferManager_UpdateFlowControllerConfig(gcRegistersData_t *pGCRegs)
 
 AXI4L_write32(0, XPAR_M_BUFFERING_CTRL_BASEADDR + BM_DVAL);
 
-if(TDCFlags2Tst(BufferClinkDownloadIsImplementedMask) && IsActiveFlagsTst(BufferClinkDownloadIsActiveMask)){
+if(TDCFlags2Tst(MemoryBufferClinkDownloadIsImplementedMask) && IsActiveFlagsTst(MemoryBufferClinkDownloadIsActiveMask)){
 
    AXI4L_write32(1, XPAR_M_BUFFERING_CTRL_BASEADDR + BM_DOWNLOAD_OUTPUT);
    AXI4L_write32(pGCRegs->Width, XPAR_M_BUFFERING_CTRL_BASEADDR + BM_WIDTH);
