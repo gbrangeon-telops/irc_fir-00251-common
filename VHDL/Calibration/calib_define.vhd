@@ -63,6 +63,8 @@ package calib_define is
       height            : unsigned(15 downto 0);
       offsetx           : unsigned(15 downto 0);
       offsety           : unsigned(15 downto 0);
+      width_aligned     : unsigned(15 downto 0);
+      offsetx_aligned   : unsigned(15 downto 0);
    end record;
    
    -- Calibration header
@@ -161,7 +163,18 @@ package calib_define is
       fw_position    : std_logic_vector(7 downto 0);
       freeze_cmd     : std_logic;
    end record;
-      
+
+   -- Axis64-xcropping config
+   constant XCROPPING_PARAM_LEN : natural := 11;
+   type calib_xcropping_type is
+   record
+      full_width     : std_logic_vector(XCROPPING_PARAM_LEN-1 downto 0);
+      aoi_fli_pos    : std_logic_vector(XCROPPING_PARAM_LEN-1 downto 0);
+      aoi_lli_pos    : std_logic_vector(XCROPPING_PARAM_LEN-1 downto 0);
+      aoi_sol_pos    : std_logic_vector(XCROPPING_PARAM_LEN-1 downto 0);
+      aoi_eol_pos    : std_logic_vector(XCROPPING_PARAM_LEN-1 downto 0);
+   end record;
+  
    -- Calibration config
    type calib_config_type is
    record
@@ -174,6 +187,7 @@ package calib_define is
       cal_bpr_mode               : bpr_mode_type;
       video_cfg                  : video_config_type;
       video_bpr_mode             : bpr_mode_type;
+      cal_xcropping_cfg          : calib_xcropping_type;
    end record;
       
    -- error_type
