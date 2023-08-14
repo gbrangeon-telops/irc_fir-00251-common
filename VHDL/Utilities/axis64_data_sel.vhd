@@ -21,8 +21,6 @@ entity axis64_data_sel is
       ARESET         : in std_logic;
       CLK            : in std_logic;      
       
-      M_FULL_WIDTH   : in std_logic_vector(10 downto 0);
-      
       M_AOI_SOL_POS  : in std_logic_vector(10 downto 0);
       M_AOI_EOL_POS  : in std_logic_vector(10 downto 0);
       

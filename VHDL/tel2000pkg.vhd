@@ -25,8 +25,8 @@ package TEL2000 is
    attribute DONT_TOUCH : string;
    --usage example
    --attribute KEEP of trig : signal is "TRUE"; 
-    
-    
+   
+   
    ------------------------------------------
    -- Types used in entity ports
    ------------------------------------------
@@ -594,7 +594,7 @@ package TEL2000 is
       lut_factor_inv: std_logic_vector(31 downto 0);  -- ce parametre (en floating point) vaut x_range/lut_size
    end record;
    
-      -- lut  parameters
+   -- lut  parameters
    type axis_lut_param_type_mosi is record
       x_min_mosi         : t_axi4_stream_mosi32;  -- valeur minimale autorisée pour X (en floating point)
       x_range_mosi       : t_axi4_stream_mosi32;  -- range de X autorisée (en floating point). x_max = x_min + range
@@ -605,7 +605,7 @@ package TEL2000 is
       lut_factor_inv_mosi: t_axi4_stream_mosi32;  -- ce parametre (en floating point) vaut x_range/lut_size
    end record;
    
-    type axis_lut_param_type_miso is record
+   type axis_lut_param_type_miso is record
       x_min_miso         : t_axi4_stream_miso;
       x_range_miso       : t_axi4_stream_miso;
       lut_size_miso      : t_axi4_stream_miso;
@@ -638,6 +638,20 @@ package TEL2000 is
       frame_rate        : std_logic_vector(31 downto 0);   -- Last measured frame rate
       frame_rate_max    : std_logic_vector(31 downto 0);   -- Maximum measured frame rate
    end record;
+   
+   -- xcropping_status_type
+   type xcropping_status_type is
+   record
+      input_frm_in_progress      : std_logic;   
+      output_frm_in_progress     : std_logic;  
+      cfg_change_err             : std_logic;  
+      input_dcnt_err             : std_logic;
+      output_dcnt_err            : std_logic;      
+      cfg_input_data_num         : unsigned(23 downto 0);
+      cfg_output_data_num        : unsigned(23 downto 0);
+   end record;
+   
+   
    
    -- Response constant.
    constant AXI_OKAY   : std_logic_vector(1 downto 0) := "00"; --! Successful Read or Write Acces

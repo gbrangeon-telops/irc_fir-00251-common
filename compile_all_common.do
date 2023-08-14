@@ -150,6 +150,7 @@ acom \
  
  # Xcropping
 acom \
+ "$COMMON\VHDL\Utilities\xcropping_watchdog.vhd" \
  "$COMMON\VHDL\Utilities\axis64_line_pos.vhd" \
  "$COMMON\VHDL\Utilities\axis64_data_sel.vhd" \
  "$COMMON\VHDL\Utilities\axis64_data_pos.vhd" \
