@@ -649,6 +649,8 @@ package TEL2000 is
       output_dcnt_err            : std_logic;      
       cfg_input_data_num         : unsigned(23 downto 0);
       cfg_output_data_num        : unsigned(23 downto 0);
+      input_dcnt                 : unsigned(21 downto 0);
+      output_dcnt                : unsigned(21 downto 0);
    end record;
    
    

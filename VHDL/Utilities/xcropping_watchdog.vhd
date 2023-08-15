@@ -90,7 +90,8 @@ begin
    STATUS.OUTPUT_DCNT_ERR        <= output_dcnt_err;
    STATUS.CFG_INPUT_DATA_NUM     <= resize(cfg_input_data_num, STATUS.CFG_INPUT_DATA_NUM'LENGTH);
    STATUS.CFG_OUTPUT_DATA_NUM    <= resize(cfg_output_data_num, STATUS.CFG_OUTPUT_DATA_NUM'LENGTH);
-   
+   STATUS.INPUT_DCNT             <= resize(input_dcnt_i, STATUS.INPUT_DCNT'LENGTH);
+   STATUS.OUTPUT_DCNT            <= resize(output_dcnt_i, STATUS.OUTPUT_DCNT'LENGTH);
    
    
    
