@@ -32,6 +32,8 @@ end adc_serdes_clk_wrapper;
 architecture rtl of adc_serdes_clk_wrapper is
    
    constant CLK_1X_PERIOD_mS : real :=  CLK_1X_PERIOD_nS/1_000_000.0; --  CLK_1X_PERIOD_NS converti en millisecond
+
+   signal FoundGenCase     : boolean := FALSE;
    
    
    component serdes_isc0207A_3k_5_0_MHz_mmcm
@@ -252,8 +254,19 @@ architecture rtl of adc_serdes_clk_wrapper is
          reset             : in     std_logic;
          locked            : out    std_logic
          );
-   end component;
+   end component;  
    
+   component serdes_clkin_35_0_MHz_mmcm
+      port
+         (
+         clk_in            : in     std_logic;
+         clk_out           : out    std_logic;
+         clk_out_mult7     : out    std_logic;
+         reset             : in     std_logic;
+         locked            : out    std_logic
+         );
+   end component;
+
    component serdes_clkin_40_0_MHz_mmcm
       port
          (
@@ -457,6 +470,18 @@ begin
          reset          => ARESET,
          locked         => LOCKED            
          );      
+   end generate; 
+   
+   Gen_35_0M : if abs(1.0/CLK_1X_PERIOD_mS - 35_000.0) <= 10.0  generate   
+      begin                                             
+      Ux :  serdes_clkin_35_0_MHz_mmcm
+      port map (   
+         clk_in         => CLK_IN,
+         clk_out        => CLK_OUT, 
+         clk_out_mult7  => CLK_OUT_MULT7,   
+         reset          => ARESET,
+         locked         => LOCKED            
+         );      
    end generate;
    
    Gen_40_0M : if abs(1.0/CLK_1X_PERIOD_mS - 40_000.0) <= 10.0  generate   
@@ -470,7 +495,13 @@ begin
          locked         => LOCKED            
          );      
    end generate;
-   
+
+   -- pragma translate_off 
+   Uw : process(CLK_IN)
+   begin	               
+      assert (FoundGenCase) report " Invalid settings! MMCM/PLL not found" severity FAILURE;
+   end process; 
+   -- pragma translate_on 
    
 end rtl;
 
