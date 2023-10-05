@@ -24,7 +24,8 @@ entity fi32_axis_max is
       b_input_signed  : boolean := false;
       b_input_efflen  : natural := 12;     -- largeur effective des données B en entrée.  Max = 31
       tuser_index     : integer := TUSER_UCR_PIX_BIT;
-      flag_en         : boolean := false
+      flag_en         : boolean := false;
+	  enable_internal_sync : boolean := true -- enable axis_sync_flow module to synchronize input flows. If false, flow must be synchronized externally
       );      
    port(
       ARESETN    : in std_logic;
@@ -72,7 +73,6 @@ architecture rtl of fi32_axis_max is
    
 begin  
    
-   sync_tready <= TX_MISO.TREADY;
    TX_SIGNED <= '1';
    areset <= not ARESETN;
    
@@ -84,15 +84,25 @@ begin
       SRESET => sreset
       ); 
    
-   U1: axis_sync_flow
-   port map(
-      RX0_TVALID  => RXA_MOSI.TVALID,
-      RX0_TREADY  => RXA_MISO.TREADY,
-      RX1_TVALID  => RXB_MOSI.TVALID,
-      RX1_TREADY  => RXB_MISO.TREADY,
-      SYNC_TREADY => sync_tready,
-      SYNC_TVALID => sync_tvalid   
-      );
+	gen_en_sync: if enable_internal_sync generate
+	   sync_tready <= TX_MISO.TREADY;
+	   
+	   U1: axis_sync_flow
+	   port map(
+	      RX0_TVALID  => RXA_MOSI.TVALID,
+	      RX0_TREADY  => RXA_MISO.TREADY,
+	      RX1_TVALID  => RXB_MOSI.TVALID,
+	      RX1_TREADY  => RXB_MISO.TREADY,
+	      SYNC_TREADY => sync_tready,
+	      SYNC_TVALID => sync_tvalid   
+	      );
+	end generate;
+
+	gen_ext_sync: if not enable_internal_sync generate
+		RXA_MISO.TREADY <= TX_MISO.TREADY;
+		RXB_MISO.TREADY <= TX_MISO.TREADY;
+		sync_tvalid     <= RXA_MOSI.TVALID; -- externally synchronized with RXB_MOSI.TVALID when enable_internal_sync = false
+	end generate;
    
    a_signed_case: if a_input_efflen < 32 and a_input_signed generate
       begin
@@ -124,9 +134,6 @@ begin
             ERR <= '0';
          end if;
 
-         TX_MOSI.TID    <= (others => '0');   -- non supporté
-         TX_MOSI.TDEST  <= (others => '0');   -- non supporté	 
-         
          if TX_MISO.TREADY = '1' then 
             TX_MOSI <= RXA_MOSI;
             if sync_tvalid = '1' then 
@@ -146,7 +153,10 @@ begin
          if sreset = '1' then
             TX_MOSI.TVALID <= '0';
          end if;
-         
+
+         TX_MOSI.TID    <= (others => '0');   -- non supporté
+         TX_MOSI.TDEST  <= (others => '0');   -- non supporté	 
+
       end if; 
    end process;
    
