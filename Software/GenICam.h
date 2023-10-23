@@ -78,6 +78,7 @@
 #define Blackbird1520DSensor     21
 #define ScorpiomwA_300HzSensor   22
 #define Isc0804A_2kSensor        23
+#define CalciumDSensor           24
 
 /**
  * TDCFlags register bit field definition
@@ -136,6 +137,7 @@
 #define Blackbird1520DIsImplemented    SensorIsImplemented(Blackbird1520DSensor)
 #define ScorpiomwA_300HzIsImplemented  SensorIsImplemented(ScorpiomwA_300HzSensor)
 #define Isc0804A_2kIsImplemented       SensorIsImplemented(Isc0804A_2kSensor)
+#define CalciumDIsImplemented          SensorIsImplemented(CalciumDSensor)
 
 #define TDCFlagsSet(mask) BitMaskSet(gcRegsData.TDCFlags, mask)  /**< Set masked bits in TDCFlags register */
 #define TDCFlagsClr(mask) BitMaskClr(gcRegsData.TDCFlags, mask)  /**< Clear masked bits in TDCFlags register */
