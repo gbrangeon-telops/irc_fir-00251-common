@@ -13,17 +13,21 @@
 library IEEE;
 use IEEE.std_logic_1164.all;   
 use ieee.numeric_std.all;
-use ieee.numeric_std.all;
 use work.tel2000.all;
 
 entity fp32_axis_sqroot is
    port(
       ARESETN    : in  std_logic;
       CLK        : in  std_logic;
+      
+      -- input = pixels
       RX_MOSI    : in  t_axi4_stream_mosi32;      
       RX_MISO    : out t_axi4_stream_miso;  
+      
+      -- output
       TX_MOSI    : out t_axi4_stream_mosi32;
       TX_MISO    : in t_axi4_stream_miso;
+      
       ERR        : out std_logic
       );
 end fp32_axis_sqroot;
@@ -31,8 +35,8 @@ end fp32_axis_sqroot;
 
 architecture RTL of fp32_axis_sqroot is
    
-   signal tuser_out      : std_logic_vector(8 downto 0);
-   signal tx_data_valid  : std_logic;
+   signal tx_tuser      : std_logic_vector(8 downto 0);
+   signal tx_data_valid  : std_logic := '0';
    
    component ip_fp32_axis_sqroot
       port (
@@ -55,13 +59,14 @@ architecture RTL of fp32_axis_sqroot is
    
 begin
    
-   TX_MOSI.TUSER  <= tuser_out(8 downto 1);
-   TX_MOSI.TKEEP  <= tx_data_valid & tx_data_valid & tx_data_valid & tx_data_valid; 
-   TX_MOSI.TSTRB  <= tx_data_valid & tx_data_valid & tx_data_valid & tx_data_valid;
+   TX_MOSI.TUSER  <= tx_tuser(8 downto 1);
+   TX_MOSI.TKEEP  <= "1111"; 
+   TX_MOSI.TSTRB  <= "1111";
    TX_MOSI.TVALID <= tx_data_valid;
    TX_MOSI.TID    <= (others => '0');   -- non supporté
    TX_MOSI.TDEST  <= (others => '0');   -- non supporté
-   ERR <= tuser_out(0);
+   
+   ERR <= tx_tuser(0); -- invalid_op
    
    U1 : ip_fp32_axis_sqroot
    PORT MAP (
@@ -75,7 +80,7 @@ begin
       m_axis_result_tvalid => tx_data_valid,
       m_axis_result_tready => TX_MISO.TREADY,
       m_axis_result_tdata  => TX_MOSI.TDATA,
-      m_axis_result_tuser  => tuser_out,
+      m_axis_result_tuser  => tx_tuser,
       m_axis_result_tlast  => TX_MOSI.TLAST
       );
    

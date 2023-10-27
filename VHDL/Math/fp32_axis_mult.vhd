@@ -33,7 +33,6 @@ entity fp32_axis_mult is
       TX_MISO    : in t_axi4_stream_miso;
       
       ERR        : out std_logic_vector(4 downto 0)
-      
       );
 end fp32_axis_mult;
 
@@ -41,13 +40,14 @@ end fp32_axis_mult;
 architecture RTL of fp32_axis_mult is
    
    signal tx_tuser      : std_logic_vector(18 downto 0); 
-   signal rxa_tready    : std_logic  := '0';
-   signal rxb_tready    : std_logic  := '0';
-   signal sync_err      : std_logic  := '0';
+   signal rxa_tready     : std_logic;
+   signal rxb_tready     : std_logic;
+   signal sync_err       : std_logic;
+   signal div_by_zero    : std_logic;
+   signal invalid_op     : std_logic;
+   signal overflow       : std_logic;
+   signal underflow      : std_logic;
    signal tx_data_valid : std_logic  := '0';
-   signal invalid_op    : std_logic  := '0';
-   signal overflow      : std_logic  := '0';
-   signal underflow     : std_logic  := '0';
    
    component ip_fp32_axis_mult
       port (
@@ -71,6 +71,8 @@ architecture RTL of fp32_axis_mult is
          );
    end component;
    
+   
+   
 begin                            
    
    RXA_MISO.TREADY <= rxa_tready;  
@@ -84,7 +86,7 @@ begin
    TX_MOSI.TDEST  <= (others => '0');   -- non supporté
    
    ERR(4) <= sync_err;
-   ERR(3) <= '0';
+   ERR(3) <= div_by_zero;
    ERR(2) <= invalid_op;
    ERR(1) <= overflow;
    ERR(0) <= underflow; 
@@ -115,6 +117,7 @@ begin
    U2 :  process(CLK)
    begin
       if rising_edge(CLK) then
+         div_by_zero <= '0';
          invalid_op <= tx_tuser(2);
          overflow <= tx_tuser(1);
          underflow <= tx_tuser(0); 

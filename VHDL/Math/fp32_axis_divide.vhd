@@ -19,12 +19,19 @@ entity fp32_axis_divide is
    port(
       ARESETN     : in  std_logic;
       CLK         : in  std_logic;
+      
+      -- input A = pixels
       RXA_MOSI    : in  t_axi4_stream_mosi32;      
       RXA_MISO    : out t_axi4_stream_miso;  
+      
+      -- input B 
       RXB_MOSI    : in  t_axi4_stream_mosi32;      
       RXB_MISO    : out t_axi4_stream_miso;      
+      
+      -- output
       TX_MOSI     : out t_axi4_stream_mosi32;
       TX_MISO     : in t_axi4_stream_miso;
+      
       ERR         : out std_logic_vector(4 downto 0)     
       );
 end fp32_axis_divide;
@@ -40,7 +47,7 @@ architecture RTL of fp32_axis_divide is
    signal invalid_op  : std_logic;
    signal overflow    : std_logic;
    signal underflow   : std_logic;
-   signal tx_data_valid : std_logic;
+   signal tx_data_valid  : std_logic := '0';
    
    component ip_fp32_axis_divide
       port (
@@ -64,14 +71,16 @@ architecture RTL of fp32_axis_divide is
          );
    end component;
    
-begin                            
+   
+   
+begin
    
    RXA_MISO.TREADY <= rxa_tready;  
    RXB_MISO.TREADY <= rxb_tready;  
    
    TX_MOSI.TUSER  <= tx_tuser(19 downto 12) or tx_tuser(11 downto 4); -- Take the tuser of either input
-   TX_MOSI.TKEEP  <= tx_data_valid & tx_data_valid & tx_data_valid & tx_data_valid; 
-   TX_MOSI.TSTRB  <= tx_data_valid & tx_data_valid & tx_data_valid & tx_data_valid;
+   TX_MOSI.TKEEP  <= "1111"; 
+   TX_MOSI.TSTRB  <= "1111";
    TX_MOSI.TVALID <= tx_data_valid;
    TX_MOSI.TID    <= (others => '0');   -- non supporté
    TX_MOSI.TDEST  <= (others => '0');   -- non supporté

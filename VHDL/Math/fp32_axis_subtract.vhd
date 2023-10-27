@@ -19,29 +19,35 @@ entity fp32_axis_subtract is
    port(
       ARESETN    : in  std_logic;
       CLK        : in  std_logic;
+      
+      -- input A = pixels
       RXA_MOSI   : in  t_axi4_stream_mosi32;      
       RXA_MISO   : out t_axi4_stream_miso;  
+      
+      -- input B 
       RXB_MOSI   : in  t_axi4_stream_mosi32;      
       RXB_MISO   : out t_axi4_stream_miso;      
+      
+      -- output
       TX_MOSI    : out t_axi4_stream_mosi32;
       TX_MISO    : in t_axi4_stream_miso;
-      ERR        : out std_logic_vector(4 downto 0)  
       
+      ERR        : out std_logic_vector(4 downto 0)  
       );
 end fp32_axis_subtract;
 
 
 architecture RTL of fp32_axis_subtract is
    
-   signal tx_tuser      : std_logic_vector(18 downto 0); 
-   signal rxa_tready    : std_logic  := '0';
-   signal rxb_tready    : std_logic  := '0';
-   signal sync_err      : std_logic  := '0';
-   signal div_by_zero   : std_logic  := '0';
-   signal invalid_op    : std_logic  := '0';
-   signal overflow      : std_logic  := '0';
-   signal underflow     : std_logic  := '0';
-   signal tx_data_valid : std_logic  := '0';
+   signal tx_tuser       : std_logic_vector(18 downto 0); 
+   signal rxa_tready     : std_logic;
+   signal rxb_tready     : std_logic;
+   signal sync_err       : std_logic;
+   signal div_by_zero    : std_logic;
+   signal invalid_op     : std_logic;
+   signal overflow       : std_logic;
+   signal underflow      : std_logic;
+   signal tx_data_valid  : std_logic  := '0';
    
    component ip_fp32_axis_subtract
       port (
@@ -65,6 +71,8 @@ architecture RTL of fp32_axis_subtract is
          );
    end component;
    
+   
+   
 begin                            
    
    RXA_MISO.TREADY <= rxa_tready;  
@@ -74,10 +82,11 @@ begin
    TX_MOSI.TKEEP  <= "1111"; 
    TX_MOSI.TSTRB  <= "1111";
    TX_MOSI.TVALID <= tx_data_valid;
-   
+   TX_MOSI.TID    <= (others => '0');   -- non supporté
+   TX_MOSI.TDEST  <= (others => '0');   -- non supporté
    
    ERR(4) <= sync_err;
-   ERR(3) <= '0';
+   ERR(3) <= div_by_zero;
    ERR(2) <= invalid_op;
    ERR(1) <= overflow;
    ERR(0) <= underflow; 
@@ -108,11 +117,14 @@ begin
    U2 :  process(CLK)
    begin
       if rising_edge(CLK) then
+         div_by_zero <= '0';
          invalid_op <= tx_tuser(2);
          overflow <= tx_tuser(1);
          underflow <= tx_tuser(0); 
          if RXB_MOSI.TVALID = '1' and RXB_MOSI.TLAST = '1' and rxb_tready = '1' then 
             sync_err <= RXA_MOSI.TVALID and rxa_tready and not RXA_MOSI.TLAST;   -- erreur de desynchronisation
+         else 
+            sync_err <= '0';
          end if;
       end if;      
    end process;  

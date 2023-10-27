@@ -86,7 +86,7 @@ begin
    TX_MOSI.TDEST  <= (others => '0');   -- non supporté
    
    ERR(4) <= sync_err;
-   ERR(3) <= '0';
+   ERR(3) <= div_by_zero;
    ERR(2) <= invalid_op;
    ERR(1) <= overflow;
    ERR(0) <= underflow; 
@@ -117,6 +117,7 @@ begin
    U2 :  process(CLK)
    begin
       if rising_edge(CLK) then
+         div_by_zero <= '0';
          invalid_op <= tx_tuser(2);
          overflow <= tx_tuser(1);
          underflow <= tx_tuser(0); 
