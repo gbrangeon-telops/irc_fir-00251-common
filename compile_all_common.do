@@ -129,6 +129,8 @@ acom \
  "$COMMON\VHDL\Math\fi32_axis_min.vhd" \
  "$COMMON\VHDL\Math\fp32_axis_add.vhd" \
  "$COMMON\VHDL\Math\fp32_axis_divide.vhd" \
+ "$COMMON\VHDL\Math\fp32_axis_exp.vhd" \
+ "$COMMON\VHDL\Math\fp32_axis_log.vhd" \
  "$COMMON\VHDL\Math\fp32_axis_mult.vhd" \
  "$COMMON\VHDL\Math\fp32_axis_sqroot.vhd" \
  "$COMMON\VHDL\Math\fp32_axis_subtract.vhd" \
