@@ -78,7 +78,7 @@
 #define Blackbird1520DSensor     21
 #define ScorpiomwA_300HzSensor   22
 #define Isc0804A_2kSensor        23
-#define CalciumDSensor           24
+#define Calcium640DSensor        24
 
 /**
  * TDCFlags register bit field definition
