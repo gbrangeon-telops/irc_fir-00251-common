@@ -107,8 +107,8 @@ begin
    -- Thus, we have to reorder the transaction to have the first transaction to get out to be the LSB position.
    
    --                                 TDATA                 TID                TLAST
-   fifo_din(35 downto 0)  <= RX_MOSI.TDATA(15 downto 0)  &  '0'              &   '0'           &
-   RX_MOSI.TDATA(31 downto 16) &  RX_MOSI.TID(0)   &   RX_MOSI.TLAST ;
+   fifo_din(35 downto 0)  <= RX_MOSI.TDATA(15 downto 0)  &  RX_MOSI.TID(0)   &   '0'               &
+                             RX_MOSI.TDATA(31 downto 16) &  RX_MOSI.TID(0)   &   RX_MOSI.TLAST ;
    
    
    
@@ -124,13 +124,6 @@ begin
    
    agen_wr64_rd16_d256 : if (WR_FIFO_DEPTH > 0 and WR_FIFO_DEPTH <= 256 and ASYNC) generate  
       
-      -- Fifo generator (13.1) synthesis setting : 
-      -- Interface type -> Native, Fifo implementation -> Idependent clock block ram, Read mode -> Fist Word Fall Through,
-      -- Data Port Parameters : Write width -> 72, Write Depth -> 1024, Read width -> 18, 
-      -- ECC, Output register and Power Gating Options : ECC -> OFF, Output register -> ON (Embedded register), 
-      -- Initialization  -> DEFAULT VALUES (Safety circuit -> OFF)
-      -- Status Flag -> ALL DEFAULT, except : Overflow -> OFF, Valid Flag -> ON
-      -- Data count option -> DEFAULT VALUES.
       begin  
       
       FoundGenCase <= true;  

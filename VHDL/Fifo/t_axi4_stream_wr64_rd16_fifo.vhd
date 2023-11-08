@@ -57,8 +57,8 @@ architecture rtl of t_axi4_stream_wr64_rd16_fifo is
           full : out STD_LOGIC;
           empty : out STD_LOGIC;
           valid : out STD_LOGIC;
-		  wr_rst_busy : out STD_LOGIC;
-		  rd_rst_busy : out STD_LOGIC
+          wr_rst_busy : out STD_LOGIC;
+          rd_rst_busy : out STD_LOGIC
          );
    END COMPONENT;
    
@@ -82,19 +82,19 @@ architecture rtl of t_axi4_stream_wr64_rd16_fifo is
    signal fifo_overflow    : std_logic;
       attribute KEEP of fifo_overflow : signal is "TRUE";
    signal rx_tready        : std_logic  := '0';
-	attribute KEEP of rx_tready : signal is "TRUE";
+    attribute KEEP of rx_tready : signal is "TRUE";
 begin  
 
       areset <= not ARESETN ; 
-	  OVFL <= fifo_overflow;
+      OVFL <= fifo_overflow;
 
-	  -- Write control
-	  rx_tready <= (not fifo_full);
+      -- Write control
+      rx_tready <= (not fifo_full);
       RX_MISO.TREADY <= rx_tready;
       fifo_wr_en <= RX_MOSI.TVALID and rx_tready;
 
-	  -- Read control
-	  TX_MOSI.TVALID <= fifo_valid;
+      -- Read control
+      TX_MOSI.TVALID <= fifo_valid;
       fifo_rd_en <=  TX_MISO.TREADY and fifo_valid and (not fifo_empty) ; 
       
     ---------------------------- INPUT MAPPING ----------------------------------   
@@ -107,16 +107,16 @@ begin
     -- Thus, we have to reorder the transaction to have the first transaction to get out to be the LSB position.
 
 --                                 TDATA                 TID                TLAST
-fifo_din(71 downto 0)  <= RX_MOSI.TDATA(15 downto 0)  &  '0'              &   '0'           &
-                          RX_MOSI.TDATA(31 downto 16) &  '0'              &   '0'           &
-                          RX_MOSI.TDATA(47 downto 32) &  '0'              &   '0'           &
+fifo_din(71 downto 0)  <= RX_MOSI.TDATA(15 downto 0)  &  RX_MOSI.TID(0)   &   '0'               &
+                          RX_MOSI.TDATA(31 downto 16) &  RX_MOSI.TID(0)   &   '0'               &
+                          RX_MOSI.TDATA(47 downto 32) &  RX_MOSI.TID(0)   &   '0'               &
                           RX_MOSI.TDATA(63 downto 48) &  RX_MOSI.TID(0)   &   RX_MOSI.TLAST ;
       
       
-	  
-	 ---------------------------- OUTPUT MAPPING ----------------------------------
+  
+ ---------------------------- OUTPUT MAPPING ----------------------------------
       TX_MOSI.TDATA <= fifo_dout(17 downto 2); 
-	  TX_MOSI.TID(0) <= fifo_dout(1);
+      TX_MOSI.TID(0) <= fifo_dout(1);
       TX_MOSI.TLAST <= fifo_dout(0);
 
       TX_MOSI.TKEEP <=  (others => '1');
@@ -125,14 +125,6 @@ fifo_din(71 downto 0)  <= RX_MOSI.TDATA(15 downto 0)  &  '0'              &   '0
       TX_MOSI.TUSER <= (others => '0'); -- non géré       
 
    agen_wr64_rd16_d16 : if (WR_FIFO_DEPTH > 0 and WR_FIFO_DEPTH <= 16 and ASYNC) generate  
-      
-   -- Fifo generator (13.1) synthesis setting : 
-   -- Interface type -> Native, Fifo implementation -> Idependent clock block ram, Read mode -> Fist Word Fall Through,
-   -- Data Port Parameters : Write width -> 72, Write Depth -> 1024, Read width -> 18, 
-   -- ECC, Output register and Power Gating Options : ECC -> OFF, Output register -> ON (Embedded register), 
-   -- Initialization  -> DEFAULT VALUES (Safety circuit -> OFF)
-   -- Status Flag -> ALL DEFAULT, except : Overflow -> OFF, Valid Flag -> ON
-   -- Data count option -> DEFAULT VALUES.
    begin  
       
       FoundGenCase <= true;  
