@@ -76,25 +76,17 @@ architecture RTL of axis16_combine_axis32 is
    
 begin
    
-   s_axis_tvalid(0) <= RX0_MOSI.tvalid;
    RX0_MISO.tready <= s_axis_tready(0);
-   s_axis_tdata(15 downto 0) <= RX0_MOSI.tdata;
-   s_axis_tstrb(1 downto 0) <= RX0_MOSI.tstrb;
-   s_axis_tkeep(1 downto 0) <= RX0_MOSI.tkeep;
-   s_axis_tlast(0) <= RX0_MOSI.tlast;
-   s_axis_tid(0 downto 0) <= RX0_MOSI.tid;
-   s_axis_tdest(2 downto 0) <= RX0_MOSI.tdest;
-   s_axis_tuser(3 downto 0) <= RX0_MOSI.tuser;
-   
-   s_axis_tvalid(1) <= RX1_MOSI.tvalid;
    RX1_MISO.tready <= s_axis_tready(1);
-   s_axis_tdata(31 downto 16) <= RX1_MOSI.tdata;
-   s_axis_tstrb(3 downto 2) <= RX1_MOSI.tstrb;
-   s_axis_tkeep(3 downto 2) <= RX1_MOSI.tkeep;
-   s_axis_tlast(1) <= RX1_MOSI.tlast;
-   s_axis_tid(1 downto 1) <= RX1_MOSI.tid;
-   s_axis_tdest(5 downto 3) <= RX1_MOSI.tdest;
-   s_axis_tuser(7 downto 4) <= RX1_MOSI.tuser;
+   
+   s_axis_tvalid <= RX1_MOSI.tvalid & RX0_MOSI.tvalid;
+   s_axis_tdata <= RX1_MOSI.tdata & RX0_MOSI.tdata;
+   s_axis_tstrb <= RX1_MOSI.tstrb & RX0_MOSI.tstrb;
+   s_axis_tkeep <= RX1_MOSI.tkeep & RX0_MOSI.tkeep;
+   s_axis_tlast <= RX1_MOSI.tlast & RX0_MOSI.tlast;
+   s_axis_tid <= RX1_MOSI.tid & RX0_MOSI.tid;
+   s_axis_tdest <= RX1_MOSI.tdest & RX0_MOSI.tdest;
+   s_axis_tuser <= RX1_MOSI.tuser & RX0_MOSI.tuser;
    
    ERR <= s0_cmd_err or s1_cmd_err;
    
@@ -124,8 +116,8 @@ begin
       m_axis_tdest => TX_MOSI.tdest,
       m_axis_tuser => TX_MOSI.tuser,
       
-      -- When S00 is primary slave: s_cmd_err(5:3) => errors and s_cmd_err(2:0) => gnd
-      -- When S01 is primary slave: s_cmd_err(5:3) => gnd and s_cmd_err(2:0) => errors
+      -- When S00 is primary slave: s_cmd_err(5:3) => errors and others => gnd
+      -- When S01 is primary slave: s_cmd_err(2:0) => errors and others => gnd
       s_cmd_err(5 downto 3) => s0_cmd_err,
       s_cmd_err(2 downto 0) => s1_cmd_err
       );

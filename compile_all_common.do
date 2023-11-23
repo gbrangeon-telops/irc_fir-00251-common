@@ -100,6 +100,7 @@ acom \
  "$COMMON\VHDL\Utilities\axis16_merge_axis64.vhd" \
  "$COMMON\VHDL\Utilities\axis32_merge_axis64.vhd" \
  "$COMMON\VHDL\Utilities\axis16_combine_axis32.vhd" \
+ "$COMMON\VHDL\Utilities\axis16_combine_axis64.vhd" \
  "$COMMON\VHDL\Utilities\axis32_split_axis16.vhd" \
  "$COMMON\VHDL\Utilities\axis128_split_axis64.vhd" \
  "$COMMON\VHDL\Utilities\badpixel_handler.vhd" \
