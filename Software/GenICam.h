@@ -55,6 +55,7 @@
 /**
  * Sensor code (based on firmware minor version number definition)
  */
+#define StartupSensor            0  /**< Reserved for startup (ProdTest) version */
 #define Isc0207ASensor           1
 #define HawkASensor              2
 #define HerculesDSensor          3
@@ -79,6 +80,9 @@
 #define ScorpiomwA_300HzSensor   22
 #define Isc0804A_2kSensor        23
 #define Calcium640DSensor        24
+
+#define DummySensor              31 /**< Reserved for software Dummy version */
+
 
 /**
  * TDCFlags register bit field definition
