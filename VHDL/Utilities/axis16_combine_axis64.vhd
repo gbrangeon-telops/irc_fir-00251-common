@@ -16,25 +16,16 @@ use work.tel2000.all;
 
 entity axis16_combine_axis64 is
    port(
-      ARESETN    : in  std_logic;
-      CLK        : in  std_logic;
+      ARESETN        : in  std_logic;
+      CLK            : in  std_logic;
       
-      RX0_MOSI   : in  t_axi4_stream_mosi16;
-      RX0_MISO   : out t_axi4_stream_miso;
+      RX_MOSI_ARY    : in  t_axis4_mosi16_a(0 to 3);
+      RX_MISO_ARY    : out t_axis4_miso_a(0 to 3);
       
-      RX1_MOSI   : in  t_axi4_stream_mosi16;
-      RX1_MISO   : out t_axi4_stream_miso;
+      TX_MOSI        : out t_axi4_stream_mosi64;
+      TX_MISO        : in  t_axi4_stream_miso;
       
-      RX2_MOSI   : in  t_axi4_stream_mosi16;
-      RX2_MISO   : out t_axi4_stream_miso;
-      
-      RX3_MOSI   : in  t_axi4_stream_mosi16;
-      RX3_MISO   : out t_axi4_stream_miso;
-      
-      TX_MOSI    : out t_axi4_stream_mosi64;
-      TX_MISO    : in  t_axi4_stream_miso;
-      
-      ERR        : out std_logic_vector(2 downto 0)
+      ERR            : out std_logic_vector(2 downto 0)
       );
 end axis16_combine_axis64;
 
@@ -84,19 +75,19 @@ architecture RTL of axis16_combine_axis64 is
    
 begin
    
-   RX0_MISO.tready <= s_axis_tready(0);
-   RX1_MISO.tready <= s_axis_tready(1);
-   RX2_MISO.tready <= s_axis_tready(2);
-   RX3_MISO.tready <= s_axis_tready(3);
+   RX_MISO_ARY(0).tready <= s_axis_tready(0);
+   RX_MISO_ARY(1).tready <= s_axis_tready(1);
+   RX_MISO_ARY(2).tready <= s_axis_tready(2);
+   RX_MISO_ARY(3).tready <= s_axis_tready(3);
    
-   s_axis_tvalid <= RX3_MOSI.tvalid & RX2_MOSI.tvalid & RX1_MOSI.tvalid & RX0_MOSI.tvalid;
-   s_axis_tdata <= RX3_MOSI.tdata & RX2_MOSI.tdata & RX1_MOSI.tdata & RX0_MOSI.tdata;
-   s_axis_tstrb <= RX3_MOSI.tstrb & RX2_MOSI.tstrb & RX1_MOSI.tstrb & RX0_MOSI.tstrb;
-   s_axis_tkeep <= RX3_MOSI.tkeep & RX2_MOSI.tkeep & RX1_MOSI.tkeep & RX0_MOSI.tkeep;
-   s_axis_tlast <= RX3_MOSI.tlast & RX2_MOSI.tlast & RX1_MOSI.tlast & RX0_MOSI.tlast;
-   s_axis_tid <= RX3_MOSI.tid & RX2_MOSI.tid & RX1_MOSI.tid & RX0_MOSI.tid;
-   s_axis_tdest <= RX3_MOSI.tdest & RX2_MOSI.tdest & RX1_MOSI.tdest & RX0_MOSI.tdest;
-   s_axis_tuser <= RX3_MOSI.tuser & RX2_MOSI.tuser & RX1_MOSI.tuser & RX0_MOSI.tuser;
+   s_axis_tvalid  <= RX_MOSI_ARY(3).tvalid & RX_MOSI_ARY(2).tvalid & RX_MOSI_ARY(1).tvalid & RX_MOSI_ARY(0).tvalid;
+   s_axis_tdata   <= RX_MOSI_ARY(3).tdata  & RX_MOSI_ARY(2).tdata  & RX_MOSI_ARY(1).tdata  & RX_MOSI_ARY(0).tdata;
+   s_axis_tstrb   <= RX_MOSI_ARY(3).tstrb  & RX_MOSI_ARY(2).tstrb  & RX_MOSI_ARY(1).tstrb  & RX_MOSI_ARY(0).tstrb;
+   s_axis_tkeep   <= RX_MOSI_ARY(3).tkeep  & RX_MOSI_ARY(2).tkeep  & RX_MOSI_ARY(1).tkeep  & RX_MOSI_ARY(0).tkeep;
+   s_axis_tlast   <= RX_MOSI_ARY(3).tlast  & RX_MOSI_ARY(2).tlast  & RX_MOSI_ARY(1).tlast  & RX_MOSI_ARY(0).tlast;
+   s_axis_tid     <= RX_MOSI_ARY(3).tid    & RX_MOSI_ARY(2).tid    & RX_MOSI_ARY(1).tid    & RX_MOSI_ARY(0).tid;
+   s_axis_tdest   <= RX_MOSI_ARY(3).tdest  & RX_MOSI_ARY(2).tdest  & RX_MOSI_ARY(1).tdest  & RX_MOSI_ARY(0).tdest;
+   s_axis_tuser   <= RX_MOSI_ARY(3).tuser  & RX_MOSI_ARY(2).tuser  & RX_MOSI_ARY(1).tuser  & RX_MOSI_ARY(0).tuser;
    
    ERR <= s0_cmd_err or s1_cmd_err or s2_cmd_err or s3_cmd_err;
    
