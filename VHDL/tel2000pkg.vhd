@@ -24,7 +24,10 @@ package TEL2000 is
    attribute KEEP : string;
    attribute DONT_TOUCH : string;
    --usage example
-   --attribute KEEP of trig : signal is "TRUE"; 
+   --attribute KEEP of trig : signal is "TRUE";
+   attribute FSM_ENCODING : string;
+   --usage example
+   --attribute FSM_ENCODING of ctrl_fsm : signal is "sequential";
    
    
    ------------------------------------------
