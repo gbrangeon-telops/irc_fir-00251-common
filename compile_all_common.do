@@ -140,7 +140,8 @@ acom \
  "$COMMON\VHDL\Math\axis_fp32tofi16.vhd" \
  "$COMMON\VHDL\Math\fi16_axis_min.vhd" \
  "$COMMON\VHDL\Math\sync_native2axis.vhd" \
- "$COMMON\VHDL\Math\fp32_axis_power.bde"
+ "$COMMON\VHDL\Math\fp32_axis_power.bde" \
+ "$COMMON\VHDL\Math\fi32_axis_power.bde"
 
 # RAM
 acom "$COMMON\VHDL\Ram\tdp_ram_w32.vhd"
