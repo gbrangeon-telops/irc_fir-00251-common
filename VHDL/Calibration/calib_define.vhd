@@ -174,6 +174,13 @@ package calib_define is
       aoi_sol_pos    : std_logic_vector(XCROPPING_PARAM_LEN-1 downto 0);
       aoi_eol_pos    : std_logic_vector(XCROPPING_PARAM_LEN-1 downto 0);
    end record;
+   
+   -- Compression param
+   type compr_param_type is
+   record
+      compr_ratio_fp32  : std_logic_vector(31 downto 0);
+      dcompr_ratio_fp32 : std_logic_vector(31 downto 0);
+   end record;
   
    -- Calibration config
    type calib_config_type is
@@ -188,6 +195,7 @@ package calib_define is
       video_cfg                  : video_config_type;
       video_bpr_mode             : bpr_mode_type;
       cal_xcropping_cfg          : calib_xcropping_type;
+      com_param                  : compr_param_type;
    end record;
       
    -- error_type
