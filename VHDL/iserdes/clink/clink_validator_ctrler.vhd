@@ -61,7 +61,7 @@ architecture rtl of clink_validator_ctrler is
          );
    end component;
    
-   type ctler_fsm_type is (idle, wait_eof_st, discard_1st_lval_st, dly_run_st, lval_meas_st, fetch_result_st, check_result_st1, check_result_st2, check_result_st3, output_st); 
+   type ctler_fsm_type is (idle, wait_start_st, wait_eof_st, discard_1st_lval_st, dly_run_st, lval_meas_st, fetch_result_st, check_result_st1, check_result_st2, check_result_st3, output_st); 
    type timeout_fsm_type is (check_rate_st, timeout_st);
    
    signal ctler_fsm              : ctler_fsm_type;
@@ -145,6 +145,11 @@ begin
                   run_lval_meas_i <= '0';
                   result_fail <= '0';
                   pattern_done_i <= '0';
+                  if START = '0' then 
+                     ctler_fsm <= wait_start_st;
+                  end if;
+               
+               when wait_start_st =>
                   if START = '1' then 
                      ctler_fsm <= wait_eof_st;
                   end if;

@@ -21,6 +21,8 @@ library IEEE;
 use IEEE.vital_timing.all;
 -- synthesis translate_on 
 
+library UNISIM;
+use UNISIM.VComponents.all;
 
 entity iserdes_wrapper is
    generic(
