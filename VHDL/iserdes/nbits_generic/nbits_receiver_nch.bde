@@ -2,7 +2,7 @@ SCHM0104
 
 HEADER
 {
- FREEID 126143
+ FREEID 127146
  VARIABLES
  {
   #ARCHITECTURE="nbits_receiver_nch"
@@ -997,7 +997,7 @@ PAGE ""
    TEXT 
 "PIXEL_CLK_PERIOD : time := 30 ns;\n"+
 "PIPE_CLK_PERIOD : time := 10 ns;\n"+
-"BIT_CLK_PERIOD : time := 1.25 ns;\n"+
+"BIT_CLK_PERIOD : time := 1250 ps;\n"+
 "FRAME_RATE_MIN : real := 0.1;-- Hz\n"+
 "CHANNEL_COUNT : positive := 4;\n"+
 "IODELAY_GROUP_NAME : string := \"iodelay_b13\";\n"+
@@ -3155,7 +3155,7 @@ PAGE ""
  
  BODY
  {
-  TEXT  126126, 0, 0
+  TEXT  127129, 0, 0
   {
    PAGEALIGN 10
    OUTLINE 5,1, (0,0,0)
@@ -3166,7 +3166,7 @@ PAGE ""
    COLOR (0,0,0)
    FONT (12,0,0,700,0,0,0,"Arial")
   }
-  TEXT  126127, 0, 0
+  TEXT  127130, 0, 0
   {
    PAGEALIGN 10
    TEXT "$CREATIONDATE"
@@ -3177,7 +3177,7 @@ PAGE ""
    FONT (12,0,0,700,0,128,0,"Arial")
    UPDATE 0
   }
-  TEXT  126128, 0, 0
+  TEXT  127131, 0, 0
   {
    PAGEALIGN 10
    TEXT "Title:"
@@ -3187,7 +3187,7 @@ PAGE ""
    COLOR (0,0,0)
    FONT (12,0,0,700,0,0,0,"Arial")
   }
-  TEXT  126129, 0, 0
+  TEXT  127132, 0, 0
   {
    PAGEALIGN 10
    OUTLINE 5,1, (0,0,0)
@@ -3199,7 +3199,7 @@ PAGE ""
    FONT (12,0,0,700,0,128,0,"Arial")
    UPDATE 0
   }
-  TEXT  126130, 0, 0
+  TEXT  127133, 0, 0
   {
    PAGEALIGN 10
    TEXT 
@@ -3212,7 +3212,7 @@ PAGE ""
    FONT (12,0,0,700,0,0,0,"Arial")
    MULTILINE
   }
-  TEXT  126131, 0, 0
+  TEXT  127134, 0, 0
   {
    PAGEALIGN 10
    TEXT "Page:"
@@ -3222,7 +3222,7 @@ PAGE ""
    COLOR (0,0,0)
    FONT (12,0,0,700,0,0,0,"Arial")
   }
-  TEXT  126132, 0, 0
+  TEXT  127135, 0, 0
   {
    PAGEALIGN 10
    OUTLINE 5,1, (0,0,0)
@@ -3234,7 +3234,7 @@ PAGE ""
    FONT (12,0,0,700,0,128,0,"Arial")
    UPDATE 0
   }
-  TEXT  126133, 0, 0
+  TEXT  127136, 0, 0
   {
    PAGEALIGN 10
    TEXT "Revision:"
@@ -3244,7 +3244,7 @@ PAGE ""
    COLOR (0,0,0)
    FONT (12,0,0,700,0,0,0,"Arial")
   }
-  TEXT  126134, 0, 0
+  TEXT  127137, 0, 0
   {
    PAGEALIGN 10
    TEXT "$Revision"
@@ -3255,7 +3255,7 @@ PAGE ""
    FONT (12,0,0,700,0,204,0,"Arial")
    UPDATE 0
   }
-  GROUP  126135, 0, 0
+  GROUP  127138, 0, 0
   {
    PAGEALIGN 10
    RECT (4120,4620,5001,5001)
@@ -3267,7 +3267,7 @@ PAGE ""
     FILL (1,(0,0,0),0)
    }
   }
-  GROUP  126136, 0, 0
+  GROUP  127139, 0, 0
   {
    PAGEALIGN 10
    RECT (4120,4820,5001,4821)
@@ -3279,7 +3279,7 @@ PAGE ""
     FILL (1,(0,0,0),0)
    }
   }
-  GROUP  126137, 0, 0
+  GROUP  127140, 0, 0
   {
    PAGEALIGN 10
    RECT (4120,4760,5001,4761)
@@ -3291,7 +3291,7 @@ PAGE ""
     FILL (1,(0,0,0),0)
    }
   }
-  GROUP  126138, 0, 0
+  GROUP  127141, 0, 0
   {
    PAGEALIGN 10
    RECT (4120,4880,5001,4881)
@@ -3303,7 +3303,7 @@ PAGE ""
     FILL (1,(0,0,0),0)
    }
   }
-  GROUP  126139, 0, 0
+  GROUP  127142, 0, 0
   {
    PAGEALIGN 10
    RECT (4120,4940,5001,4941)
@@ -3315,7 +3315,7 @@ PAGE ""
     FILL (1,(0,0,0),0)
    }
   }
-  GROUP  126140, 0, 0
+  GROUP  127143, 0, 0
   {
    PAGEALIGN 10
    RECT (4300,4620,4301,4761)
@@ -3326,7 +3326,7 @@ PAGE ""
     POINTS ( (0,0), (0,140) )
    }
   }
-  GROUP  126141, 0, 0
+  GROUP  127144, 0, 0
   {
    PAGEALIGN 10
    RECT (4300,4760,4301,5001)
@@ -3337,7 +3337,7 @@ PAGE ""
     POINTS ( (0,0), (0,240) )
    }
   }
-  BMPPICT  126142, 0, 0
+  BMPPICT  127145, 0, 0
   {
    PAGEALIGN 10
    RECT (4140,4680,4279,4725)

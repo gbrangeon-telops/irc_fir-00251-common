@@ -13,7 +13,7 @@ entity nbits_serdes_clk_wrapper is
    generic(
       NBITS_PIXEL_CLK_PERIOD : time := 30 ns;
       NBITS_PIPE_CLK_PERIOD  : time := 10 ns;
-	  NBITS_BIT_CLK_PERIOD   : time := 1.25 ns
+	  NBITS_BIT_CLK_PERIOD   : time := 1250 ps
       );
    port(
       -- Clock in ports
@@ -42,12 +42,12 @@ architecture xilinx of nbits_serdes_clk_wrapper is
    -- D : 
    --    integer in range [1, 106]
    --    freqPFD = clkin / D must be in range [10, 450] MHz
-   constant D : integer := integer(ceil(1.0 / (450.0E6 * NBITS_PIXEL_CLK_PERIOD / 1.0 sec)));
+   constant D : integer := integer(ceil(1000.0 / (0.45 * NBITS_PIXEL_CLK_PERIOD / 1 ps)));
    -- M : 
    --    integer in range [2, 64]
    --    freqVCO = clkin * M / D must be in range [600, 1200] MHz
    --    freqVCO must be as high as possible so M is calculated with freqVCOmax
-   constant Mideal : integer := integer(1200.0E6 * real(D) * NBITS_PIXEL_CLK_PERIOD / 1.0 sec);
+   constant Mideal : integer := integer(1.2 * real(D) * NBITS_PIXEL_CLK_PERIOD / 1 ns);
    constant Mvalid : integer := MIN(Mideal, 64);
    constant M      : integer := Mvalid / integer(D * NBITS_PIXEL_CLK_PERIOD / NBITS_BIT_CLK_PERIOD) * integer(D * NBITS_PIXEL_CLK_PERIOD / NBITS_BIT_CLK_PERIOD);
 
@@ -83,7 +83,7 @@ begin
        CLKOUT0_DIVIDE_F => real(M/D),
        CLKOUT1_DIVIDE   => (M/D) / (NBITS_PIXEL_CLK_PERIOD/NBITS_PIPE_CLK_PERIOD),
 	   CLKOUT2_DIVIDE   => (M/D) / (NBITS_PIXEL_CLK_PERIOD/NBITS_BIT_CLK_PERIOD),
-       CLKIN1_PERIOD    => real(NBITS_PIXEL_CLK_PERIOD / 1.0 ns),
+       CLKIN1_PERIOD    => real(NBITS_PIXEL_CLK_PERIOD / 1 ps) / 1000.0,
        REF_JITTER1      => 0.072)
    port map
       (-- Output clocks
