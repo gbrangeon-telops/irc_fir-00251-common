@@ -30,6 +30,7 @@ use WORK.TEL2000.all;
 
 entity iserdes_nbits_wrapper is
 	generic (
+		DATA_RATE : string := "SDR"; -- "SDR" or "DDR"
 		IOBDELAY : string := "NONE"; -- "IBUF" or "NONE"
 		DATA_WIDTH : positive := 8
 	);
@@ -95,6 +96,7 @@ architecture rtl of iserdes_nbits_wrapper is
 	
 	component iserdes_wrapper
 		generic (
+			DATA_RATE : string := "SDR"; -- "SDR" or "DDR"
 			IOBDELAY : string := "NONE"; -- "IBUF" or "NONE"
 			DATA_WIDTH : integer := 7 -- Q8 est open si DATA_WIDTH = 7
 		);
@@ -120,6 +122,7 @@ architecture rtl of iserdes_nbits_wrapper is
 begin
 	iserdes_wrapper_inst : iserdes_wrapper
 	generic map (
+		DATA_RATE => DATA_RATE,
 		IOBDELAY =>	IOBDELAY,
 		DATA_WIDTH => SERDES_WIDTH
 	)
