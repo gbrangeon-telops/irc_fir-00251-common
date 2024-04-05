@@ -26,6 +26,7 @@ use UNISIM.VComponents.all;
 
 entity iserdes_wrapper is
    generic(
+   DATA_RATE      : STRING  := "SDR";    -- "SDR" or "DDR"
    IOBDELAY       : STRING  := "NONE";   -- "IBUF" or "NONE"
    DATA_WIDTH     : INTEGER := 7         -- Q8 est open si DATA_WIDTH = 7
       );
@@ -110,7 +111,7 @@ begin
    iserdes_inst : ISERDESE2
    
    generic map (
-      DATA_RATE=> "SDR",
+      DATA_RATE=> DATA_RATE,
       DATA_WIDTH => DATA_WIDTH,
       DYN_CLKDIV_INV_EN =>"FALSE",
       DYN_CLK_INV_EN => "FALSE",
