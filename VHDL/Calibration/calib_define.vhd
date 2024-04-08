@@ -65,6 +65,8 @@ package calib_define is
       offsety           : unsigned(15 downto 0);
       width_aligned     : unsigned(15 downto 0);
       offsetx_aligned   : unsigned(15 downto 0);
+      xsize_max         : unsigned(15 downto 0);
+      ysize_max         : unsigned(15 downto 0);
    end record;
    
    -- Calibration header

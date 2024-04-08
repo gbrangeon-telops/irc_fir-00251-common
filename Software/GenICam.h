@@ -156,6 +156,8 @@
 #define ManufacturerStaticImageIsImplementedMask         0x00000004  /**< TDCFlags2 register bit mask for ManufacturerStaticImageIsImplemented field */
 #define Mem4DDRIsImplementedMask                         0x00000008  /**< TDCFlags2 register bit mask for Mem4DDRIsImplemented field */
 #define MemoryBufferClinkDownloadIsImplementedMask       0x00000010  /**< TDCFlags2 register bit mask for MemoryBufferClinkDownloadIsImplemented field */
+#define Binning2x2IsImplementedMask                      0x00000020  /**< TDCFlags2 register bit mask for Binning2x2IsImplementedMask field */
+#define Binning4x4IsImplementedMask                      0x00000040  /**< TDCFlags2 register bit mask for Binning2x2IsImplementedMask field */
 
 #define TDCFlags2Set(mask) BitMaskSet(gcRegsData.TDCFlags2, mask)  /**< Set masked bits in TDCFlags2 register */
 #define TDCFlags2Clr(mask) BitMaskClr(gcRegsData.TDCFlags2, mask)  /**< Clear masked bits in TDCFlags2 register */
