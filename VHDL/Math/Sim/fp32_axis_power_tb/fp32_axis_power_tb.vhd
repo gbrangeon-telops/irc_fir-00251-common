@@ -26,11 +26,10 @@ architecture TB_ARCHITECTURE of fp32_axis_power_tb is
          ARESETN : in std_logic;
          CLK : in std_logic;
          BASE_MOSI : in t_axi4_stream_mosi32;
-         EXP_MOSI : in t_axi4_stream_mosi32;
+         EXPN : in STD_LOGIC_VECTOR(31 downto 0);
          POW_MISO : in t_axi4_stream_miso;
          BASE_MISO : out t_axi4_stream_miso;
          ERR : out std_logic_vector(4 downto 0);
-         EXP_MISO : out t_axi4_stream_miso;
          POW_MOSI : out t_axi4_stream_mosi32
       );
    end component;
@@ -88,8 +87,6 @@ architecture TB_ARCHITECTURE of fp32_axis_power_tb is
    signal clk : std_logic := '0';
    
    signal compress_err, decompress_err : std_logic_vector(4 downto 0);
-   signal compress_exp_miso, decompress_exp_miso : t_axi4_stream_miso;
-   signal compress_exp_mosi, decompress_exp_mosi : t_axi4_stream_mosi32;
 
    signal din_integer_miso : t_axi4_stream_miso;
    signal din_integer_mosi : t_axi4_stream_mosi32;
@@ -165,46 +162,6 @@ begin
 
    end process;
    
-   -- Send compress exponent value
-   process is
-   begin
-      
-      compress_exp_mosi.tvalid <= '0';
-      
-      wait until aresetn = '1';
-      
-      wait until rising_edge(clk);
-      
-      -- Exponent value is a constant
-      for ii in 0 to MAX_VALUE - 1 loop
-         write_axis32 (clk, COMPRESS_EXPONENT, '0', compress_exp_miso,  compress_exp_mosi);
-      end loop;
-      write_axis32(clk, COMPRESS_EXPONENT, '1', compress_exp_miso,  compress_exp_mosi);
-      
-      wait;
-      
-   end process;
-   
-   -- Send decompress exponent value
-   process is
-   begin
-      
-      decompress_exp_mosi.tvalid <= '0';
-      
-      wait until aresetn = '1';
-      
-      wait until rising_edge(clk);
-      
-      -- Exponent value is a constant
-      for ii in 0 to MAX_VALUE - 1 loop
-         write_axis32 (clk, DECOMPRESS_EXPONENT, '0', decompress_exp_miso,  decompress_exp_mosi);
-      end loop;
-      write_axis32(clk, DECOMPRESS_EXPONENT, '1', decompress_exp_miso,  decompress_exp_mosi);
-      
-      wait;
-      
-   end process;
-   
    -- Receive compress value
    process is
       file compress_fptr : text open write_mode is "D:/Telops/FIR-00251-Common/VHDL/Math/Sim/fp32_axis_power_tb/compress_values.txt";
@@ -263,8 +220,7 @@ begin
       CLK => clk,
       BASE_MISO => din_float_miso,
       BASE_MOSI => din_float_mosi,
-      EXP_MISO => compress_exp_miso,
-      EXP_MOSI => compress_exp_mosi,
+      EXPN => COMPRESS_EXPONENT,
       ERR => compress_err,
       POW_MISO => compress_float_miso,
       POW_MOSI => compress_float_mosi
@@ -319,8 +275,7 @@ begin
       CLK => clk,
       BASE_MISO => compress_float_miso_1,
       BASE_MOSI => compress_float_mosi_1,
-      EXP_MISO => decompress_exp_miso,
-      EXP_MOSI => decompress_exp_mosi,
+      EXPN => DECOMPRESS_EXPONENT,
       ERR => decompress_err,
       POW_MISO => decompress_float_miso,
       POW_MOSI => decompress_float_mosi
