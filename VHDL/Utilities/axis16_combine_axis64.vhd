@@ -24,9 +24,7 @@ entity axis16_combine_axis64 is
       RX_MISO_ARY    : out t_axis4_miso_a(0 to 3);
       
       TX_MOSI        : out t_axi4_stream_mosi64;
-      TX_MISO        : in  t_axi4_stream_miso;
-      
-      ERR            : out std_logic_vector(2 downto 0)
+      TX_MISO        : in  t_axi4_stream_miso
       );
 end axis16_combine_axis64;
 
@@ -48,6 +46,5 @@ begin
 	TX_MOSI.TLAST <= or_reduce(TLAST);
 	TX_MOSI.TID <= RX_MOSI_ARY(0).TID;
     TX_MOSI.TDEST <= RX_MOSI_ARY(0).TDEST;
-	
-	ERR <= (others => '0');
+
 end RTL_ALT;
