@@ -67,7 +67,7 @@ begin
    TX_MOSI.TDEST  <= (others => '0');   -- non supporté
    
    ERR(4) <= '0'; -- sync_err
-   ERR(3) <= tx_tuser(1); -- div_by_zero
+   ERR(3) <= '0'; --tx_tuser(1); -- div_by_zero   2024-05-02 ODI: a été déconnecté pour éliminer les fausses erreurs. Le résultat de ln(0) est 0, ce qui nous convient.
    ERR(2) <= tx_tuser(0); -- invalid_op
    ERR(1) <= '0'; -- overflow
    ERR(0) <= '0'; -- underflow
