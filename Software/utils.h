@@ -27,6 +27,10 @@
    #define GETTIME(a) (Timer_GetTime(a))  /**< get ticks function for rtl */
 #endif
 
+#ifndef pow10f
+#define pow10f(a) powf(10.0F,a)
+#endif
+
 // Stringnification macros
 #define XSTR(s) STR(s)
 #define STR(s) #s
