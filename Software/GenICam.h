@@ -318,12 +318,12 @@ typedef struct gcRegister gcRegister_t;
 
 /* AUTO-CODE BEGIN */
 // Auto-generated GeniCam library.
-// Generated from XML camera definition file version 13.3.1
+// Generated from XML camera definition file version 13.4.0
 // using generateGenICamCommonCLib.m Matlab script.
 
 #define GC_XMLMAJORVERSION    13
-#define GC_XMLMINORVERSION    3
-#define GC_XMLSUBMINORVERSION 1
+#define GC_XMLMINORVERSION    4
+#define GC_XMLSUBMINORVERSION 0
 
 // Enumerations values and data types
 ////////////////////////////////////////////////////////////////////////////////
@@ -780,6 +780,20 @@ enum IntegrationModeEnum {
 typedef enum IntegrationModeEnum IntegrationMode_t;
 
 /**
+ * BinningMode enumeration values
+ */
+enum BinningModeEnum {
+   BM_Mode2x2 = 1,
+   BM_Mode4x4 = 2,
+   BM_NoBinning = 0
+};
+
+/**
+ * BinningMode enumeration values data type
+ */
+typedef enum BinningModeEnum BinningMode_t;
+
+/**
  * TriggerSelector enumeration values
  */
 enum TriggerSelectorEnum {
@@ -1211,7 +1225,8 @@ enum EventErrorCodeDescEnum {
    EECD_MotorizedLensError = 39,
    EECD_AutofocusModuleError = 40,
    EECD_AutofocusTimeout = 41,
-   EECD_FilterWheelInvalidSpeedSetpoint = 42
+   EECD_FilterWheelInvalidSpeedSetpoint = 42,
+   EECD_BinningModeNotAvailable = 43
 };
 
 /**
@@ -1758,6 +1773,7 @@ typedef enum DeviceLedIndicatorStateEnum DeviceLedIndicatorState_t;
 #define TDCFlags2Addr                                             0x0000EC50  /**< TDCFlags2 register address */
 #define MemoryBufferSequenceCalibrationModeAddr                   0x0000EC54  /**< MemoryBufferSequenceCalibrationMode register address */
 #define MemoryBufferSequenceBadPixelReplacementAddr               0x0000EC58  /**< MemoryBufferSequenceBadPixelReplacement register address */
+#define BinningModeAddr                                           0x0000EC5C  /**< BinningMode register address */
 
 // Registers definition array indices
 ////////////////////////////////////////////////////////////////////////////////
@@ -2059,11 +2075,12 @@ typedef enum DeviceLedIndicatorStateEnum DeviceLedIndicatorState_t;
 #define TDCFlags2Idx                                              294
 #define MemoryBufferSequenceCalibrationModeIdx                    295
 #define MemoryBufferSequenceBadPixelReplacementIdx                296
+#define BinningModeIdx                                            297
 
 // Registers general macros
 ////////////////////////////////////////////////////////////////////////////////
 
-#define GC_REG_COUNT 297 /**< Number of GenICam registers */
+#define GC_REG_COUNT 298 /**< Number of GenICam registers */
 #define GC_REG_MAX_LENGTH 512 /**< GenICam registers maximum length (in bytes) */
 #define GC_REG_MAX_READ_LENGTH 512 /**< GenICam readable registers maximum length (in bytes) */
 #define GC_REG_MAX_WRITE_LENGTH 4 /**< GenICam writable registers maximum length (in bytes) */

@@ -22,7 +22,7 @@ use ieee.numeric_std.all;
 
 -- AUTO-CODE BEGIN
 -- Auto-generated IRCam image header definition package.
--- Generated from the IRCam header definition XLS file version 13.3
+-- Generated from the IRCam header definition XLS file version 13.4
 -- using generateIRCamHeaderVHDLLib.m Matlab script.
 
 package img_header_define is
@@ -318,6 +318,11 @@ package img_header_define is
    constant SensorIDMSBAdd32                             : std_logic_vector(5 downto 0) := std_logic_vector(to_unsigned(40,6));  --! SensorIDMSB field's 32-bit address
    constant SensorIDMSBBWE                               : std_logic_vector(3 downto 0) := "0010";                               --! SensorIDMSB field's word mask
    constant SensorIDMSBShift                             : natural := 8;                                                         --! SensorIDMSB field's shift value
+
+   constant BinningModeAdd8                              : std_logic_vector(7 downto 0) := x"A3";                                --! BinningMode field's 8-bit address
+   constant BinningModeAdd32                             : std_logic_vector(5 downto 0) := std_logic_vector(to_unsigned(40,6));  --! BinningMode field's 32-bit address
+   constant BinningModeBWE                               : std_logic_vector(3 downto 0) := "0001";                               --! BinningMode field's word mask
+   constant BinningModeShift                             : natural := 0;                                                         --! BinningMode field's shift value
 
    constant TemperatureInternalLensAdd8                  : std_logic_vector(7 downto 0) := x"A4";                                --! TemperatureInternalLens field's 8-bit address
    constant TemperatureInternalLensAdd32                 : std_logic_vector(5 downto 0) := std_logic_vector(to_unsigned(41,6));  --! TemperatureInternalLens field's 32-bit address

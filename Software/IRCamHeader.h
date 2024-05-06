@@ -16,7 +16,7 @@
 
 /* AUTO-CODE BEGIN */
 // Auto-generated IRCam header library.
-// Generated from the IRCam header definition XLS file version 13.3
+// Generated from the IRCam header definition XLS file version 13.4
 // using generateIRCamHeaderCLib.m Matlab script.
 
 #define SignatureHdrAddr                              0x00  /**< Signature header field address */
@@ -78,6 +78,7 @@
 #define ExternalBlackBodyTemperatureHdrAddr           0x9C  /**< ExternalBlackBodyTemperature header field address */
 #define TemperatureSensorHdrAddr                      0xA0  /**< TemperatureSensor header field address */
 #define SensorIDMSBHdrAddr                            0xA2  /**< SensorIDMSB header field address */
+#define BinningModeHdrAddr                            0xA3  /**< BinningMode header field address */
 #define TemperatureInternalLensHdrAddr                0xA4  /**< TemperatureInternalLens header field address */
 #define TemperatureExternalLensHdrAddr                0xA6  /**< TemperatureExternalLens header field address */
 #define TemperatureInternalCalibrationUnitHdrAddr     0xA8  /**< TemperatureInternalCalibrationUnit header field address */
