@@ -89,6 +89,9 @@ package TEL2000 is
       RRESP : std_logic_vector(1 downto 0); --! Read Response
    end record;
    
+   type t_axi4_mosi_a is array (natural range <>) of t_axi4_lite_mosi;
+   type t_axi4_miso_a is array (natural range <>) of t_axi4_lite_miso;
+   
    type t_axi4_lite is record
       axi4_lite_mosi : t_axi4_lite_mosi;
       axi4_lite_miso : t_axi4_lite_miso;
