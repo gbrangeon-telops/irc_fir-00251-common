@@ -209,6 +209,16 @@ package img_header_define is
    constant FWSpeedBWE                                   : std_logic_vector(3 downto 0) := "0011";                               --! FWSpeed field's word mask
    constant FWSpeedShift                                 : natural := 0;                                                         --! FWSpeed field's shift value
 
+   constant CompressionAlgorithmAdd8                     : std_logic_vector(7 downto 0) := x"5F";                                --! CompressionAlgorithm field's 8-bit address
+   constant CompressionAlgorithmAdd32                    : std_logic_vector(5 downto 0) := std_logic_vector(to_unsigned(23,6));  --! CompressionAlgorithm field's 32-bit address
+   constant CompressionAlgorithmBWE                      : std_logic_vector(3 downto 0) := "0001";                               --! CompressionAlgorithm field's word mask
+   constant CompressionAlgorithmShift                    : natural := 0;                                                         --! CompressionAlgorithm field's shift value
+
+   constant CompressionParameterAdd8                     : std_logic_vector(7 downto 0) := x"60";                                --! CompressionParameter field's 8-bit address
+   constant CompressionParameterAdd32                    : std_logic_vector(5 downto 0) := std_logic_vector(to_unsigned(24,6));  --! CompressionParameter field's 32-bit address
+   constant CompressionParameterBWE                      : std_logic_vector(3 downto 0) := "1111";                               --! CompressionParameter field's word mask
+   constant CompressionParameterShift                    : natural := 0;                                                         --! CompressionParameter field's shift value
+
    constant POSIXTimeAdd8                                : std_logic_vector(7 downto 0) := x"64";                                --! POSIXTime field's 8-bit address
    constant POSIXTimeAdd32                               : std_logic_vector(5 downto 0) := std_logic_vector(to_unsigned(25,6));  --! POSIXTime field's 32-bit address
    constant POSIXTimeBWE                                 : std_logic_vector(3 downto 0) := "1111";                               --! POSIXTime field's word mask

@@ -156,8 +156,10 @@
 #define ManufacturerStaticImageIsImplementedMask         0x00000004  /**< TDCFlags2 register bit mask for ManufacturerStaticImageIsImplemented field */
 #define Mem4DDRIsImplementedMask                         0x00000008  /**< TDCFlags2 register bit mask for Mem4DDRIsImplemented field */
 #define MemoryBufferClinkDownloadIsImplementedMask       0x00000010  /**< TDCFlags2 register bit mask for MemoryBufferClinkDownloadIsImplemented field */
-#define Binning2x2IsImplementedMask                      0x00000020  /**< TDCFlags2 register bit mask for Binning2x2IsImplementedMask field */
-#define Binning4x4IsImplementedMask                      0x00000040  /**< TDCFlags2 register bit mask for Binning2x2IsImplementedMask field */
+#define Binning2x2IsImplementedMask                      0x00000020  /**< TDCFlags2 register bit mask for Binning2x2IsImplemented field */
+#define Binning4x4IsImplementedMask                      0x00000040  /**< TDCFlags2 register bit mask for Binning4x4IsImplemented field */
+#define AECIsImplementedMask                             0x00000080  /**< TDCFlags2 register bit mask for AECIsImplemented field */
+#define CalibrationFileStorageIsImplementedMask          0x00000100  /**< TDCFlags2 register bit mask for CalibrationFileStorageIsImplemented field */
 
 #define TDCFlags2Set(mask) BitMaskSet(gcRegsData.TDCFlags2, mask)  /**< Set masked bits in TDCFlags2 register */
 #define TDCFlags2Clr(mask) BitMaskClr(gcRegsData.TDCFlags2, mask)  /**< Clear masked bits in TDCFlags2 register */
@@ -1774,6 +1776,8 @@ typedef enum DeviceLedIndicatorStateEnum DeviceLedIndicatorState_t;
 #define MemoryBufferSequenceCalibrationModeAddr                   0x0000EC54  /**< MemoryBufferSequenceCalibrationMode register address */
 #define MemoryBufferSequenceBadPixelReplacementAddr               0x0000EC58  /**< MemoryBufferSequenceBadPixelReplacement register address */
 #define BinningModeAddr                                           0x0000EC5C  /**< BinningMode register address */
+#define DeviceStabilizationTimeAddr                               0x0000EC60  /**< DeviceStabilizationTime register address */
+#define DeviceStabilizationDeltaTemperatureAddr                   0x0000EC64  /**< DeviceStabilizationDeltaTemperature register address */
 
 // Registers definition array indices
 ////////////////////////////////////////////////////////////////////////////////
@@ -2076,11 +2080,13 @@ typedef enum DeviceLedIndicatorStateEnum DeviceLedIndicatorState_t;
 #define MemoryBufferSequenceCalibrationModeIdx                    295
 #define MemoryBufferSequenceBadPixelReplacementIdx                296
 #define BinningModeIdx                                            297
+#define DeviceStabilizationTimeIdx                                298
+#define DeviceStabilizationDeltaTemperatureIdx                    299
 
 // Registers general macros
 ////////////////////////////////////////////////////////////////////////////////
 
-#define GC_REG_COUNT 298 /**< Number of GenICam registers */
+#define GC_REG_COUNT 300 /**< Number of GenICam registers */
 #define GC_REG_MAX_LENGTH 512 /**< GenICam registers maximum length (in bytes) */
 #define GC_REG_MAX_READ_LENGTH 512 /**< GenICam readable registers maximum length (in bytes) */
 #define GC_REG_MAX_WRITE_LENGTH 4 /**< GenICam writable registers maximum length (in bytes) */

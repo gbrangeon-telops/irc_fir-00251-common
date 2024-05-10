@@ -323,7 +323,9 @@ gcRegister_t gcRegsDef[GC_REG_COUNT] = {
    /* TDCFlags2 */                                             {0x0000EC50, NULL, NULL, 4, 4, GCRO_Processing_FPGA, REG_UNLOCKED|REG_INT|REG_RO|REG_SHARED|REG_BIGENDIAN},
    /* MemoryBufferSequenceCalibrationMode */                   {0x0000EC54, NULL, NULL, 4, 4, GCRO_Storage_FPGA, REG_UNLOCKED|REG_INT|REG_RO|REG_SHARED|REG_BIGENDIAN},
    /* MemoryBufferSequenceBadPixelReplacement */               {0x0000EC58, NULL, NULL, 4, 4, GCRO_Storage_FPGA, REG_UNLOCKED|REG_INT|REG_RO|REG_SHARED|REG_BIGENDIAN},
-   /* BinningMode */                                           {0x0000EC5C, NULL, NULL, 4, 4, GCRO_Processing_FPGA, REG_UNLOCKED|REG_INT|REG_RW|REG_NOTSHARED|REG_BIGENDIAN}
+   /* BinningMode */                                           {0x0000EC5C, NULL, NULL, 4, 4, GCRO_Processing_FPGA, REG_UNLOCKED|REG_INT|REG_RW|REG_NOTSHARED|REG_BIGENDIAN},
+   /* DeviceStabilizationTime */                               {0x0000EC60, NULL, NULL, 4, 4, GCRO_Processing_FPGA, REG_UNLOCKED|REG_INT|REG_RO|REG_NOTSHARED|REG_BIGENDIAN},
+   /* DeviceStabilizationDeltaTemperature */                   {0x0000EC64, NULL, NULL, 4, 4, GCRO_Processing_FPGA, REG_UNLOCKED|REG_FLOAT|REG_RO|REG_NOTSHARED|REG_BIGENDIAN}
 };
 
 /* AUTO-CODE END */

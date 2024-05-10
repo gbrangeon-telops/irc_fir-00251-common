@@ -56,6 +56,8 @@
 #define FWModeHdrAddr                                 0x4B  /**< FWMode header field address */
 #define FWSpeedSetpointHdrAddr                        0x4C  /**< FWSpeedSetpoint header field address */
 #define FWSpeedHdrAddr                                0x4E  /**< FWSpeed header field address */
+#define CompressionAlgorithmHdrAddr                   0x5F  /**< CompressionAlgorithm header field address */
+#define CompressionParameterHdrAddr                   0x60  /**< CompressionParameter header field address */
 #define POSIXTimeHdrAddr                              0x64  /**< POSIXTime header field address */
 #define SubSecondTimeHdrAddr                          0x68  /**< SubSecondTime header field address */
 #define TimeSourceHdrAddr                             0x6C  /**< TimeSource header field address */
