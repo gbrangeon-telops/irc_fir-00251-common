@@ -84,6 +84,7 @@ acom \
  "$COMMON\VHDL\Utilities\axil32_demux3.vhd" \
  "$COMMON\VHDL\Utilities\axil32_mux2.vhd" \
  "$COMMON\VHDL\Utilities\axil32_addr_demux4.vhd" \
+ "$COMMON\VHDL\Utilities\axil32_addr_demux.vhd" \
  "$COMMON\VHDL\Utilities\axis32_sw_3_1.vhd" \
  "$COMMON\VHDL\axis128_pixel_cnt.vhd" \
  "$COMMON\VHDL\axis64_pixel_cnt.vhd" \
