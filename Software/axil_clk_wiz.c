@@ -1,4 +1,5 @@
 #include <stdint.h>
+#include <math.h>
 
 typedef enum {RESET = 0xA} soft_reset_reg_t;
 
@@ -82,3 +83,65 @@ typedef struct {
     clock_config_reg2to4_t  clock_config_reg2to22[7];
     clock_config_reg23_t    clock_config_reg23;
 } axil_clk_wiz_reg_t;
+
+#define MMCM_FINMAX   800.00f
+#define MMCM_FINMIN    10.00f
+#define MMCM_FOUTMAX  800.00f
+#define MMCM_FOUTMIN    4.69f
+#define MMCM_FPFDMAX  450.00f
+#define MMCM_FPFDMIN   10.00f
+#define MMCM_FVCOMAX 1200.00f
+#define MMCM_FVCOMIN  600.00f
+
+int axil_clk_wiz_setFreq(void *baseAddress, float inputActualFreqMHz, const float outputDesiredFreqMHz[7], float outputActualFreqMHz[7]) {
+    if(baseAddress == NULL || inputActualFreqMHz > MMCM_FINMAX || inputActualFreqMHz < MMCM_FINMIN || outputDesiredFreqMHz == NULL) return -1;
+    for(uint8_t i = 0; i < 7; i += 1) {
+        if(outputDesiredFreqMHz[i] != 0.0f && (outputDesiredFreqMHz[i] > MMCM_FOUTMAX || outputDesiredFreqMHz[i] < MMCM_FOUTMIN)) return -1;
+    }
+
+    float relativeErrorMin = INFINITY;
+
+    for(uint8_t divclk_divide = 1; divclk_divide <= 106; divclk_divide += 1) {
+        float freqPFD = inputActualFreqMHz / divclk_divide;
+        if(freqPFD > MMCM_FPFDMAX || freqPFD < MMCM_FPFDMIN) continue;
+        for(uint16_t clkfbout_mult = 64000; clkfbout_mult >= 2000; clkfbout_mult -= 125) {
+            float freqVCO = freqPFD * (clkfbout_mult / 1000.0f);
+            if(freqVCO > MMCM_FVCOMAX || freqVCO < MMCM_FVCOMIN) continue;
+
+            uint8_t clkout_divide[7] = {0};
+            float relativeError = 0.0f;
+            for(uint8_t i = 0; i < 7; i += 1) {
+                if(outputDesiredFreqMHz[i] == 0.0f) continue;
+
+                clkout_divide[i] = roundf(freqVCO / outputDesiredFreqMHz[i]);
+                if(clkout_divide[i] > 128 || clkout_divide[i] < 1) relativeError = INFINITY;
+
+                float freqOUT = freqVCO / clkout_divide[i];
+                if(freqOUT > MMCM_FOUTMAX || freqOUT < MMCM_FOUTMIN) relativeError = INFINITY;
+
+                relativeError += fabsf((freqOUT - outputDesiredFreqMHz[i]) / outputDesiredFreqMHz[i]);
+            }
+            if(relativeError < relativeErrorMin) {
+                relativeErrorMin = relativeError;
+
+                ((axil_clk_wiz_reg_t *)baseAddress)->clock_config_reg0.divclk_divide = divclk_divide;
+                ((axil_clk_wiz_reg_t *)baseAddress)->clock_config_reg0.clkfbout_multiply.mult = clkfbout_mult / 1000;
+                ((axil_clk_wiz_reg_t *)baseAddress)->clock_config_reg0.clkfbout_multiply.frac = clkfbout_mult % 1000;
+
+                for(uint8_t i = 0; i < 7; i += 1) {
+                    float freqOUT = 0.0f;
+
+                    if(outputDesiredFreqMHz[i] != 0.0f) {
+                        freqOUT = freqVCO / clkout_divide[i];
+
+                        ((axil_clk_wiz_reg_t *)baseAddress)->clock_config_reg2to22[i].clkout_divide.div = clkout_divide[i];
+                    }
+
+                    if(outputActualFreqMHz != NULL) outputActualFreqMHz[i] = freqOUT;
+                }
+            }
+        }
+    }
+
+    return (relativeErrorMin == INFINITY) ? -1 : 0;
+}
