@@ -1,5 +1,6 @@
 #include <stdint.h>
 #include <math.h>
+#include "axil_clk_wiz.h"
 
 typedef enum {RESET = 0xA} soft_reset_reg_t;
 
@@ -144,4 +145,28 @@ int axil_clk_wiz_setFreq(void *baseAddress, float inputActualFreqMHz, const floa
     }
 
     return (relativeErrorMin == INFINITY) ? -1 : 0;
+}
+
+int axil_clk_wiz_doReset(void *baseAddress) {
+    if(baseAddress == NULL) return -1;
+
+    ((axil_clk_wiz_reg_t *)baseAddress)->soft_reset_reg = RESET;
+
+    return 0;
+}
+
+int axil_clk_wiz_isLocked(const void *baseAddress) {
+    if(baseAddress == NULL) return -1;
+
+    return ((const axil_clk_wiz_reg_t *)baseAddress)->status_reg.locked;
+}
+
+int axil_clk_wiz_doReconfig(void *baseAddress, bool defaultConfig) {
+    if(baseAddress == NULL) return -1;
+
+    clock_config_reg23_t regValue = {.load_sen = 1, .saddr = !defaultConfig};
+
+    ((axil_clk_wiz_reg_t *)baseAddress)->clock_config_reg23 = regValue;
+
+    return 0;
 }
