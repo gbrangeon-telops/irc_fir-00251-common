@@ -125,7 +125,10 @@ int axil_clk_wiz_setFreq(void *baseAddress, float inputActualFreqMHz, const floa
             if(relativeError < relativeErrorMin) {
                 relativeErrorMin = relativeError;
 
-                ((axil_clk_wiz_reg_t *)baseAddress)->clock_config_reg0 = (clock_config_reg0_t){.divclk_divide = divclk_divide, .clkfbout_multiply = {.mult = clkfbout_mult / 1000, .frac = clkfbout_mult % 1000}};
+                {
+                    clock_config_reg0_t regValue = {.divclk_divide = divclk_divide, .clkfbout_multiply = {.mult = clkfbout_mult / 1000, .frac = clkfbout_mult % 1000}};
+                    ((axil_clk_wiz_reg_t *)baseAddress)->clock_config_reg0 = regValue;
+                }
 
                 for(uint8_t i = 0; i < 7; i += 1) {
                     float freqOUT = 0.0f;
@@ -133,7 +136,10 @@ int axil_clk_wiz_setFreq(void *baseAddress, float inputActualFreqMHz, const floa
                     if(outputDesiredFreqMHz[i] != 0.0f) {
                         freqOUT = freqVCO / clkout_divide[i];
 
-                        ((axil_clk_wiz_reg_t *)baseAddress)->clock_config_reg2to22[i].clkout_divide = (clock_config_reg2_t){.div = clkout_divide[i]};
+                        {
+                            clock_config_reg2_t regValue = {.div = clkout_divide[i]};
+                            ((axil_clk_wiz_reg_t *)baseAddress)->clock_config_reg2to22[i].clkout_divide = regValue;
+                        }
                     }
 
                     if(outputActualFreqMHz != NULL) outputActualFreqMHz[i] = freqOUT;
@@ -156,9 +162,9 @@ int axil_clk_wiz_doReset(void *baseAddress) {
 int axil_clk_wiz_isLocked(const void *baseAddress) {
     if(baseAddress == NULL) return -1;
 
-    status_reg_t status_reg = ((const axil_clk_wiz_reg_t *)baseAddress)->status_reg;
+    status_reg_t regValue = ((const axil_clk_wiz_reg_t *)baseAddress)->status_reg;
 
-    return status_reg.locked;
+    return regValue.locked;
 }
 
 int axil_clk_wiz_doReconfig(void *baseAddress, bool defaultConfig) {
