@@ -1211,19 +1211,19 @@ IRC_Status_t DebugTerminalParseCI(circByteBuffer_t *cbuf)
 
    DT_PRINTF("Debug Terminal Interface");
    DT_PRINTF("  Network port: %d", gDebugTerminal.port.port);
-   if (gDebugTerminal.cuart != NULL) {
-      if (gDebugTerminal.cuart->uartType == Ns550) {
-
-      DT_PRINTF("  Link: CUART @ 0x%08X", gDebugTerminal.cuart->uart.Ns550.BaseAddress);
-   }
-      else  {
+   if (gDebugTerminal.cuart != NULL)
+   {
+      if (gDebugTerminal.cuart->uartType == Ns550)
+      {
+         DT_PRINTF("  Link: CUART @ 0x%08X", gDebugTerminal.cuart->uart.Ns550.BaseAddress);
+      }
+      else
+      {
          DT_PRINTF("  Link: CUART @ 0x%08X", gDebugTerminal.cuart->uart.Lite.RegBaseAddress);
       }
-
-
-
    }
-   if (gDebugTerminal.rxCircBuffer != NULL) {
+   if (gDebugTerminal.rxCircBuffer != NULL)
+   {
       DT_PRINTF("  RX buffer: %d / %d (max=%d, ovfl=%d)", gDebugTerminal.rxCircBuffer->length,
          gDebugTerminal.rxCircBuffer->size, gDebugTerminal.rxCircBuffer->maxLength, gDebugTerminal.rxCircBuffer->ovfl);
    }
