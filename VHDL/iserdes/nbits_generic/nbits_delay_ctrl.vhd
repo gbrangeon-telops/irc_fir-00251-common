@@ -153,6 +153,7 @@ begin
             done_i <= '0';
             dly_dval_i <= '0';
             success_i <= '0';
+            fdb_rdy_i <= '0';
             
          else
             
