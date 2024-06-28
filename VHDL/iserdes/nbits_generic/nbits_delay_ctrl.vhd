@@ -278,7 +278,8 @@ begin
                when check_pos_st =>   
                   if edge_vector_i(to_integer(previous_pos_i)) = '1' and edge_vector_i(to_integer(pos_i)) = '0' then 
                      begin_pos <= pos_i;
-                     begin_pos_valid <= '1';                                      
+                     begin_pos_valid <= '1';
+                     end_pos_valid <= '0';
                   end if; 
                   if edge_vector_i(to_integer(previous_pos_i)) = '0' and edge_vector_i(to_integer(pos_i)) = '1' then 
                      end_pos <= pos_i;
