@@ -154,6 +154,7 @@ begin
             dly_dval_i <= '0';
             success_i <= '0';
             fdb_rdy_i <= '0';
+            fdb_en_i <= '0';
             
          else
             
