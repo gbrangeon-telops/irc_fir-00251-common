@@ -396,7 +396,9 @@ begin
                
                when done_st =>
                   result_done <= '1';            -- permet à ce que fetch_result tombe à '0' quand on sera dans idle
-                  result_fsm   <= idle;
+                  if fetch_result = '0'	then
+                     result_fsm   <= idle;
+                  end if;
                
                when others => 
                
