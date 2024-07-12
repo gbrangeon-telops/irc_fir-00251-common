@@ -175,7 +175,11 @@ begin
                when OUTPUT_STS =>
                   DLY_DVAL <= '0';
                   DONE     <= '1';
-                  SUCCESS  <= '0' when cnt_bst = STABILITY_WIDTH_MIN else '1';
+                  if cnt_bst = STABILITY_WIDTH_MIN then
+                     SUCCESS <= '0';
+                  else
+                     SUCCESS <= '1';
+                  end if;
                   fdb      <= fdb_bst;
             end case;
          end if;
