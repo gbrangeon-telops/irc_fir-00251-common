@@ -131,7 +131,7 @@ begin
                      state                 <= INCR_POS;
                   end if;
                when INCR_POS =>
-                  if and(dly1) or and(dly2) then
+                  if and(dly1) = '1' or and(dly2) = '1' then
                      dly1  <= to_unsigned(0, dly1'LENGTH);
                      dly2  <= to_unsigned(0, dly2'LENGTH);
                      state <= EYE_WINDOW;
