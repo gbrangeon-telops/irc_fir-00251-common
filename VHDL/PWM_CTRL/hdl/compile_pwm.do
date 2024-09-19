@@ -1,8 +1,11 @@
-SetActiveLib -work
+setactivelib work
+
+#get root directory relative to this file
+set current_file_location_absolute_path [file normalize [file dirname [info script]]]
 
 #FAN CTRL
-acom -relax "D:\Telops\FIR-00251-Common\VHDL\PWM_CTRL\hdl\pwm_ctrl.vhd"
-acom "D:\Telops\Common_HDL\gh_vhdl_lib\custom_MSI\gh_PWM.vhd"
-acom "D:\Telops\FIR-00251-Common\VHDL\PWM_CTRL\hdl\PWM_GEN1.vhd"
-acom "D:\Telops\FIR-00251-Common\VHDL\PWM_CTRL\hdl\PWM_GEN3.vhd"
-acom "D:\Telops\FIR-00251-Common\VHDL\PWM_CTRL\hdl\PWM_GEN4.vhd"
+acom -relax "$current_file_location_absolute_path/pwm_ctrl.vhd"
+acom "$COMMON_HDL/gh_vhdl_lib/custom_MSI/gh_PWM.vhd"
+acom "$current_file_location_absolute_path/PWM_GEN1.vhd"
+acom "$current_file_location_absolute_path/PWM_GEN3.vhd"
+acom "$current_file_location_absolute_path/PWM_GEN4.vhd"
